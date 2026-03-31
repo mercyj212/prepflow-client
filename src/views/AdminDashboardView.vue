@@ -216,7 +216,7 @@ const quizStore = useQuizStore();
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: 'https://prepflow-server.onrender.com/api',
   headers: {
     Authorization: `Bearer ${authStore.token}`
   }

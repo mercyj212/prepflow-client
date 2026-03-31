@@ -125,7 +125,7 @@ const fetchQuiz = async () => {
   loading.value = true;
   try {
     // We intentionally ignore auth for practice links
-    const res = await axios.get(`http://localhost:5000/api/quizzes/${route.params.id}/study/public`);
+    const res = await axios.get(`https://prepflow-server.onrender.com/api/quizzes/${route.params.id}/study/public`);
     quiz.value = res.data;
   } catch (err) {
     console.error(err);
