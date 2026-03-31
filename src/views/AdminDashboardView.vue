@@ -135,7 +135,7 @@
               </div>
               <div class="sm:col-span-1">
                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Question Count</label>
-                <input v-model="aiForm.count" required type="number" min="1" max="20" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
+                <input v-model="aiForm.count" required type="number" min="1" max="200" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-indigo-500 focus:border-indigo-500">
               </div>
             </div>
             
@@ -231,7 +231,7 @@ const copiedId = ref(null);
 const courseForm = ref({ title: '', description: '' });
 const quizForm = ref({ course: '', title: '', timeLimit: 30 });
 
-const aiForm = ref({ quizId: '', material: '', count: 5 });
+const aiForm = ref({ quizId: '', material: '', count: 100 });
 
 const creatingCourse = ref(false);
 const creatingQuiz = ref(false);
