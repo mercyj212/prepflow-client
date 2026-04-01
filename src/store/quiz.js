@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuthStore } from './auth';
 
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: 'http://localhost:5000/api',
 });
 
 api.interceptors.request.use((config) => {
@@ -59,7 +59,7 @@ export const useQuizStore = defineStore('quiz', {
         this.loading = false;
       }
     },
-    async submitQuiz(quizId, answers, timeTaken) {
+    async submitQuiz(quizId, answers, timeTaken, totalQuestions) {
       this.loading = true;
       this.error = null;
       try {
@@ -67,6 +67,7 @@ export const useQuizStore = defineStore('quiz', {
           quizId,
           answers,
           timeTaken,
+          totalQuestions,
         });
         return data; // Return submission result
       } catch (err) {

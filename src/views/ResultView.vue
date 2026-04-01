@@ -7,8 +7,11 @@
                 You scored
             </p>
 
-            <p class="text-center text-4xl font-bold text-green-400 mb-6">
+            <p class="text-center text-4xl font-bold text-green-400 mb-2">
                 {{ score }} / {{ total }}
+            </p>
+            <p class="text-center text-zinc-400 font-medium mb-6">
+                {{ percentage }}% Correct
             </p>
 
             <button 
@@ -37,6 +40,11 @@ const percentage = computed(() => {
 })
 
 function goHome() {
-    router.push('/')
+    const quizId = route.query.quizId
+    if (quizId) {
+        router.push(`/quiz/${quizId}`)
+    } else {
+        router.push('/')
+    }
 }
 </script>

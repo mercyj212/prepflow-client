@@ -52,11 +52,19 @@
             'w-full rounded-xl border px-5 py-4 text-left text-white transition-all flex items-center group',
             getOptionClass(option)
           ]"
+          :style="answered && option.isCorrect ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' } : {}"
         >
-          <span class="w-8 h-8 rounded-full border border-zinc-600 flex items-center justify-center mr-4 text-sm tracking-wide font-medium group-hover:border-indigo-400 group-hover:text-indigo-400 transition-colors shrink-0" :class="{'bg-white/10': isSelected(option)}">
+          <span 
+            class="w-8 h-8 rounded-full border border-zinc-600 flex items-center justify-center mr-4 text-sm tracking-wide font-medium transition-colors shrink-0" 
+            :class="[
+              isSelected(option) ? 'bg-white/10' : '',
+              !answered ? 'group-hover:border-indigo-400 group-hover:text-indigo-400' : ''
+            ]"
+            :style="answered && option.isCorrect ? { borderColor: '#10b981', color: '#10b981' } : (answered && isSelected(option) && !option.isCorrect ? { borderColor: '#f87171', color: '#f87171' } : {})"
+          >
             {{ optionLabels[index] }}
           </span>
-          <span class="text-sm sm:text-base">{{ option.text }}</span>
+          <span class="text-sm sm:text-base" :style="answered && option.isCorrect ? { color: '#10b981', fontWeight: '600' } : (answered && isSelected(option) && !option.isCorrect ? { color: '#f87171', fontWeight: '600' } : {})">{{ option.text }}</span>
         </button>
       </div>
 
@@ -131,6 +139,9 @@ onMounted(async () => {
   await quizStore.fetchQuizById(quizId);
   
   if (quiz.value) {
+    console.log('--- DEBUG: QUIZ LOADED ---');
+    console.log('Title:', quiz.value.title);
+    console.log('Q1 Options Correctness:', quiz.value.questions[0].options.map(o => `${o.text}: ${o.isCorrect}`));
     timeLeft.value = (quiz.value.timeLimit || 30) * 60;
     startTimer();
   }
@@ -154,10 +165,11 @@ function startTimer() {
 function selectAnswer(option) {
   if (answered.value) return;
 
-  // We actually don't know the correct answer from backend (it's hidden from student)
-  // We only record what they clicked.
+  const isCorrect = option.isCorrect;
+  
   localAnswers.value[currentIndex.value] = {
-    selectedOption: option
+    selectedOption: option,
+    isSelectedCorrect: isCorrect
   };
   
   studentAnswers.value.push({
@@ -178,12 +190,18 @@ function getOptionClass(option) {
     return 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-600 cursor-pointer';
   }
 
-  // Once answered, highlight the selected one
-  if (isSelected(option)) {
-    return 'border-indigo-500 bg-indigo-500/10 text-white cursor-default';
+  const isCorrect = option.isCorrect;
+  const selected = isSelected(option);
+
+  if (isCorrect) {
+    return 'border-emerald-500 bg-emerald-500/10 text-emerald-400 cursor-default shadow-[0_0_20px_rgba(16,185,129,0.2)] z-10';
   }
 
-  return 'border-zinc-800 bg-zinc-900/30 opacity-50 cursor-default';
+  if (selected && !isCorrect) {
+    return 'border-red-500 bg-red-500/10 text-red-400 cursor-default shadow-[0_0_20px_rgba(239,68,68,0.2)] z-10';
+  }
+
+  return 'border-zinc-800 bg-zinc-900/30 opacity-40 cursor-default';
 }
 
 async function nextQuestion() {
@@ -200,12 +218,13 @@ async function submitQuizFinal() {
   const timeTaken = ((quiz.value.timeLimit || 30) * 60) - timeLeft.value;
   
   try {
-    const result = await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, timeTaken);
+    const result = await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, timeTaken, quiz.value.questions.length);
     router.push({
       path: '/result',
       query: {
         score: result.score,
         total: result.totalQuestions,
+        quizId: quiz.value._id
       },
     });
   } catch (err) {

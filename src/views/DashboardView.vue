@@ -12,6 +12,13 @@
         
         <div class="flex items-center gap-4">
           <ThemeToggle />
+          <router-link 
+            v-if="user?.role === 'admin'"
+            to="/admin" 
+            class="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300 transition-colors"
+          >
+            Return to Admin
+          </router-link>
           <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hidden sm:block">
             {{ user?.email }}
           </span>
@@ -36,7 +43,7 @@
       <!-- Loading State -->
       <div v-if="quizStore.loading" class="flex flex-col items-center justify-center py-20">
         <div class="w-6 h-6 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-white rounded-full animate-spin mb-4"></div>
-        <p class="text-sm text-zinc-500 dark:text-zinc-400">Syncing data...</p>
+        <p class="text-sm text-zinc-500 dark:text-zinc-400">Preparing your quiz...</p>
       </div>
 
       <template v-else>
@@ -108,7 +115,7 @@
                     <span class="text-xs font-medium text-zinc-500 dark:text-zinc-400">{{ quiz.questions.length }} Questions</span>
                   </div>
                   <h3 class="text-lg font-semibold text-zinc-900 dark:text-white group-hover:text-black dark:group-hover:text-zinc-300 transition-colors">{{ quiz.title }}</h3>
-                  <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-1">{{ quiz.description || 'Test your knowledge on this topic.' }}</p>
+                  <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1 line-clamp-1">{{ quiz.description || 'Test your knowledge on this course.' }}</p>
                 </div>
 
                 <div class="flex items-center gap-3 shrink-0">

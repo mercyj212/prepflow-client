@@ -17,7 +17,7 @@
 
     <div v-else-if="quiz && quiz.questions.length > 0" class="w-full max-w-3xl z-10">
       <div class="flex justify-between items-center mb-8 px-2">
-        <button @click="$router.push('/')" class="text-zinc-400 hover:text-white flex items-center gap-2 transition">
+        <button @click="$router.push('/dashboard')" class="text-zinc-400 hover:text-white flex items-center gap-2 transition">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
           Back
         </button>
@@ -139,15 +139,12 @@ const currentQuestion = computed(() => {
 const correctAnswerText = computed(() => {
   if (!currentQuestion.value) return '';
   const correctOpt = currentQuestion.value.options.find(o => o.isCorrect === true);
-  return correctOpt ? correctOpt.text : 'Answer hidden for security in this fetch call (API update required for full study mode).';
+  return correctOpt ? correctOpt.text : 'No correct answer found.';
 });
 
 onMounted(async () => {
-  // If we just use the default fetchQuizById, it lacks the correct answers.
-  // The correct answers are removed in the backend via select("-questions.options.isCorrect").
-  // So I'm about to update the backend controller so the Flashcards can retrieve answers.
   isFlipped.value = false;
-  await quizStore.fetchQuizById(quizId);
+  await quizStore.fetchStudyQuizById(quizId);
 });
 
 const flipCard = () => {
@@ -156,19 +153,27 @@ const flipCard = () => {
 
 const nextCard = () => {
   if (currentIndex.value < quiz.value.questions.length - 1) {
-    isFlipped.value = false;
-    setTimeout(() => {
+    if (isFlipped.value) {
+      isFlipped.value = false;
+      setTimeout(() => {
+        currentIndex.value++;
+      }, 300);
+    } else {
       currentIndex.value++;
-    }, 150); // wait for flip animation to unflip before changing text
+    }
   }
 };
 
 const prevCard = () => {
   if (currentIndex.value > 0) {
-    isFlipped.value = false;
-    setTimeout(() => {
+    if (isFlipped.value) {
+      isFlipped.value = false;
+      setTimeout(() => {
+        currentIndex.value--;
+      }, 300);
+    } else {
       currentIndex.value--;
-    }, 150);
+    }
   }
 };
 

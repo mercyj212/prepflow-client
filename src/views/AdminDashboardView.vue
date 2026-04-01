@@ -171,7 +171,12 @@
                <div v-for="course in courses" :key="course._id" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 flex items-center justify-between hover:shadow-md transition-all duration-300">
                   <div>
                     <h3 class="font-bold text-zinc-900 dark:text-white">{{ course.title }}</h3>
-                    <p class="text-xs text-zinc-500 mt-1">{{ quizzes.filter(q => q.course?._id === course._id).length }} Quizzes</p>
+                    <p class="text-xs text-zinc-500 mt-1">
+                      {{ quizzes.filter(q => {
+                        const courseId = q.course?._id || q.course;
+                        return courseId === course._id;
+                      }).length }} Quizzes
+                    </p>
                   </div>
                   <button @click="handleDeleteCourse(course._id)" class="p-2 text-zinc-400 hover:text-red-500 transition-colors" title="Delete Course">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -229,7 +234,7 @@ const quizStore = useQuizStore();
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: 'http://localhost:5000/api',
   headers: {
     Authorization: `Bearer ${authStore.token}`
   }
