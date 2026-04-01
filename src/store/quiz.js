@@ -3,7 +3,7 @@ import axios from 'axios';
 import { useAuthStore } from './auth';
 
 const api = axios.create({
-  baseURL: 'http://172.20.10.2:5000/api',
+  baseURL: 'https://prepflow-server.onrender.com/api',
 });
 
 api.interceptors.request.use((config) => {
