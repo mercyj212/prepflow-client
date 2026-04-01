@@ -7,7 +7,7 @@
           <div class="w-8 h-8 rounded-md bg-zinc-900 dark:bg-white flex items-center justify-center shadow-sm">
             <svg class="w-4 h-4 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
           </div>
-          <span class="font-semibold text-lg tracking-tight">PrepFlow</span>
+          <span class="font-semibold text-lg tracking-tight">PrepUp</span>
         </div>
         
         <div class="flex items-center gap-4">
@@ -42,7 +42,7 @@
         </h1>
         
         <p class="text-lg lg:text-xl text-zinc-500 dark:text-zinc-400 max-w-2xl mx-auto leading-relaxed">
-          PrepFlow is the modern learning environment that provides structured quizzes, intelligent flashcards, and powerful analytics to elevate your academic performance.
+          PrepUp is the modern learning environment that provides structured quizzes, intelligent flashcards, and powerful analytics to elevate your academic performance.
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
@@ -101,7 +101,7 @@
     <!-- Footer -->
     <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-8 mt-20 transition-colors">
       <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-sm text-zinc-500 dark:text-zinc-400">
-        <p>&copy; 2026 PrepFlow. Developed for excellence.</p>
+        <p>&copy; 2026 PrepUp. Developed for excellence.</p>
         <div class="flex gap-4 mt-4 sm:mt-0">
           <a href="#" class="hover:text-black dark:hover:text-white transition">Terms</a>
           <a href="#" class="hover:text-black dark:hover:text-white transition">Privacy</a>
