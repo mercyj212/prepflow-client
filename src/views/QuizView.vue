@@ -3,7 +3,7 @@
     
     <div v-if="quizStore.loading" class="text-white text-center">
       <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-      <p>Loading Quiz...</p>
+      <p>{{ isSubmitting ? 'Calculating Score...' : 'Loading Quiz...' }}</p>
     </div>
 
     <div v-else-if="quizStore.error" class="text-red-500 text-center bg-zinc-900 border border-zinc-800 p-8 rounded-2xl">
@@ -110,6 +110,7 @@ const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 const currentIndex = ref(0);
 const studentAnswers = ref([]); // Tracks all answers { questionId, selectedOptionId }
 const answered = ref(false);
+const isSubmitting = ref(false);
 
 const timeLeft = ref(0);
 let timer = null;
@@ -215,6 +216,7 @@ async function nextQuestion() {
 }
 
 async function submitQuizFinal() {
+  isSubmitting.value = true;
   const timeTaken = ((quiz.value.timeLimit || 30) * 60) - timeLeft.value;
   
   try {
