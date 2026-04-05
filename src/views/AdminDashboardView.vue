@@ -357,11 +357,14 @@ const quizStore = useQuizStore();
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: window.location.hostname.includes('onrender.com') 
+    ? 'https://prepflow-server.onrender.com/api' 
+    : `http://${window.location.hostname}:5000/api`,
   headers: {
     Authorization: `Bearer ${authStore.token}`
   }
 });
+console.log('🔗 API BaseURL (Admin):', api.defaults.baseURL);
 
 // ── Core State ──────────────────────────────────────────────
 const courses = ref([]);
