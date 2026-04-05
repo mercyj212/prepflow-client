@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
 
+const isProd = window.location.hostname !== 'localhost';
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: isProd ? 'https://prepflow-server.onrender.com/api' : 'http://localhost:5000/api',
 });
 
 export const useAuthStore = defineStore('auth', {
@@ -12,7 +13,7 @@ export const useAuthStore = defineStore('auth', {
     error: null,
   }),
   getters: {
-    isAuthenticated: (state) => !!state.user,
+    isAuthenticated: (state) => !!state.user && state.user.isVerified,
     token: (state) => state.user?.token,
   },
   actions: {
@@ -21,10 +22,24 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       try {
         const { data } = await api.post('/auth/register', userData);
-        this.user = data;
-        localStorage.setItem('user', JSON.stringify(data));
+        return data; 
       } catch (err) {
         this.error = err.response?.data?.message || 'Registration failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async verifyOTP(email, otp) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.post('/auth/verify-otp', { email, otp });
+        this.user = data;
+        localStorage.setItem('user', JSON.stringify(data));
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Verification failed';
         throw err;
       } finally {
         this.loading = false;
@@ -39,6 +54,32 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', JSON.stringify(data));
       } catch (err) {
         this.error = err.response?.data?.message || 'Login failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async forgotPassword(email) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.post('/auth/forgot-password', { email });
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Request failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async resetPassword(token, password) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.put(`/auth/reset-password/${token}`, { password });
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Reset failed';
         throw err;
       } finally {
         this.loading = false;

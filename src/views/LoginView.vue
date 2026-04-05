@@ -5,10 +5,12 @@
     <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
       <div class="z-10 mt-8 flex justify-between w-full pr-12">
         <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
-            <svg class="w-5 h-5 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
+            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
           </div>
-          <span class="text-white font-bold text-2xl tracking-tight">PrepUp.</span>
+          <span class="text-white font-black text-2xl tracking-tighter uppercase">PrepUp.<span class="text-indigo-500">CBT</span></span>
         </div>
         <ThemeToggle />
       </div>
@@ -33,11 +35,13 @@
         
         <!-- Mobile Header -->
         <div class="flex items-center justify-between mb-12 lg:hidden">
-          <div class="flex items-center gap-2">
-            <div class="w-7 h-7 rounded-md bg-black dark:bg-white flex items-center justify-center">
-              <svg class="w-4 h-4 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-black dark:bg-white flex items-center justify-center shadow-lg">
+              <svg class="w-6 h-6 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
             </div>
-            <span class="text-black dark:text-white font-bold text-xl tracking-tight">PrepUp</span>
+            <span class="text-black dark:text-white font-black text-2xl tracking-tighter uppercase">PrepUp.<span class="text-indigo-500">CBT</span></span>
           </div>
           <ThemeToggle />
         </div>
@@ -78,16 +82,33 @@
           <div>
             <div class="flex items-center justify-between mb-1.5">
               <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300">Password</label>
-              <a href="#" class="text-sm font-medium text-zinc-500 hover:text-black dark:hover:text-white transition-colors">Forgot password?</a>
+              <router-link to="/forgot-password" class="text-sm font-medium text-zinc-500 hover:text-black dark:hover:text-white transition-colors">Forgot password?</router-link>
             </div>
-            <input
-              id="password"
-              type="password"
-              required
-              v-model="password"
-              placeholder="••••••••"
-              class="block w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-black dark:focus:border-white focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-colors"
-            />
+            <div class="relative group">
+              <input
+                id="password"
+                :type="showPassword ? 'text' : 'password'"
+                required
+                v-model="password"
+                placeholder="••••••••"
+                class="block w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent pl-3 pr-10 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-black dark:focus:border-white focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-colors"
+              />
+              <button 
+                type="button" 
+                @click="showPassword = !showPassword"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
+              >
+                <!-- 👁️ EYE ICON (Visible) -->
+                <svg v-if="!showPassword" class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <!-- 👁️🚫 EYE ICON (Struck) -->
+                <svg v-else class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
+              </button>
+            </div>
           </div>
 
           <div v-if="authStore.error" class="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm p-3 rounded-md border border-red-100 dark:border-red-500/20 flex items-start gap-2">
@@ -124,6 +145,7 @@ import ThemeToggle from '../components/ThemeToggle.vue';
 
 const email = ref('');
 const password = ref('');
+const showPassword = ref(false);
 const authStore = useAuthStore();
 const router = useRouter();
 

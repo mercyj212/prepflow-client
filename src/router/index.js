@@ -10,12 +10,33 @@ import RegisterView from '../views/RegisterView.vue';
 import AdminDashboardView from '../views/AdminDashboardView.vue';
 import FlashcardView from '../views/FlashcardView.vue';
 import PracticeView from '../views/PracticeView.vue';
+import VerifyEmailView from '../views/VerifyEmailView.vue';
+import ForgotPasswordView from '../views/ForgotPasswordView.vue';
+import ResetPasswordView from '../views/ResetPasswordView.vue';
 
 const routes = [
   {
     path: '/',
     name: 'home',
     component: HomeView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/verify-email/:token',
+    name: 'verify-email',
+    component: VerifyEmailView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/forgot-password',
+    name: 'forgot-password',
+    component: ForgotPasswordView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/reset-password/:token',
+    name: 'reset-password',
+    component: ResetPasswordView,
     meta: { requiresAuth: false }
   },
   {
