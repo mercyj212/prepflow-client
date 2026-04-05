@@ -32,6 +32,14 @@
         </div>
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl relative overflow-hidden group shadow-sm transition-colors">
           <div class="absolute inset-0 bg-gradient-to-br from-zinc-500/5 dark:from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          <h3 class="text-zinc-500 dark:text-zinc-400 text-sm font-medium flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+            Total Scholars
+          </h3>
+          <p class="text-4xl font-bold mt-2 text-zinc-900 dark:text-white">{{ totalStudents }}</p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 p-6 rounded-2xl relative overflow-hidden group shadow-sm transition-colors">
+          <div class="absolute inset-0 bg-gradient-to-br from-zinc-500/5 dark:from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
           <h3 class="text-zinc-500 dark:text-zinc-400 text-sm font-medium">Total Submissions</h3>
           <p class="text-4xl font-bold mt-2 text-zinc-900 dark:text-white">{{ allSubmissions.length }}</p>
         </div>
@@ -392,6 +400,7 @@ const api = axios.create({
 const courses = ref([]);
 const quizzes = ref([]);
 const allSubmissions = ref([]);
+const totalStudents = ref(0);
 const loadingStats = ref(true);
 const copiedId = ref(null);
 
@@ -558,6 +567,9 @@ const fetchCoreData = async () => {
     quizzes.value = quizRes.data;
     const subsData = await quizStore.fetchAllSubmissions();
     allSubmissions.value = subsData || [];
+
+    const studentCountRes = await api.get('/students/count');
+    totalStudents.value = studentCountRes.data.count;
   } catch (err) {
     console.error(err);
   } finally {
