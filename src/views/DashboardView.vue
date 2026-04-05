@@ -71,42 +71,67 @@
         </div>
 
         <!-- Chat Messages -->
-        <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/50 dark:bg-zinc-900/50">
+        <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/50 dark:bg-zinc-900/50 relative">
           <div v-for="msg in messages" :key="msg._id" :class="['flex flex-col', msg.sender._id === user?._id ? 'items-end' : 'items-start']">
-            <div class="flex items-center gap-2 mb-1 px-1">
-              <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">{{ msg.sender.name }}</span>
+            
+            <!-- User Identity (Name & Time) -->
+            <div class="flex items-center gap-2 mb-1.5 px-1">
+              <span 
+                :class="[
+                  'text-[10px] font-bold uppercase tracking-widest',
+                  msg.sender._id === user?._id ? 'text-zinc-400 dark:text-zinc-500' : getUserColor(msg.sender._id).text
+                ]"
+              >
+                {{ msg.sender.fullName }}
+              </span>
               <span class="text-[9px] text-zinc-300 dark:text-zinc-600 font-mono">{{ formatTime(msg.createdAt) }}</span>
             </div>
+
+            <!-- Message Bubble -->
             <div :class="[
-              'max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed shadow-sm',
+              'max-w-[90%] px-4 py-3 rounded-2xl text-[13.5px] leading-relaxed shadow-sm transition-all hover:scale-[1.01]',
               msg.sender._id === user?._id 
-                ? 'bg-black dark:bg-white text-white dark:text-black rounded-tr-none' 
-                : 'bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-tl-none'
+                ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white dark:from-indigo-500 dark:to-indigo-600 rounded-tr-none shadow-indigo-100 dark:shadow-none' 
+                : `${getUserColor(msg.sender._id).bg} border ${getUserColor(msg.sender._id).border} text-zinc-800 dark:text-zinc-100 rounded-tl-none`
             ]">
               {{ msg.text }}
+            </div>
+          </div>
+          
+          <!-- Typing Indicator -->
+          <div v-if="typingUsers.length > 0" class="flex flex-col items-start px-1 animate-in slide-in-from-bottom-2 duration-300">
+            <div class="flex items-center gap-2 bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 rounded-2xl px-3 py-2 shadow-sm">
+              <div class="flex gap-1">
+                <span class="w-1 h-1 bg-zinc-400 rounded-full animate-bounce"></span>
+                <span class="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                <span class="w-1 h-1 bg-zinc-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+              </div>
+              <span class="text-[10px] text-zinc-500 font-medium">
+                {{ typingUsers.length > 1 ? `${typingUsers[0]} and others are typing...` : `${typingUsers[0]} is typing...` }}
+              </span>
             </div>
           </div>
         </div>
 
         <!-- Chat Input -->
         <div class="p-4 sm:p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
-          <form @submit.prevent="sendMessage" class="flex items-end gap-3">
+          <div class="flex items-end gap-3">
             <textarea 
               v-model="newMessage" 
               placeholder="Join the discussion..." 
               rows="1"
-              class="flex-1 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm transition-all focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-zinc-900 resize-none max-h-[120px]"
+              class="flex-1 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-base sm:text-sm transition-all focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-zinc-900 resize-none max-h-[120px] text-zinc-900 dark:text-white"
               style="min-height: 48px;"
             ></textarea>
             <button 
-              type="submit" 
+              @click="sendMessage"
               :disabled="!newMessage.trim() || sendingMessage"
               class="w-12 h-12 shrink-0 flex items-center justify-center rounded-2xl bg-black dark:bg-white text-white dark:text-black disabled:opacity-30 disabled:scale-95 transition-all shadow-sm hover:scale-105 active:scale-90"
             >
               <svg v-if="!sendingMessage" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
               <div v-else class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin"></div>
             </button>
-          </form>
+          </div>
         </div>
       </div>
     </div>
@@ -249,10 +274,12 @@ const averageScore = computed(() => {
 // ── Community Chat Logic ────────────────────────────────────
 const isChatOpen = ref(false);
 const messages = ref([]);
+const typingUsers = ref([]);
 const newMessage = ref('');
 const sendingMessage = ref(false);
 const hasNewMessages = ref(false);
 let chatInterval = null;
+let lastTypingSent = 0;
 
 const api = axios.create({
   baseURL: 'https://prepflow-server.onrender.com/api',
@@ -263,9 +290,12 @@ const fetchMessages = async (isInitial = false) => {
   try {
     const { data } = await api.get('/chat');
     const oldLength = messages.value.length;
-    messages.value = data;
     
-    if (!isInitial && data.length > oldLength) {
+    // Now data is an object { messages, typingUsers }
+    messages.value = data.messages;
+    typingUsers.value = data.typingUsers || [];
+    
+    if (!isInitial && data.messages.length > oldLength) {
       if (!isChatOpen.value) hasNewMessages.value = true;
       scrollToBottom();
     }
@@ -273,6 +303,18 @@ const fetchMessages = async (isInitial = false) => {
     console.error('Chat error:', err);
   }
 };
+
+const handleTyping = async () => {
+  const now = Date.now();
+  if (now - lastTypingSent > 3000) { // Throttled at 3 seconds
+    lastTypingSent = now;
+    try { await api.post('/chat/typing'); } catch (err) { /* silent fail */ }
+  }
+};
+
+watch(newMessage, (val) => {
+  if (val.trim() !== '') handleTyping();
+});
 
 const sendMessage = async () => {
   if (!newMessage.value.trim() || sendingMessage.value) return;
@@ -300,6 +342,22 @@ const scrollToBottom = async () => {
 
 const formatTime = (iso) => {
   return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+// 🎨 Helper for User Colors
+const getUserColor = (id) => {
+  const palettes = [
+    { bg: 'bg-rose-50/70 dark:bg-rose-500/10', border: 'border-rose-100 dark:border-rose-500/20', text: 'text-rose-600 dark:text-rose-400' },
+    { bg: 'bg-sky-50/70 dark:bg-sky-500/10', border: 'border-sky-100 dark:border-sky-500/20', text: 'text-sky-600 dark:text-sky-400' },
+    { bg: 'bg-emerald-50/70 dark:bg-emerald-500/10', border: 'border-emerald-100 dark:border-emerald-500/20', text: 'text-emerald-600 dark:text-emerald-400' },
+    { bg: 'bg-amber-50/70 dark:bg-amber-500/10', border: 'border-amber-100 dark:border-amber-500/20', text: 'text-amber-600 dark:text-amber-400' },
+    { bg: 'bg-violet-50/70 dark:bg-violet-500/10', border: 'border-violet-100 dark:border-violet-500/20', text: 'text-violet-600 dark:text-violet-400' },
+    { bg: 'bg-indigo-50/70 dark:bg-indigo-500/10', border: 'border-indigo-100 dark:border-indigo-500/20', text: 'text-indigo-600 dark:text-indigo-400' },
+  ];
+  
+  // Deterministic index based on ID
+  const num = parseInt(id.slice(-4), 16) || 0;
+  return palettes[num % palettes.length];
 };
 
 watch(isChatOpen, (val) => {
