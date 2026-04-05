@@ -113,21 +113,40 @@
           </h2>
           <form @submit.prevent="handleGenerativeAI" class="space-y-4 relative z-10">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div class="sm:col-span-2">
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Select Target Quiz</label>
-                <select v-model="aiForm.quizId" required class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black text-sm">
-                  <option value="" disabled>Choose a quiz</option>
-                  <option v-for="q in quizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.questions?.length || 0 }} Qs)</option>
-                </select>
-              </div>
+                <div class="flex items-end gap-2">
+                  <div class="flex-1">
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Select Target Quiz</label>
+                    <select v-model="aiForm.quizId" required class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black text-sm">
+                      <option value="" disabled>Choose a quiz</option>
+                      <option v-for="q in quizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.questions?.length || 0 }} Qs)</option>
+                    </select>
+                  </div>
+                  <button v-if="aiForm.quizId" @click="startQuizRename(quizzes.find(q => q._id === aiForm.quizId))" type="button" class="p-2.5 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 rounded-lg hover:text-black dark:hover:text-white transition-colors border border-zinc-200 dark:border-zinc-700" title="Rename Selected Quiz">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                </div>
               <div class="sm:col-span-1">
                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Question Count</label>
                 <input v-model="aiForm.count" required type="number" min="1" max="200" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black">
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Course Material (Paste text, notes, or chapter)</label>
-              <textarea v-model="aiForm.material" required class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black h-[178px] font-mono text-sm leading-relaxed" placeholder="Paste the reading material here..."></textarea>
+              <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Course Material (Paste text or Upload Image/PDF)</label>
+              <textarea v-model="aiForm.material" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black h-[120px] font-mono text-sm leading-relaxed mb-3" placeholder="Paste the reading material here..."></textarea>
+              
+              <!-- AI Material Upload -->
+              <div class="flex items-center gap-4">
+                <label class="flex-1 flex items-center justify-center h-12 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors group bg-zinc-50/50 dark:bg-zinc-800/30">
+                  <div class="flex items-center gap-2 text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    <span class="text-xs font-medium">{{ aiFile ? aiFile.name : 'Upload Image or PDF' }}</span>
+                  </div>
+                  <input type="file" accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
+                </label>
+                <button v-if="aiFile" @click="aiFile = null" type="button" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+              </div>
             </div>
             <button type="submit" :disabled="generatingAI" class="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-bold py-3 px-4 rounded-lg transition disabled:opacity-50 flex justify-center items-center gap-2">
               <div v-if="generatingAI" class="w-4 h-4 border-2 border-white/30 border-t-zinc-900 rounded-full animate-spin"></div>
@@ -269,17 +288,38 @@
           <div v-else class="space-y-4">
             <div v-for="quiz in quizzes" :key="quiz._id" class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 flex flex-col gap-4 hover:shadow-md transition-all duration-300">
               <div class="flex items-center justify-between">
-                <div>
-                  <h3 class="font-bold text-zinc-900 dark:text-white">{{ quiz.title }}</h3>
+                <div class="flex-1">
+                  <div v-if="renamingQuizId === quiz._id" class="flex items-center gap-2 mb-2">
+                    <input
+                      v-model="renameQuizTitle"
+                      @keyup.enter="submitQuizRename(quiz._id)"
+                      @keyup.escape="cancelQuizRename"
+                      class="flex-1 bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-lg px-3 py-1 text-sm font-semibold text-zinc-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-black"
+                      placeholder="New quiz title"
+                      autofocus
+                    />
+                    <button @click="submitQuizRename(quiz._id)" :disabled="renamingQuizLoading" class="px-3 py-1 bg-black dark:bg-white text-white dark:text-black text-xs font-bold rounded-lg transition">
+                      {{ renamingQuizLoading ? '...' : 'Save' }}
+                    </button>
+                    <button @click="cancelQuizRename" class="px-3 py-1 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 text-xs font-medium rounded-lg">Cancel</button>
+                  </div>
+                  <h3 v-else class="font-bold text-zinc-900 dark:text-white">{{ quiz.title }}</h3>
+                  
                   <div class="flex items-center gap-2 mt-1">
                     <span class="text-[10px] text-zinc-400 font-bold uppercase">{{ quiz.course?.title || 'General' }}</span>
                     <span class="text-[10px] text-zinc-300">•</span>
                     <span class="text-[10px] text-zinc-400 font-bold">{{ quiz.questions?.length || 0 }} Qs</span>
                   </div>
                 </div>
-                <button @click="handleDeleteQuiz(quiz._id)" class="p-2 text-zinc-400 hover:text-red-500 transition-colors" title="Delete Quiz">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                <div class="flex items-center gap-1">
+                  <button @click="startQuizRename(quiz)" class="flex items-center gap-1.5 px-2 py-1.5 text-zinc-500 hover:text-black dark:hover:text-white hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-all group" title="Rename Quiz">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    <span class="text-[10px] font-bold uppercase tracking-wider">Rename</span>
+                  </button>
+                  <button @click="handleDeleteQuiz(quiz._id)" class="p-2 text-zinc-400 hover:text-red-500 transition-colors" title="Delete Quiz">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
               </div>
               <div class="flex items-center gap-2 p-2 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-100 dark:border-zinc-800 overflow-hidden">
                 <input type="text" readonly :value="getPracticeLink(quiz._id)" class="flex-1 bg-transparent text-[10px] font-mono text-zinc-400 focus:outline-none truncate">
@@ -308,7 +348,7 @@ const quizStore = useQuizStore();
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   headers: {
     Authorization: `Bearer ${authStore.token}`
   }
@@ -367,6 +407,39 @@ const submitRename = async (id) => {
   } catch (err) {
     alert(err.response?.data?.message || 'Error renaming course');
     renamingLoading.value = false;
+  }
+};
+
+// ── Quiz Rename State ───────────────────────────────────────────
+const renamingQuizId = ref(null);
+const renameQuizTitle = ref('');
+const renamingQuizLoading = ref(false);
+
+const startQuizRename = (quiz) => {
+  if (renamingQuizId.value === quiz._id) {
+    cancelQuizRename();
+    return;
+  }
+  renamingQuizId.value = quiz._id;
+  renameQuizTitle.value = quiz.title;
+};
+
+const cancelQuizRename = () => {
+  renamingQuizId.value = null;
+  renameQuizTitle.value = '';
+  renamingQuizLoading.value = false;
+};
+
+const submitQuizRename = async (id) => {
+  if (!renameQuizTitle.value.trim()) return;
+  renamingQuizLoading.value = true;
+  try {
+    await api.put(`/quizzes/${id}/rename`, { title: renameQuizTitle.value.trim() });
+    cancelQuizRename();
+    fetchCoreData();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Error renaming quiz');
+    renamingQuizLoading.value = false;
   }
 };
 
@@ -515,17 +588,28 @@ const handleDeleteQuiz = async (id) => {
 };
 
 // ── AI Generate ───────────────────────────────────────────────
+const aiFile = ref(null);
+const onAiFileChange = (e) => {
+  aiFile.value = e.target.files[0] || null;
+};
+
 const handleGenerativeAI = async () => {
   generatingAI.value = true;
   aiSuccessMsg.value = '';
   aiErrorMsg.value = '';
+
+  const formData = new FormData();
+  if (aiFile.value) formData.append('file', aiFile.value);
+  if (aiForm.value.material) formData.append('material', aiForm.value.material);
+  formData.append('count', aiForm.value.count);
+
   try {
-    await api.post(`/quizzes/${aiForm.value.quizId}/generate`, {
-      material: aiForm.value.material,
-      count: aiForm.value.count
+    await api.post(`/quizzes/${aiForm.value.quizId}/generate`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     });
     aiSuccessMsg.value = `${aiForm.value.count} Questions successfully generated and added!`;
     aiForm.value.material = '';
+    aiFile.value = null;
     fetchCoreData();
   } catch (err) {
     aiErrorMsg.value = err.response?.data?.message || 'Error communicating with AI. Check server logs.';
