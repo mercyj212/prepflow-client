@@ -32,7 +32,51 @@
     <!-- Right panel - Form -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white dark:bg-zinc-950 transition-colors duration-300">
       <div class="w-full max-w-sm relative">
-        
+        <!-- 🍱 OTP VERIFICATION MODAL -->
+        <div v-if="showOTPModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+          <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"></div>
+          <div class="relative bg-white dark:bg-zinc-900 w-full max-w-md rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
+            <div class="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Check Your Inbox</h3>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
+              We dispatched a fresh 6-digit identity node to **{{ unverifiedEmail }}**. Enter the code to activate your profile.
+            </p>
+            
+            <div class="flex justify-between gap-2 mb-8">
+              <input 
+                v-for="(digit, i) in 6" :key="i"
+                v-model="otpInputs[i]"
+                @input="handleDigitInput($event, i)"
+                @keydown.delete="handleDigitDelete($event, i)"
+                ref="digitRefs"
+                type="text"
+                maxlength="1"
+                class="w-full h-12 text-center text-xl font-black bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:border-indigo-500 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-zinc-900 dark:text-white"
+              />
+            </div>
+
+            <div v-if="verifyError" class="mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-500 text-[10px] font-bold uppercase tracking-wider">
+              {{ verifyError }}
+            </div>
+
+            <button 
+              @click="handleVerifyOTP"
+              :disabled="otpInputs.join('').length < 6 || authStore.loading"
+              class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
+            >
+              <span v-if="!authStore.loading">Activate Identity -></span>
+              <span v-else class="flex items-center justify-center gap-2">
+                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                Verifying...
+              </span>
+            </button>
+          </div>
+        </div>
+
         <!-- Mobile Header -->
         <div class="flex items-center justify-between mb-12 lg:hidden">
           <div class="flex items-center gap-3">
@@ -138,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, nextTick } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import ThemeToggle from '../components/ThemeToggle.vue';
@@ -150,6 +194,43 @@ const authStore = useAuthStore();
 const router = useRouter();
 
 const showSuccess = ref(false);
+
+// 🔟 OTP STATE
+const showOTPModal = ref(false);
+const unverifiedEmail = ref('');
+const otpInputs = ref(['', '', '', '', '', '']);
+const digitRefs = ref([]);
+const verifyError = ref('');
+
+const handleDigitInput = (e, index) => {
+  const val = e.target.value;
+  if (val && index < 5) {
+    nextTick(() => digitRefs.value[index + 1].focus());
+  }
+};
+const handleDigitDelete = (e, index) => {
+  if (!otpInputs.value[index] && index > 0) {
+    nextTick(() => digitRefs.value[index - 1].focus());
+  }
+};
+
+const handleVerifyOTP = async () => {
+  try {
+    const otp = otpInputs.value.join('');
+    await authStore.verifyOTP(unverifiedEmail.value, otp);
+    showOTPModal.value = false;
+    showSuccess.value = true;
+    setTimeout(() => {
+      if (authStore.user && authStore.user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    }, 1500);
+  } catch (err) {
+    verifyError.value = err.response?.data?.message || 'Verification failed. Try again.';
+  }
+};
 
 const handleLogin = async () => {
   try {
@@ -167,8 +248,17 @@ const handleLogin = async () => {
     }, 1500); // Show fancy display for 1.5s
     
   } catch (error) {
+    // 🛡️ CATCH UNVERIFIED IDENTITY (403)
+    if (error.response?.status === 403 && error.response?.data?.requiresVerification) {
+      unverifiedEmail.value = error.response.data.email || email.value;
+      showOTPModal.value = true;
+      nextTick(() => {
+        if (digitRefs.value && digitRefs.value[0]) digitRefs.value[0].focus();
+      });
+      return;
+    }
+
     console.error('Login failed:', error);
-    // Disappear error after some seconds
     setTimeout(() => {
       authStore.error = null;
     }, 4000);
