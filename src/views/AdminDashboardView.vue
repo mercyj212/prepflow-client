@@ -373,6 +373,141 @@
           </div>
         </div>
       </div>
+
+      <!-- Scholarly Registry Section -->
+      <div class="mt-20">
+        <div class="flex items-center justify-between mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-5 transition-colors">
+          <div>
+            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">Scholarly Registry</h2>
+            <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Real-time monitoring of registered scholars and engagement health.</p>
+          </div>
+          <div class="px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-indigo-100 dark:border-indigo-500/20 shadow-sm shadow-indigo-500/5">
+            {{ totalStudents }} Verified Scholars
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-3xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:shadow-none transition-colors">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-sans">
+              <thead>
+                <tr class="bg-zinc-50/50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800/50">
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Scholar Profile</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Communications</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-center">Last Engagement</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-center">Device Signature</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-right">Status</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800/50">
+                <tr v-for="student in incomingScholars" :key="student._id" class="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/30 transition-colors group">
+                  <td class="px-8 py-6">
+                    <div class="flex items-center gap-4">
+                      <div class="w-10 h-10 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center text-white dark:text-black font-black text-xs uppercase shadow-lg shadow-zinc-900/10 dark:shadow-none">
+                        {{ student.fullName.split(' ').map(n => n[0]).join('').slice(0, 2) }}
+                      </div>
+                      <div>
+                        <p class="font-bold text-zinc-900 dark:text-white group-hover:text-black dark:group-hover:text-white transition-colors text-base lowercase tracking-tight">{{ student.fullName }}</p>
+                        <p class="text-[9px] text-zinc-400 font-bold uppercase tracking-[0.25em] mt-0.5">ID:{{ student._id.slice(-6) }}</p>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6">
+                    <div class="space-y-1">
+                      <div class="flex items-center gap-2 group/text">
+                        <svg class="w-3.5 h-3.5 text-zinc-300 group-hover/text:text-indigo-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">{{ student.email }}</span>
+                      </div>
+                      <div v-if="student.phone" class="flex items-center gap-2 group/text">
+                        <svg class="w-3.5 h-3.5 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-widest">{{ student.phone }}</span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-center whitespace-nowrap">
+                    <div class="inline-flex flex-col items-center">
+                      <span class="text-[11px] font-black text-zinc-900 dark:text-zinc-100 tracking-tighter">
+                        {{ new Date(student.lastLogin || student.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) }}
+                      </span>
+                      <div class="flex items-center gap-1 mt-0.5">
+                        <span class="w-1 h-1 rounded-full bg-indigo-500 animate-pulse"></span>
+                        <span class="text-[9px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-widest">
+                          {{ formatFullTime(student.lastLogin || student.createdAt) }}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-center">
+                    <div class="flex flex-col items-center gap-1.5">
+                      <div class="px-2.5 py-1 bg-zinc-900 dark:bg-white text-white dark:text-black text-[9px] font-black uppercase tracking-[0.15em] rounded-lg shadow-sm">
+                        {{ parseDevice(student.deviceInfo) }}
+                      </div>
+                      <span class="text-[8px] text-zinc-400 font-medium truncate max-w-[140px] opacity-60 group-hover:opacity-100 transition-opacity">
+                        {{ student.deviceInfo?.split(') ')[0]?.split(' (')[1] || 'Standard Access' }}
+                      </span>
+                    </div>
+                  </td>
+                  <td class="px-8 py-6 text-right">
+                    <span :class="['px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm', student.accessStatus === 'active' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20' : 'bg-red-50 dark:bg-red-500/10 text-red-600 border-red-100 dark:border-red-500/20']">
+                      {{ student.accessStatus || 'Active' }}
+                    </span>
+                  </td>
+                  <td class="px-8 py-6 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                      <button @click="openEmailModal(student)" class="p-2 text-zinc-400 hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 rounded-lg transition-all" title="Message Scholar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                      </button>
+                      <button @click="handleDeleteStudent(student._id)" class="p-2 text-zinc-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition-all" title="Remove Scholar">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr v-if="incomingScholars.length === 0">
+                  <td colspan="4" class="px-8 py-20 text-center">
+                    <div class="flex flex-col items-center">
+                      <div class="w-12 h-12 bg-zinc-50 dark:bg-zinc-800 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                      </div>
+                      <p class="text-zinc-400 font-medium italic text-sm">Waiting for scholars to register...</p>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 📧 EMAIL COMPOSER MODAL -->
+    <div v-if="emailModalVisible" class="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
+      <div class="bg-white dark:bg-zinc-900 w-full max-w-xl rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden">
+        <div class="px-10 py-8 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between">
+          <div>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-1">Direct Communication</h2>
+            <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Message to {{ emailTargetName }}</p>
+          </div>
+          <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+        </div>
+
+        <div class="p-10 space-y-6">
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 block mb-3">Email Subject</label>
+            <input v-model="emailSubject" type="text" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="e.g., Examination Update">
+          </div>
+          <div>
+            <label class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400 block mb-3">Your Message</label>
+            <textarea v-model="emailMessage" rows="6" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none" placeholder="Draft your message to the scholar here..."></textarea>
+          </div>
+          
+          <button @click="handleSendEmail" 
+            :disabled="emailLoading"
+            class="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-zinc-900/10 hover:translate-y-[-2px] transition-all disabled:opacity-50">
+            {{ emailLoading ? 'Dispatching...' : 'Fire Dispatch 🚀' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -390,7 +525,9 @@ const quizStore = useQuizStore();
 const router = useRouter();
 
 const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
+  baseURL: window.location.hostname === 'localhost' 
+    ? 'http://127.0.0.1:5000/api' 
+    : 'https://prepflow-server.onrender.com/api',
   headers: {
     Authorization: `Bearer ${authStore.token}`
   }
@@ -401,6 +538,7 @@ const courses = ref([]);
 const quizzes = ref([]);
 const allSubmissions = ref([]);
 const totalStudents = ref(0);
+const incomingScholars = ref([]); // Full student list
 const loadingStats = ref(true);
 const copiedId = ref(null);
 
@@ -450,6 +588,50 @@ const submitRename = async (id) => {
   } catch (err) {
     alert(err.response?.data?.message || 'Error renaming course');
     renamingLoading.value = false;
+  }
+};
+
+// ── Email System ────────────────────────────────────────────────
+const emailModalVisible = ref(false);
+const emailLoading = ref(false);
+const emailSubject = ref('');
+const emailMessage = ref('');
+const emailTargetId = ref(null);
+const emailTargetName = ref('');
+
+const openEmailModal = (student) => {
+  emailTargetId.value = student._id;
+  emailTargetName.value = student.fullName;
+  emailSubject.value = 'Update from PrepUp CBT';
+  emailMessage.value = '';
+  emailModalVisible.value = true;
+};
+
+const handleSendEmail = async () => {
+  if (!emailMessage.value) return;
+  emailLoading.value = true;
+  try {
+    const res = await api.post('/students/email', {
+      id: emailTargetId.value,
+      subject: emailSubject.value,
+      message: emailMessage.value
+    });
+    alert(res.data.message);
+    emailModalVisible.value = false;
+  } catch (err) {
+    alert(err.response?.data?.message || 'Email dispatch failed');
+  } finally {
+    emailLoading.value = false;
+  }
+};
+
+const handleDeleteStudent = async (id) => {
+  if (!confirm('Permanently remove this scholar? This cannot be undone.')) return;
+  try {
+    await api.delete(`/students/${id}`);
+    fetchCoreData();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Error deleting student');
   }
 };
 
@@ -570,11 +752,51 @@ const fetchCoreData = async () => {
 
     const studentCountRes = await api.get('/students/count');
     totalStudents.value = studentCountRes.data.count;
+
+    const studentListRes = await api.get('/students');
+    incomingScholars.value = studentListRes.data;
   } catch (err) {
     console.error(err);
   } finally {
     loadingStats.value = false;
   }
+};
+
+const formatDate = (dateString, fallbackDate) => {
+  const actualDate = dateString || fallbackDate;
+  if (!actualDate) return 'Unknown';
+  
+  const date = new Date(actualDate);
+  const now = new Date();
+  const diffInMs = now - date;
+  const diffInMins = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMs / (1000 * 60 * 60));
+  const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+
+  if (diffInMins < 1) return 'Just now';
+  if (diffInMins < 60) return `${diffInMins}m ago`;
+  if (diffInHours < 24) return `${diffInHours}h ago`;
+  if (diffInDays < 7) return `${diffInDays}d ago`;
+  return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+};
+
+const formatFullTime = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleTimeString(undefined, { 
+    hour: '2-digit', 
+    minute: '2-digit',
+    hour12: true 
+  });
+};
+
+const parseDevice = (ua) => {
+  if (!ua || ua === 'Unknown') return 'Legacy Account';
+  if (ua.includes('iPhone')) return 'iPhone';
+  if (ua.includes('Android')) return 'Android';
+  if (ua.includes('iPad')) return 'iPad';
+  if (ua.includes('Windows')) return 'Windows PC';
+  if (ua.includes('Macintosh')) return 'MacBook';
+  return 'Desktop';
 };
 
 onMounted(() => fetchCoreData());
