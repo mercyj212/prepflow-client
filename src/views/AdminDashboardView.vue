@@ -136,14 +136,28 @@
               
               <!-- AI Material Upload -->
               <div class="space-y-3">
-                <label class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors group bg-zinc-50/50 dark:bg-zinc-800/30">
-                  <div class="flex flex-col items-center gap-2 text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span class="text-xs font-bold uppercase tracking-wider">Upload Images or PDFs</span>
-                    <span class="text-[10px] text-zinc-400">Select multiple files (Max 10)</span>
-                  </div>
-                  <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
-                </label>
+                <div class="relative">
+                  <label 
+                    :class="[
+                      'flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-xl transition-all group bg-zinc-50/50 dark:bg-zinc-800/30',
+                      aiFiles.length >= 10 ? 'border-amber-400 bg-amber-50/10 cursor-not-allowed opacity-60' : 'border-zinc-300 dark:border-zinc-700 cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600'
+                    ]"
+                  >
+                    <div class="flex flex-col items-center gap-2 text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                      <svg class="w-6 h-6" :class="aiFiles.length >= 10 ? 'text-amber-500' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path v-if="aiFiles.length < 10" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                      </svg>
+                      <span class="text-xs font-bold uppercase tracking-wider" :class="aiFiles.length >= 10 ? 'text-amber-600 dark:text-amber-400' : ''">
+                        {{ aiFiles.length >= 10 ? 'Max Limit Reached' : 'Upload Images or PDFs' }}
+                      </span>
+                      <span class="text-[10px] text-zinc-400">
+                        {{ aiFiles.length >= 10 ? 'Remove a file to add more' : `Selected: ${aiFiles.length}/10` }}
+                      </span>
+                    </div>
+                    <input v-if="aiFiles.length < 10" type="file" multiple accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
+                  </label>
+                </div>
                 
                 <!-- Files Preview List -->
                 <div v-if="aiFiles.length > 0" class="space-y-2 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
@@ -603,11 +617,15 @@ const handleDeleteQuiz = async (id) => {
 const aiFiles = ref([]);
 const onAiFileChange = (e) => {
   const selected = Array.from(e.target.files);
-  if (aiFiles.value.length + selected.length > 10) {
-    alert("Max 10 files allowed");
-    return;
+  const remaining = 10 - aiFiles.value.length;
+  if (remaining <= 0) return;
+  
+  const toAdd = selected.slice(0, remaining);
+  aiFiles.value = [...aiFiles.value, ...toAdd];
+  
+  if (selected.length > remaining) {
+    alert(`Only first 10 files were added (Limit reached).`);
   }
-  aiFiles.value = [...aiFiles.value, ...selected];
 };
 
 const removeAiFile = (index) => {
