@@ -3,11 +3,8 @@ import axios from 'axios';
 import { useAuthStore } from './auth';
 
 const api = axios.create({
-  baseURL: window.location.hostname.includes('onrender.com') 
-    ? 'https://prepflow-server.onrender.com/api' 
-    : `http://${window.location.hostname}:5000/api`,
+  baseURL: 'https://prepflow-server.onrender.com/api',
 });
-console.log('🔗 API BaseURL (Quiz):', api.defaults.baseURL);
 
 api.interceptors.request.use((config) => {
   const authStore = useAuthStore();

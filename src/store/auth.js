@@ -2,11 +2,8 @@ import { defineStore } from 'pinia';
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: window.location.hostname.includes('onrender.com') 
-    ? 'https://prepflow-server.onrender.com/api' 
-    : `http://${window.location.hostname}:5000/api`,
+  baseURL: 'https://prepflow-server.onrender.com/api',
 });
-console.log('🔗 API BaseURL (Auth):', api.defaults.baseURL);
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
