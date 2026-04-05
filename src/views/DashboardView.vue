@@ -49,11 +49,11 @@
     
     <div 
       :class="[
-        'fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white dark:bg-zinc-900 z-[101] shadow-2xl transition-transform duration-500 ease-in-out border-l border-zinc-200 dark:border-zinc-800',
+        'fixed top-0 right-0 h-[100dvh] w-full sm:w-[400px] bg-white dark:bg-zinc-900 z-[101] shadow-2xl transition-transform duration-500 ease-in-out border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden',
         isChatOpen ? 'translate-x-0' : 'translate-x-full'
       ]"
     >
-      <div class="flex flex-col h-full uppercase-titles tracking-tight">
+      <div class="flex flex-col h-full uppercase-titles tracking-tight relative overflow-hidden">
         <!-- Chat Header -->
         <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900">
           <div class="flex items-center gap-3">
@@ -89,20 +89,22 @@
         </div>
 
         <!-- Chat Input -->
-        <div class="p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
-          <form @submit.prevent="sendMessage" class="relative group">
-            <input 
+        <div class="p-4 sm:p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
+          <form @submit.prevent="sendMessage" class="flex items-end gap-3">
+            <textarea 
               v-model="newMessage" 
-              type="text" 
               placeholder="Join the discussion..." 
-              class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-5 pr-12 py-3.5 text-sm transition-all focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
-            />
+              rows="1"
+              class="flex-1 bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-3.5 text-sm transition-all focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-zinc-900 resize-none max-h-[120px]"
+              style="min-height: 48px;"
+            ></textarea>
             <button 
               type="submit" 
               :disabled="!newMessage.trim() || sendingMessage"
-              class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-black dark:bg-white text-white dark:text-black disabled:opacity-30 disabled:scale-95 transition-all shadow-sm hover:scale-105 active:scale-95"
+              class="w-12 h-12 shrink-0 flex items-center justify-center rounded-2xl bg-black dark:bg-white text-white dark:text-black disabled:opacity-30 disabled:scale-95 transition-all shadow-sm hover:scale-105 active:scale-90"
             >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              <svg v-if="!sendingMessage" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+              <div v-else class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin"></div>
             </button>
           </form>
         </div>
@@ -304,6 +306,9 @@ watch(isChatOpen, (val) => {
   if (val) {
     hasNewMessages.value = false;
     scrollToBottom();
+    document.body.style.overflow = 'hidden'; // Lock Body
+  } else {
+    document.body.style.overflow = ''; // Release Body
   }
 });
 
