@@ -378,8 +378,14 @@
       <div class="mt-20">
         <div class="flex items-center justify-between mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-5 transition-colors">
           <div>
+          <div class="flex items-center gap-4">
             <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">Scholarly Registry</h2>
-            <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Real-time monitoring of registered scholars and engagement health.</p>
+            <button @click="openEmailModal()" class="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-500/20">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+              Broadcast to All 📣
+            </button>
+          </div>
+          <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Real-time monitoring of registered scholars and engagement health.</p>
           </div>
           <div class="px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-indigo-100 dark:border-indigo-500/20 shadow-sm shadow-indigo-500/5">
             {{ totalStudents }} Verified Scholars
@@ -485,8 +491,13 @@
       <div class="bg-white dark:bg-zinc-900 w-full max-w-xl rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden">
         <div class="px-10 py-8 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between">
           <div>
-            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-indigo-500 mb-1">Direct Communication</h2>
-            <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">Message to {{ emailTargetName }}</p>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] mb-1" 
+                :class="isBlastMode ? 'text-red-500' : 'text-indigo-500'">
+              {{ isBlastMode ? 'Sovereign Broadcast' : 'Direct Communication' }}
+            </h2>
+            <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+              {{ isBlastMode ? `Message to All ${incomingScholars.length} Scholars` : `Message to ${emailTargetName}` }}
+            </p>
           </div>
           <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
         </div>
@@ -598,11 +609,19 @@ const emailSubject = ref('');
 const emailMessage = ref('');
 const emailTargetId = ref(null);
 const emailTargetName = ref('');
+const isBlastMode = ref(false);
 
-const openEmailModal = (student) => {
-  emailTargetId.value = student._id;
-  emailTargetName.value = student.fullName;
-  emailSubject.value = 'Update from PrepUp CBT';
+const openEmailModal = (student = null) => {
+  if (student) {
+    isBlastMode.value = false;
+    emailTargetId.value = student._id;
+    emailTargetName.value = student.fullName;
+  } else {
+    isBlastMode.value = true;
+    emailTargetName.value = 'All Registered Scholars';
+  }
+  
+  emailSubject.value = isBlastMode.value ? 'Global Announcement: PrepUp CBT' : 'Update from PrepUp CBT';
   emailMessage.value = '';
   emailModalVisible.value = true;
 };
@@ -611,11 +630,12 @@ const handleSendEmail = async () => {
   if (!emailMessage.value) return;
   emailLoading.value = true;
   try {
-    const res = await api.post('/students/email', {
-      id: emailTargetId.value,
-      subject: emailSubject.value,
-      message: emailMessage.value
-    });
+    const endpoint = isBlastMode.value ? '/students/email-blast' : '/students/email';
+    const payload = isBlastMode.value 
+      ? { subject: emailSubject.value, message: emailMessage.value }
+      : { id: emailTargetId.value, subject: emailSubject.value, message: emailMessage.value };
+
+    const res = await api.post(endpoint, payload);
     alert(res.data.message);
     emailModalVisible.value = false;
   } catch (err) {
