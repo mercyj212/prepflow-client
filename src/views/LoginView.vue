@@ -42,6 +42,21 @@
           <ThemeToggle />
         </div>
 
+        <!-- Success Fancy Display -->
+        <div v-if="showSuccess" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-all duration-700 animate-in fade-in">
+          <div class="flex flex-col items-center gap-6 scale-up-center">
+            <div class="w-16 h-16 rounded-full bg-black dark:bg-white flex items-center justify-center shadow-2xl">
+              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path class="draw-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <div class="text-center">
+              <h3 class="text-2xl font-bold text-black dark:text-white mb-1">Welcome Back!</h3>
+              <p class="text-zinc-500 dark:text-zinc-400">Login successful, redirecting...</p>
+            </div>
+          </div>
+        </div>
+
         <div class="mb-8">
           <h2 class="text-2xl font-semibold text-zinc-900 dark:text-white tracking-tight">Log in</h2>
           <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Enter your credentials to access your account.</p>
@@ -112,16 +127,60 @@ const password = ref('');
 const authStore = useAuthStore();
 const router = useRouter();
 
+const showSuccess = ref(false);
+
 const handleLogin = async () => {
   try {
     await authStore.login(email.value, password.value);
-    if (authStore.user && authStore.user.role === 'admin') {
-      router.push('/admin');
-    } else {
-      router.push('/dashboard');
-    }
+    
+    // Fancy Success Display
+    showSuccess.value = true;
+    
+    setTimeout(() => {
+      if (authStore.user && authStore.user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    }, 1500); // Show fancy display for 1.5s
+    
   } catch (error) {
     console.error('Login failed:', error);
+    // Disappear error after some seconds
+    setTimeout(() => {
+      authStore.error = null;
+    }, 4000);
   }
 };
 </script>
+
+<style scoped>
+.scale-up-center {
+	animation: scale-up-center 0.4s cubic-bezier(0.390, 0.575, 0.565, 1.000) both;
+}
+
+@keyframes scale-up-center {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.draw-path {
+  stroke-dasharray: 100;
+  stroke-dashoffset: 100;
+  animation: draw 0.6s ease-out forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes draw {
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
