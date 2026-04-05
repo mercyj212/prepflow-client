@@ -72,20 +72,22 @@ const router = createRouter({
 });
 
 // Navigation guard
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, from) => {
   const authStore = useAuthStore();
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/login');
-  } else if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
-    if (authStore.user && authStore.user.role === 'admin') {
-      next('/admin');
-    } else {
-      next('/dashboard');
-    }
-  } else {
-    next();
+    return '/login';
   }
+  
+  if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
+    if (authStore.user && authStore.user.role === 'admin') {
+      return '/admin';
+    } else {
+      return '/dashboard';
+    }
+  }
+  
+  return true; // proceed
 });
 
 export default router;
