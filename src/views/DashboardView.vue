@@ -12,6 +12,14 @@
         
         <div class="flex items-center gap-4">
           <ThemeToggle />
+          <button 
+            @click="isChatOpen = !isChatOpen"
+            class="relative p-2 text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition-colors duration-300"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+            <span v-if="hasNewMessages" class="absolute top-1.5 right-1.5 w-2 h-2 bg-indigo-500 rounded-full border-2 border-white dark:border-zinc-950"></span>
+          </button>
+          
           <router-link 
             v-if="user?.role === 'admin'"
             to="/admin" 
@@ -20,7 +28,7 @@
             Return to Admin
           </router-link>
           <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400 hidden sm:block">
-            {{ user?.email }}
+            {{ user?.fullName }}
           </span>
           <button 
             @click="logout" 
@@ -31,6 +39,75 @@
         </div>
       </div>
     </nav>
+
+    <!-- Community Chat Drawer -->
+    <div 
+      v-if="isChatOpen" 
+      class="fixed inset-0 z-[100] bg-zinc-950/20 dark:bg-zinc-950/40 backdrop-blur-sm transition-opacity"
+      @click="isChatOpen = false"
+    ></div>
+    
+    <div 
+      :class="[
+        'fixed top-0 right-0 h-full w-full sm:w-[400px] bg-white dark:bg-zinc-900 z-[101] shadow-2xl transition-transform duration-500 ease-in-out border-l border-zinc-200 dark:border-zinc-800',
+        isChatOpen ? 'translate-x-0' : 'translate-x-full'
+      ]"
+    >
+      <div class="flex flex-col h-full uppercase-titles tracking-tight">
+        <!-- Chat Header -->
+        <div class="p-6 border-b border-zinc-100 dark:border-zinc-800 flex items-center justify-between bg-white dark:bg-zinc-900">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-zinc-900 dark:text-white">Community Chat</h3>
+              <p class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase font-medium tracking-widest">Connect with other students</p>
+            </div>
+          </div>
+          <button @click="isChatOpen = false" class="p-2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          </button>
+        </div>
+
+        <!-- Chat Messages -->
+        <div id="chat-container" class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar bg-zinc-50/50 dark:bg-zinc-900/50">
+          <div v-for="msg in messages" :key="msg._id" :class="['flex flex-col', msg.sender._id === user?._id ? 'items-end' : 'items-start']">
+            <div class="flex items-center gap-2 mb-1 px-1">
+              <span class="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-tight">{{ msg.sender.name }}</span>
+              <span class="text-[9px] text-zinc-300 dark:text-zinc-600 font-mono">{{ formatTime(msg.createdAt) }}</span>
+            </div>
+            <div :class="[
+              'max-w-[85%] px-4 py-2.5 rounded-2xl text-[13px] leading-relaxed shadow-sm',
+              msg.sender._id === user?._id 
+                ? 'bg-black dark:bg-white text-white dark:text-black rounded-tr-none' 
+                : 'bg-white dark:bg-zinc-800 border border-zinc-100 dark:border-zinc-800 text-zinc-700 dark:text-zinc-200 rounded-tl-none'
+            ]">
+              {{ msg.text }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+        <div class="p-6 bg-white dark:bg-zinc-900 border-t border-zinc-100 dark:border-zinc-800">
+          <form @submit.prevent="sendMessage" class="relative group">
+            <input 
+              v-model="newMessage" 
+              type="text" 
+              placeholder="Join the discussion..." 
+              class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-800 rounded-2xl pl-5 pr-12 py-3.5 text-sm transition-all focus:ring-2 focus:ring-black dark:focus:ring-white focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+            />
+            <button 
+              type="submit" 
+              :disabled="!newMessage.trim() || sendingMessage"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-xl bg-black dark:bg-white text-white dark:text-black disabled:opacity-30 disabled:scale-95 transition-all shadow-sm hover:scale-105 active:scale-95"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
 
     <main class="max-w-6xl mx-auto px-6 py-12">
       <header class="mb-10 lg:mb-16">
@@ -144,11 +221,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import axios from 'axios';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();
@@ -166,9 +244,78 @@ const averageScore = computed(() => {
   return Math.round(totalPercentage / quizStore.mySubmissions.length);
 });
 
+// ── Community Chat Logic ────────────────────────────────────
+const isChatOpen = ref(false);
+const messages = ref([]);
+const newMessage = ref('');
+const sendingMessage = ref(false);
+const hasNewMessages = ref(false);
+let chatInterval = null;
+
+const api = axios.create({
+  baseURL: 'https://prepflow-server.onrender.com/api',
+  headers: { Authorization: `Bearer ${authStore.token}` }
+});
+
+const fetchMessages = async (isInitial = false) => {
+  try {
+    const { data } = await api.get('/chat');
+    const oldLength = messages.value.length;
+    messages.value = data;
+    
+    if (!isInitial && data.length > oldLength) {
+      if (!isChatOpen.value) hasNewMessages.value = true;
+      scrollToBottom();
+    }
+  } catch (err) {
+    console.error('Chat error:', err);
+  }
+};
+
+const sendMessage = async () => {
+  if (!newMessage.value.trim() || sendingMessage.value) return;
+  
+  sendingMessage.value = true;
+  try {
+    const { data } = await api.post('/chat', { text: newMessage.value });
+    messages.value.push(data);
+    newMessage.value = '';
+    scrollToBottom();
+  } catch (err) {
+    console.error('Send error:', err);
+  } finally {
+    sendingMessage.value = false;
+  }
+};
+
+const scrollToBottom = async () => {
+  await nextTick();
+  const container = document.getElementById('chat-container');
+  if (container) {
+    container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+  }
+};
+
+const formatTime = (iso) => {
+  return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+};
+
+watch(isChatOpen, (val) => {
+  if (val) {
+    hasNewMessages.value = false;
+    scrollToBottom();
+  }
+});
+
 onMounted(() => {
   quizStore.fetchQuizzes();
   quizStore.fetchMySubmissions();
+  fetchMessages(true);
+  chatInterval = setInterval(fetchMessages, 5000); // Poll every 5s
+});
+
+onUnmounted(() => {
+  if (chatInterval) clearInterval(chatInterval);
 });
 
 const startStudy = (id) => {
@@ -184,3 +331,41 @@ const logout = () => {
   router.push('/login');
 };
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+#chat-container {
+  scroll-behavior: smooth;
+}
+
+/* Animations */
+.animate-in {
+  animation: animate-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.zoom-in-95 {
+  animation: zoom-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes animate-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+</style>
