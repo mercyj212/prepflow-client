@@ -3,11 +3,9 @@
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6 transition-colors gap-4">
-        <div>
-          <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-zinc-800 to-zinc-500 dark:from-white dark:to-zinc-500">
-            Admin Portal
-          </h1>
-          <p class="text-zinc-500 dark:text-zinc-400 mt-2">Manage courses, monitor analytics, and construct interactive quizzes.</p>
+        <div class="flex items-end gap-2 group cursor-pointer">
+          <span class="font-black text-3xl tracking-tighter text-zinc-900 dark:text-white leading-none">PrepUp</span>
+          <span class="text-[12px] font-bold uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 mb-1">CBT</span>
         </div>
         <div class="flex gap-4 items-center">
           <ThemeToggle />
