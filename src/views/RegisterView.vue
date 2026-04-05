@@ -191,6 +191,13 @@
             Initialize Profile ->
           </button>
         </form>
+        
+        <div class="mt-8 text-center text-xs sm:text-sm font-medium">
+          <span class="text-zinc-500">Already have an identity node? </span>
+          <router-link to="/login" class="text-indigo-500 dark:text-indigo-400 font-bold hover:underline transition-all">
+            Enter Command Center ->
+          </router-link>
+        </div>
       </div>
     </div>
   </div>
