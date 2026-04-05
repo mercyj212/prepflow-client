@@ -147,6 +147,26 @@
               </button>
             </div>
             
+            <!-- 🛡️ SECURITY SENTINEL CHECKLIST -->
+            <div class="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] sm:text-xs">
+              <div :class="password.length >= 8 ? 'text-emerald-500' : 'text-zinc-500'" class="flex items-center gap-1.5 transition-colors font-medium">
+                <i class="fas h-3 w-3" :class="password.length >= 8 ? 'fa-check-circle text-emerald-500' : 'fa-circle-notch'"></i>
+                <span>Min. 8 Chars</span>
+              </div>
+              <div :class="/[A-Z]/.test(password) ? 'text-emerald-500' : 'text-zinc-500'" class="flex items-center gap-1.5 transition-colors font-medium">
+                <i class="fas h-3 w-3" :class="/[A-Z]/.test(password) ? 'fa-check-circle text-emerald-500' : 'fa-circle-notch'"></i>
+                <span>Uppercase</span>
+              </div>
+              <div :class="/\d/.test(password) ? 'text-emerald-500' : 'text-zinc-500'" class="flex items-center gap-1.5 transition-colors font-medium">
+                <i class="fas h-3 w-3" :class="/\d/.test(password) ? 'fa-check-circle text-emerald-500' : 'fa-circle-notch'"></i>
+                <span>One Number</span>
+              </div>
+              <div :class="/[@$!%*?&]/.test(password) ? 'text-emerald-500' : 'text-zinc-500'" class="flex items-center gap-1.5 transition-colors font-medium">
+                <i class="fas h-3 w-3" :class="/[@$!%*?&]/.test(password) ? 'fa-check-circle text-emerald-500' : 'fa-circle-notch'"></i>
+                <span>Special Symbol</span>
+              </div>
+            </div>
+            
             <!-- Strength Meter -->
             <div class="mt-4 flex gap-1.5 h-1.5">
               <div v-for="i in 4" :key="i" class="flex-1 rounded-full transition-all duration-500" :class="[ i <= passwordStrength ? strengthColor : 'bg-zinc-100 dark:bg-zinc-800' ]"></div>
