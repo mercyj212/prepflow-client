@@ -252,6 +252,7 @@ const handleLogin = async () => {
     if (error.response?.status === 403 && error.response?.data?.requiresVerification) {
       unverifiedEmail.value = error.response.data.email || email.value;
       showOTPModal.value = true;
+      authStore.error = null; // Clear the visible red banner!
       nextTick(() => {
         if (digitRefs.value && digitRefs.value[0]) digitRefs.value[0].focus();
       });

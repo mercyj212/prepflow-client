@@ -3,6 +3,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: 'https://prepflow-server.onrender.com/api',
+  timeout: 15000, // Enforce strict 15-second timeout to prevent infinite hangs
 });
 
 export const useAuthStore = defineStore('auth', {
