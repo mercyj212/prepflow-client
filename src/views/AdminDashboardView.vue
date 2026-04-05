@@ -135,17 +135,26 @@
               <textarea v-model="aiForm.material" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black h-[120px] font-mono text-sm leading-relaxed mb-3" placeholder="Paste the reading material here..."></textarea>
               
               <!-- AI Material Upload -->
-              <div class="flex items-center gap-4">
-                <label class="flex-1 flex items-center justify-center h-12 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors group bg-zinc-50/50 dark:bg-zinc-800/30">
-                  <div class="flex items-center gap-2 text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
-                    <span class="text-xs font-medium">{{ aiFile ? aiFile.name : 'Upload Image or PDF' }}</span>
+              <div class="space-y-3">
+                <label class="flex flex-col items-center justify-center p-6 border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl cursor-pointer hover:border-zinc-400 dark:hover:border-zinc-600 transition-colors group bg-zinc-50/50 dark:bg-zinc-800/30">
+                  <div class="flex flex-col items-center gap-2 text-zinc-500 group-hover:text-zinc-700 dark:group-hover:text-zinc-300 transition-colors">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span class="text-xs font-bold uppercase tracking-wider">Upload Images or PDFs</span>
+                    <span class="text-[10px] text-zinc-400">Select multiple files (Max 10)</span>
                   </div>
-                  <input type="file" accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
+                  <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
                 </label>
-                <button v-if="aiFile" @click="aiFile = null" type="button" class="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                </button>
+                
+                <!-- Files Preview List -->
+                <div v-if="aiFiles.length > 0" class="space-y-2 max-h-[150px] overflow-y-auto pr-1 custom-scrollbar">
+                  <div v-for="(f, i) in aiFiles" :key="i" class="flex items-center gap-2 p-2 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg group shadow-sm transition-all animate-fade-in">
+                    <span class="text-xs shrink-0">{{ f.type.includes('pdf') ? '📄' : '🖼️' }}</span>
+                    <span class="flex-1 text-[10px] font-medium text-zinc-600 dark:text-zinc-300 truncate">{{ f.name }}</span>
+                    <button @click="removeAiFile(i)" type="button" class="p-1 text-zinc-400 hover:text-red-500 transition-colors opacity-0 group-hover:opacity-100">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
             <button type="submit" :disabled="generatingAI" class="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-bold py-3 px-4 rounded-lg transition disabled:opacity-50 flex justify-center items-center gap-2">
@@ -588,9 +597,18 @@ const handleDeleteQuiz = async (id) => {
 };
 
 // ── AI Generate ───────────────────────────────────────────────
-const aiFile = ref(null);
+const aiFiles = ref([]);
 const onAiFileChange = (e) => {
-  aiFile.value = e.target.files[0] || null;
+  const selected = Array.from(e.target.files);
+  if (aiFiles.value.length + selected.length > 10) {
+    alert("Max 10 files allowed");
+    return;
+  }
+  aiFiles.value = [...aiFiles.value, ...selected];
+};
+
+const removeAiFile = (index) => {
+  aiFiles.value.splice(index, 1);
 };
 
 const handleGenerativeAI = async () => {
@@ -599,7 +617,7 @@ const handleGenerativeAI = async () => {
   aiErrorMsg.value = '';
 
   const formData = new FormData();
-  if (aiFile.value) formData.append('file', aiFile.value);
+  aiFiles.value.forEach(f => formData.append('files', f));
   if (aiForm.value.material) formData.append('material', aiForm.value.material);
   formData.append('count', aiForm.value.count);
 
@@ -609,7 +627,7 @@ const handleGenerativeAI = async () => {
     });
     aiSuccessMsg.value = `${aiForm.value.count} Questions successfully generated and added!`;
     aiForm.value.material = '';
-    aiFile.value = null;
+    aiFiles.value = [];
     fetchCoreData();
   } catch (err) {
     aiErrorMsg.value = err.response?.data?.message || 'Error communicating with AI. Check server logs.';
