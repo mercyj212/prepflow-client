@@ -303,6 +303,7 @@ const handleVerifyOTP = async () => {
     router.push('/dashboard');
   } catch (err) {
     verifyError.value = err.response?.data?.message || 'Verification failed. Try again.';
+  }
 };
 
 const handleResendOTP = async () => {
