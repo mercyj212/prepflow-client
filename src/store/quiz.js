@@ -1,18 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-import { useAuthStore } from './auth';
-
-const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
-});
-
-api.interceptors.request.use((config) => {
-  const authStore = useAuthStore();
-  if (authStore.token) {
-    config.headers.Authorization = `Bearer ${authStore.token}`;
-  }
-  return config;
-});
+import api from '../api/axios';
 
 export const useQuizStore = defineStore('quiz', {
   state: () => ({
@@ -69,7 +56,7 @@ export const useQuizStore = defineStore('quiz', {
           timeTaken,
           totalQuestions,
         });
-        return data; // Return submission result
+        return data; 
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to submit quiz';
         throw err;

@@ -244,14 +244,12 @@ const handleVerifyOTP = async () => {
 };
 
 const handleResendOTP = async () => {
+  verifyError.value = '';
   try {
-    await authStore.login(unverifiedEmail.value || email.value, password.value);
+    await authStore.resendOTP(unverifiedEmail.value || email.value);
+    verifyError.value = "A fresh code was dispatched. Check your inbox.";
   } catch (err) {
-    if (err.response?.status === 403) {
-      verifyError.value = "A fresh code was dispatched. Check your inbox.";
-    } else {
-      verifyError.value = "Failed to resend code.";
-    }
+    verifyError.value = err.response?.data?.message || "Failed to resend code.";
   }
 };
 

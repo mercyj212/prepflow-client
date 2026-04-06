@@ -307,15 +307,12 @@ const handleVerifyOTP = async () => {
 };
 
 const handleResendOTP = async () => {
+  verifyError.value = '';
   try {
-    // When registering, calling login on unverified user resends OTP
-    await authStore.login(email.value, password.value);
+    await authStore.resendOTP(email.value);
+    verifyError.value = "A fresh code was dispatched. Check your inbox.";
   } catch (err) {
-    if (err.response?.status === 403) {
-      verifyError.value = "A fresh code was dispatched. Check your inbox.";
-    } else {
-      verifyError.value = "Failed to resend code.";
-    }
+    verifyError.value = err.response?.data?.message || "Failed to resend code.";
   }
 };
 </script>

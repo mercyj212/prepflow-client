@@ -1,10 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
-
-const api = axios.create({
-  baseURL: 'https://prepflow-server.onrender.com/api',
-  timeout: 15000, // Enforce strict 15-second timeout to prevent infinite hangs
-});
+import api from '../api/axios';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -25,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
         return data; 
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
+          console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
         }
         this.error = err.response?.data?.message || 'Registration failed';
         throw err;
@@ -33,21 +28,7 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
-    async verifyOTP(email, otp) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const { data } = await api.post('/auth/verify-otp', { email, otp });
-        this.user = data;
-        localStorage.setItem('user', JSON.stringify(data));
-        return data;
-      } catch (err) {
-        this.error = err.response?.data?.message || 'Verification failed';
-        throw err;
-      } finally {
-        this.loading = false;
-      }
-    },
+
     async login(email, password) {
       this.loading = true;
       this.error = null;
@@ -57,7 +38,7 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', JSON.stringify(data));
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
+          console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
         }
         this.error = err.response?.data?.message || 'Login failed';
         throw err;
@@ -65,19 +46,28 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
+
     async forgotPassword(email) {
       this.loading = true;
       this.error = null;
       try {
         const { data } = await api.post('/auth/forgot-password', { email });
+        // 🛡️ Added Diagnostic check for recovery emails
+        if (data?.serverDiagnostic && data.serverDiagnostic !== 'success') {
+          console.info('📡 RECOVERY DISPATCH WARNING:', data.serverDiagnostic);
+        }
         return data;
       } catch (err) {
+        if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
+          console.error('📡 RECOVERY DISPATCH ERROR:', err.response.data.serverDiagnostic);
+        }
         this.error = err.response?.data?.message || 'Request failed';
         throw err;
       } finally {
         this.loading = false;
       }
     },
+
     async resetPassword(token, password) {
       this.loading = true;
       this.error = null;
@@ -91,15 +81,27 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
+
     async verifyOTP(email, otp) {
       this.loading = true;
       this.error = null;
       try {
         const { data } = await api.post('/auth/verify-otp', { email, otp });
-        // After verification, log the user in automatically if token is returned
+        
+        // 🛡️ Log diagnostic for the Welcome Email dispatch
+        if (data.serverDiagnostic && data.serverDiagnostic !== 'success') {
+          console.info('ℹ️ WELCOME EMAIL DELAY:', data.serverDiagnostic);
+        }
+
         if (data.token) {
-          // Fetch full user profile or store minimal info
-          this.user = { ...this.user, isVerified: true, token: data.token };
+          this.user = {
+            _id: data._id,
+            fullName: data.fullName,
+            email: data.email,
+            role: data.role,
+            isVerified: true,
+            token: data.token
+          };
           localStorage.setItem('user', JSON.stringify(this.user));
         }
         return data;
@@ -110,6 +112,24 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
+
+    async resendOTP(email) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.post('/auth/resend-otp', { email });
+        return data;
+      } catch (err) {
+        if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
+          console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
+        }
+        this.error = err.response?.data?.message || 'Failed to resend code';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     logout() {
       this.user = null;
       localStorage.removeItem('user');
