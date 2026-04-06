@@ -517,6 +517,17 @@
         </div>
       </div>
     </div>
+
+    <!-- 🛡️ PROFESSIONAL CONFIRMATION GATEWAY -->
+    <ConfirmModal
+      :show="confirmModal.show"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :confirmText="confirmModal.confirmText"
+      :isDanger="confirmModal.isDanger"
+      @confirm="handleModalConfirm"
+      @cancel="confirmModal.show = false"
+    />
   </div>
 </template>
 
@@ -528,6 +539,7 @@ import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import ConfirmModal from '../components/ConfirmModal.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();
@@ -550,6 +562,38 @@ const totalStudents = ref(0);
 const incomingScholars = ref([]); // Full student list
 const loadingStats = ref(true);
 const copiedId = ref(null);
+
+// 🛡️ MODAL SYSTEM STATE
+const confirmModal = ref({
+  show: false,
+  title: '',
+  message: '',
+  confirmText: 'Confirm',
+  isDanger: true,
+  onConfirm: null
+});
+
+const openConfirm = (options) => {
+  confirmModal.value = {
+    show: true,
+    title: options.title || 'Are you sure?',
+    message: options.message || 'This action cannot be undone.',
+    confirmText: options.confirmText || 'Confirm',
+    isDanger: options.isDanger !== undefined ? options.isDanger : true,
+    onConfirm: options.onConfirm
+  };
+};
+
+const handleModalConfirm = async () => {
+  if (confirmModal.value.onConfirm) {
+    try {
+      await confirmModal.value.onConfirm();
+    } catch (err) {
+      console.error('[CONFIRM ERROR]:', err);
+    }
+  }
+  confirmModal.value.show = false;
+};
 
 // ── Forms ────────────────────────────────────────────────────
 const courseForm = ref({ title: '', description: '' });
@@ -643,14 +687,20 @@ const handleSendEmail = async () => {
   }
 };
 
-const handleDeleteStudent = async (id) => {
-  if (!confirm('Permanently remove this scholar? This cannot be undone.')) return;
-  try {
-    await api.delete(`/students/${id}`);
-    fetchCoreData();
-  } catch (err) {
-    alert(err.response?.data?.message || 'Error deleting student');
-  }
+const handleDeleteStudent = (id) => {
+  openConfirm({
+    title: 'De-enroll Scholar?',
+    message: 'Permanently remove this scholar from the platform? This cannot be undone.',
+    confirmText: 'Remove Profile',
+    onConfirm: async () => {
+      try {
+        await api.delete(`/students/${id}`);
+        fetchCoreData();
+      } catch (err) {
+        alert(err.response?.data?.message || 'Error deleting student');
+      }
+    }
+  });
 };
 
 // ── Quiz Rename State ───────────────────────────────────────────
@@ -740,14 +790,20 @@ const submitUpload = async (courseId) => {
   }
 };
 
-const handleDeleteMaterial = async (courseId, materialId) => {
-  if (!confirm('Remove this material?')) return;
-  try {
-    await api.delete(`/courses/${courseId}/materials/${materialId}`);
-    fetchCoreData();
-  } catch (err) {
-    alert('Error deleting material');
-  }
+const handleDeleteMaterial = (courseId, materialId) => {
+  openConfirm({
+    title: 'Purge Asset?',
+    message: 'Remove this curriculum material? Students will lose access immediately.',
+    confirmText: 'Delete Asset',
+    onConfirm: async () => {
+      try {
+        await api.delete(`/courses/${courseId}/materials/${materialId}`);
+        fetchCoreData();
+      } catch (err) {
+        alert('Error deleting material');
+      }
+    }
+  });
 };
 
 // ── Analytics ─────────────────────────────────────────────────
@@ -836,14 +892,20 @@ const handleCreateCourse = async () => {
   }
 };
 
-const handleDeleteCourse = async (id) => {
-  if (!confirm('Are you sure? This will NOT delete associated quizzes, but they will lose their course reference.')) return;
-  try {
-    await api.delete(`/courses/${id}`);
-    fetchCoreData();
-  } catch (err) {
-    alert('Error deleting course');
-  }
+const handleDeleteCourse = (id) => {
+  openConfirm({
+    title: 'Decommission Course?',
+    message: 'Are you sure? This will NOT delete associated quizzes, but they will lose their hierarchy context.',
+    confirmText: 'Confirm Deletion',
+    onConfirm: async () => {
+      try {
+        await api.delete(`/courses/${id}`);
+        fetchCoreData();
+      } catch (err) {
+        alert('Error deleting course');
+      }
+    }
+  });
 };
 
 // ── Quiz CRUD ─────────────────────────────────────────────────
@@ -863,14 +925,20 @@ const handleCreateQuiz = async () => {
   }
 };
 
-const handleDeleteQuiz = async (id) => {
-  if (!confirm('Delete this quiz?')) return;
-  try {
-    await api.delete(`/quizzes/${id}`);
-    fetchCoreData();
-  } catch (err) {
-    alert('Error deleting quiz');
-  }
+const handleDeleteQuiz = (id) => {
+  openConfirm({
+    title: 'Erase Assessment?',
+    message: 'This will permanently delete this quiz and its question history.',
+    confirmText: 'Erase Now',
+    onConfirm: async () => {
+      try {
+        await api.delete(`/quizzes/${id}`);
+        fetchCoreData();
+      } catch (err) {
+        alert('Error deleting quiz');
+      }
+    }
+  });
 };
 
 // ── AI Generate ───────────────────────────────────────────────
