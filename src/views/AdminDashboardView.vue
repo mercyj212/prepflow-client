@@ -111,8 +111,8 @@
         <div class="col-span-1 lg:col-span-2 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl p-6 shadow-sm transition-colors relative overflow-hidden">
           <div class="absolute inset-0 bg-gradient-to-br from-zinc-500/5 dark:from-white/5 to-transparent pointer-events-none"></div>
           <h2 class="text-xl font-bold mb-6 flex items-center gap-3 text-indigo-600 dark:text-indigo-400 relative z-10 transition-colors uppercase tracking-widest text-[11px]">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
-            Curriculum Intelligence Engine
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26.126.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+            AI Assessment Generator
           </h2>
           <form @submit.prevent="handleGenerativeAI" class="space-y-4 relative z-10">
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -136,13 +136,13 @@
             <div>
               <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Course Material (Paste text or Upload Image/PDF)</label>
               <div class="mb-4">
-                <label class="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1.5">Source Literature & Context</label>
+                <label class="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest mb-1.5">Context & Study Material</label>
                 <textarea v-model="aiForm.material" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black h-[120px] font-mono text-sm leading-relaxed mb-3" placeholder="Paste the reading material or academic context here..."></textarea>
               </div>
               
               <!-- Curriculum Asset Upload -->
               <div class="space-y-3">
-                <label class="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Supplemental Digital Scholarly Assets</label>
+                <label class="block text-[11px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest">Supplemental Study Materials</label>
                 <div class="relative">
                   <!-- Active Upload Zone (only shows when under limit) -->
                   <label 
@@ -153,7 +153,7 @@
                       <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-indigo-500 group-hover:text-white dark:group-hover:text-white transition-all mb-2">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                       </div>
-                      <span class="text-xs font-bold uppercase tracking-wider">Ingest External Source (Img/PDF)</span>
+                      <span class="text-xs font-bold uppercase tracking-wider">Upload New Source (Img/PDF)</span>
                       <span class="text-[10px] text-zinc-400">{{ aiFiles.length }}/10 sources active</span>
                     </div>
                     <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onAiFileChange" />
@@ -189,7 +189,7 @@
             <button type="submit" :disabled="generatingAI" class="w-full bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white font-bold py-4 px-4 rounded-xl transition-all shadow-lg shadow-indigo-200 dark:shadow-none disabled:opacity-50 flex justify-center items-center gap-3 active:scale-98 uppercase tracking-widest text-xs">
               <svg v-if="!generatingAI" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
               <div v-else class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              <span>{{ generatingAI ? 'Extracting Curriculum Intelligence...' : 'Initialize Assessment Forge' }}</span>
+              <span>{{ generatingAI ? 'Generating assignments...' : 'Craft Quiz with AI' }}</span>
             </button>
           </form>
           <div v-if="aiSuccessMsg" class="mt-4 relative z-10 p-3 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg text-sm text-center font-medium">{{ aiSuccessMsg }}</div>
@@ -376,16 +376,16 @@
         <div class="flex items-center justify-between mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-5 transition-colors">
           <div>
           <div class="flex items-center gap-4">
-            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">Scholarly Registry</h2>
+            <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">Student Management</h2>
             <button @click="openEmailModal()" class="flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-xl text-[10px] font-black uppercase tracking-wider transition-all shadow-lg shadow-indigo-500/20">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
               Broadcast to All 📣
             </button>
           </div>
-          <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Real-time monitoring of registered scholars and engagement health.</p>
+          <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Monitor registered students and platform engagement.</p>
           </div>
           <div class="px-4 py-2 bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl border border-indigo-100 dark:border-indigo-500/20 shadow-sm shadow-indigo-500/5">
-            {{ totalStudents }} Verified Scholars
+            {{ totalStudents }} Verified Students
           </div>
         </div>
 
@@ -394,7 +394,7 @@
             <table class="w-full text-left font-sans">
               <thead>
                 <tr class="bg-zinc-50/50 dark:bg-zinc-800/50 border-b border-zinc-100 dark:border-zinc-800/50">
-                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Scholar Profile</th>
+                  <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Student Profile</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500">Communications</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-center">Last Engagement</th>
                   <th class="px-8 py-5 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 text-center">Device Signature</th>
@@ -446,7 +446,7 @@
                         {{ parseDevice(student.deviceInfo) }}
                       </div>
                       <span class="text-[8px] text-zinc-400 font-medium truncate max-w-[140px] opacity-60 group-hover:opacity-100 transition-opacity">
-                        {{ student.deviceInfo?.split(') ')[0]?.split(' (')[1] || 'Standard Access' }}
+                        {{ student.deviceInfo?.split(') ')[0]?.split(' (')[1] || 'Web Browser' }}
                       </span>
                     </div>
                   </td>
@@ -490,10 +490,10 @@
           <div>
             <h2 class="text-[10px] font-black uppercase tracking-[0.2em] mb-1" 
                 :class="isBlastMode ? 'text-red-500' : 'text-indigo-500'">
-              {{ isBlastMode ? 'Sovereign Broadcast' : 'Direct Communication' }}
+              {{ isBlastMode ? 'Global Announcement' : 'Direct Message' }}
             </h2>
             <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-              {{ isBlastMode ? `Message to All ${incomingScholars.length} Scholars` : `Message to ${emailTargetName}` }}
+              {{ isBlastMode ? `Message to All ${incomingScholars.length} Students` : `Message to ${emailTargetName}` }}
             </p>
           </div>
           <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>

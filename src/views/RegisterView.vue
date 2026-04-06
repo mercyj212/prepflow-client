@@ -41,9 +41,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Check Your Inbox</h3>
+            <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Verify your email</h3>
             <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
-              We dispatched a 6-digit identity node to **{{ email }}**. Enter the code to activate your profile.
+              We've sent a 6-digit verification code to **{{ email }}**. Enter it below to activate your account.
             </p>
             
             <div class="flex justify-between gap-2 mb-8">
@@ -68,7 +68,7 @@
               :disabled="otpInputs.join('').length < 6 || authStore.loading"
               class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
             >
-              <span v-if="!authStore.loading">Activate Identity -></span>
+              <span v-if="!authStore.loading">Verify & Finish -></span>
               <span v-else class="flex items-center justify-center gap-2">
                 <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 Verifying...
@@ -107,8 +107,8 @@
         </div>
 
         <div class="mb-8 text-center lg:text-left">
-          <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Registry Terminal</h2>
-          <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Initialize your scholar profile to get started.</p>
+          <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Create your account</h2>
+          <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-2">Join thousands of students and start your journey today.</p>
         </div>
         
         <form class="space-y-4" @submit.prevent="handleRegister">
@@ -133,7 +133,7 @@
           </div>
           
           <div class="relative">
-            <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Security Credentials</label>
+            <label for="password" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Security Password</label>
             <div class="relative group">
               <input
                 id="password"
@@ -178,7 +178,7 @@
           </div>
 
           <div class="pt-2">
-            <label for="phone" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Contact Node (Optional)</label>
+            <label for="phone" class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1.5">Phone Number (Optional)</label>
             <div class="flex gap-2">
               <select v-model="countryCode" class="w-24 rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 px-3 py-3 text-xs font-black uppercase text-zinc-900 dark:text-white">
                 <option v-for="c in countries" :key="c.code" :value="c.dial">{{ c.flag }} {{ c.dial }}</option>
@@ -192,14 +192,14 @@
             class="w-full flex justify-center items-center py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] shadow-xl mt-6 transition-all disabled:opacity-30"
           >
             <div v-if="authStore.loading" class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin mr-3"></div>
-            Initialize Profile ->
+            Continue to Verification ->
           </button>
         </form>
         
         <div class="mt-8 text-center text-xs sm:text-sm font-medium">
           <span class="text-zinc-500">Already have an identity node? </span>
           <router-link to="/login" class="text-indigo-500 dark:text-indigo-400 font-bold hover:underline transition-all">
-            Enter Command Center ->
+            Access your account ->
           </router-link>
         </div>
       </div>

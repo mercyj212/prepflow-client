@@ -56,8 +56,8 @@
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
             </div>
             <div>
-              <h3 class="font-bold text-zinc-900 dark:text-white">Community Chat</h3>
-              <p class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase font-medium tracking-widest">Connect with other students</p>
+              <h3 class="font-bold text-zinc-900 dark:text-white">Student Lounge</h3>
+              <p class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase font-medium tracking-widest">Connect with your peers</p>
             </div>
           </div>
           <button @click="isChatOpen = false" class="p-2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
@@ -134,9 +134,9 @@
     <main class="max-w-6xl mx-auto px-6 py-12">
       <header class="mb-10 lg:mb-16">
         <h1 class="text-3xl lg:text-4xl font-semibold tracking-tight text-zinc-900 dark:text-white mb-2">
-          Good to see you, {{ user?.fullName?.split(' ')[0] || 'Student' }}.
+          Welcome back, {{ user?.fullName?.split(' ')[0] || 'Student' }}.
         </h1>
-        <p class="text-zinc-500 dark:text-zinc-400 text-lg">Your academic overview and available assignments.</p>
+        <p class="text-zinc-500 dark:text-zinc-400 text-lg">Here is your progress and available quizzes.</p>
       </header>
 
       <!-- Loading State -->

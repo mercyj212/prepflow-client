@@ -40,9 +40,9 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
               </svg>
             </div>
-            <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Check Your Inbox</h3>
+            <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Check your email</h3>
             <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
-              We dispatched a fresh 6-digit identity node to **{{ unverifiedEmail }}**. Enter the code to activate your profile.
+              We've sent a 6-digit verification code to **{{ unverifiedEmail }}**. Enter it below to activate your account.
             </p>
             
             <div class="flex justify-between gap-2 mb-8">
@@ -67,7 +67,7 @@
               :disabled="otpInputs.join('').length < 6 || authStore.loading"
               class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
             >
-              <span v-if="!authStore.loading">Activate Identity -></span>
+              <span v-if="!authStore.loading">Verify & Log in -></span>
               <span v-else class="flex items-center justify-center gap-2">
                 <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                 Verifying...
@@ -170,7 +170,7 @@
         <div class="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-6">
           Don't have an account?
           <router-link to="/register" class="font-medium text-black dark:text-white hover:underline transition-all">
-            Sign up ->
+            Create an account ->
           </router-link>
         </div>
       </div>
