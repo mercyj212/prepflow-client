@@ -203,7 +203,6 @@
           </div>
           
           <div class="relative group">
-            <!-- Professional Custom Button Base -->
             <div class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 transition-all duration-300 group-hover:border-zinc-400 dark:group-hover:border-zinc-600 group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.04)] dark:group-hover:shadow-[0_8px_30px_rgb(0,0,0,0.2)]">
               <svg class="w-5 h-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/>
@@ -214,8 +213,10 @@
               <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Sign up with Google</span>
             </div>
 
-            <!-- Invisible SDK Trigger Overlay -->
-            <div id="googleBtn" class="absolute inset-0 z-10 opacity-[0.01] [&_iframe]:!w-full [&_iframe]:!h-full overflow-hidden scale-[5] origin-center cursor-pointer"></div>
+            <!-- Invisible SDK Trigger Overlay (Clipped with Safety Container) -->
+            <div class="absolute inset-0 z-10 overflow-hidden rounded-xl">
+              <div id="googleBtn" class="opacity-[0.01] scale-[5] origin-center cursor-pointer"></div>
+            </div>
           </div>
         </div>
         

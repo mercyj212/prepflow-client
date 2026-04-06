@@ -185,8 +185,10 @@
               <span class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">Continue with Google</span>
             </div>
 
-            <!-- Invisible SDK Trigger Overlay -->
-            <div id="googleBtn" class="absolute inset-0 z-10 opacity-[0.01] [&_iframe]:!w-full [&_iframe]:!h-full overflow-hidden scale-[5] origin-center cursor-pointer"></div>
+            <!-- Invisible SDK Trigger Overlay (Clipped with Safety Container) -->
+            <div class="absolute inset-0 z-10 overflow-hidden rounded-xl">
+              <div id="googleBtn" class="opacity-[0.01] scale-[5] origin-center cursor-pointer"></div>
+            </div>
           </div>
         </div>
 
