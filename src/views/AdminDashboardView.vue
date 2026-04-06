@@ -48,6 +48,7 @@
             @upload="toggleUpload"
             @rename="startRename"
             @delete="handleDeleteCourse"
+            @delete-material="handleDeleteMaterial"
           />
         </section>
 
@@ -347,8 +348,16 @@ const startQuizRename = async (quiz) => {
 const handleDeleteCourse = (id) => {
   openConfirm({
     title: 'Decommission Course?',
-    message: 'Remove this curriculum asset? Sub-modules will lose categorization.',
+    message: 'Remove this curriculum asset? All materials will be purged from Cloudinary.',
     onConfirm: async () => { await api.delete(`/courses/${id}`); fetchCoreData(); }
+  });
+};
+
+const handleDeleteMaterial = (courseId, materialId) => {
+  openConfirm({
+    title: 'Remove Resource?',
+    message: 'This document will be permanently deleted from the cloud.',
+    onConfirm: async () => { await api.delete(`/courses/${courseId}/materials/${materialId}`); fetchCoreData(); }
   });
 };
 
