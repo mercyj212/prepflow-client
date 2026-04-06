@@ -44,7 +44,10 @@
             </div>
             <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Verify your email</h3>
             <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
-              We've sent a 6-digit verification code to **{{ email }}**. Enter it below to activate your account.
+              We've sent a 6-digit verification code to **{{ email }}**. Enter it below to activate your account.<br/>
+              <span class="inline-block mt-3 font-semibold text-amber-600 dark:text-amber-400 text-xs bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-200/50 dark:border-amber-500/20">
+                ⚠️ Please check your Spam or Junk folder if you do not see it in your inbox!
+              </span>
             </p>
             
             <div class="flex justify-between gap-2 mb-8">
