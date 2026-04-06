@@ -84,11 +84,13 @@
         </details>
       </div>
     </div>
+    <AppFooter />
   </div>
 </template>
 
 <script setup>
 import ThemeToggle from '@/components/ThemeToggle.vue';
+import AppFooter from '@/components/AppFooter.vue';
 
 const faqs = [
   {

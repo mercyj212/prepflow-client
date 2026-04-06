@@ -539,6 +539,7 @@
       @confirm="handleModalConfirm"
       @cancel="confirmModal.show = false"
     />
+    <AppFooter />
   </div>
 </template>
 
@@ -551,6 +552,7 @@ import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import ConfirmModal from '../components/ConfirmModal.vue';
+import AppFooter from '../components/AppFooter.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();

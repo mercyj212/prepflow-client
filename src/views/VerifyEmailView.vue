@@ -1,5 +1,12 @@
 <template>
-  <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center p-6 transition-colors duration-500">
+  <div class="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col transition-colors duration-500">
+    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 transition-colors">
+      <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <BrandLogo />
+        <ThemeToggle />
+      </div>
+    </nav>
+    <div class="flex-grow flex items-center justify-center p-6">
     
     <!-- 🛡️ SOVEREIGN VERIFICATION CONTAINER -->
     <div v-if="loading" class="flex flex-col items-center gap-6 animate-pulse">
@@ -45,7 +52,8 @@
         Back to Registration
       </router-link>
     </div>
-
+    </div>
+    <AppFooter />
   </div>
 </template>
 
@@ -53,6 +61,9 @@
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import BrandLogo from '../components/BrandLogo.vue';
+import ThemeToggle from '../components/ThemeToggle.vue';
+import AppFooter from '../components/AppFooter.vue';
 
 const route = useRoute();
 const router = useRouter();

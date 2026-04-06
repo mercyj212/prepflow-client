@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex transition-colors duration-300">
+  <div class="min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex flex-col transition-colors duration-300">
+    <div class="flex-grow flex">
     
     <!-- Left panel - Branding / Decorative -->
     <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
@@ -228,6 +229,8 @@
         </div>
       </div>
     </div>
+    </div>
+    <AppFooter />
   </div>
 </template>
 
@@ -237,6 +240,7 @@ import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import AppFooter from '../components/AppFooter.vue';
 
 const fullName = ref('');
 const email = ref('');

@@ -1,5 +1,6 @@
 <template>
-  <div class="min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex items-center justify-center p-6 transition-colors duration-500">
+  <div class="min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex flex-col transition-colors duration-500">
+    <div class="flex-grow flex items-center justify-center p-6">
     
     <div class="w-full max-w-sm relative">
       <!-- 🍱 SUCCESS MODAL -->
@@ -83,7 +84,8 @@
         </form>
       </div>
     </div>
-
+    </div>
+    <AppFooter />
   </div>
 </template>
 
@@ -91,6 +93,7 @@
 import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../store/auth';
+import AppFooter from '../components/AppFooter.vue';
 
 const route = useRoute();
 const authStore = useAuthStore();

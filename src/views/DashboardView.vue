@@ -239,6 +239,7 @@
         </div>
       </template>
     </main>
+    <AppFooter />
   </div>
 </template>
 
@@ -249,6 +250,7 @@ import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import AppFooter from '../components/AppFooter.vue';
 import axios from 'axios';
 
 const authStore = useAuthStore();

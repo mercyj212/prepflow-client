@@ -93,22 +93,14 @@
       </div>
     </main>
     
-    <!-- Footer -->
-    <footer class="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-8 mt-20 transition-colors">
-      <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row justify-between items-center text-sm text-zinc-500 dark:text-zinc-400">
-        <p>&copy; 2026 PrepUp. Developed for excellence.</p>
-        <div class="flex gap-4 mt-4 sm:mt-0">
-          <a href="#" class="hover:text-black dark:hover:text-white transition">Terms</a>
-          <a href="#" class="hover:text-black dark:hover:text-white transition">Privacy</a>
-        </div>
-      </div>
-    </footer>
+    <AppFooter />
   </div>
 </template>
 
 <script setup>
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
+import AppFooter from '../components/AppFooter.vue';
 </script>
 
 <style scoped>
