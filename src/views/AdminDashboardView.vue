@@ -26,11 +26,12 @@
       />
 
       <!-- Content Creation Hub -->
-      <h2 class="text-[11px] font-black mb-8 text-zinc-400 uppercase tracking-[0.3em] border-b border-zinc-100 dark:border-zinc-900 pb-4">Content Architecture</h2>
+      <h2 class="text-[11px] font-black mb-8 text-zinc-400 uppercase tracking-[0.3em] border-b border-zinc-100 dark:border-zinc-900 pb-4 text-center">Architect & Engineering Hub</h2>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
+        <AIGenerator :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
         <CourseCreator :loading="creatingCourse" @create="handleCreateCourse" />
         <QuizCreator :loading="creatingQuiz" :courses="courses" @create="handleCreateQuiz" />
-        <AIGenerator :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
+        <BatchImporter class="lg:col-span-2" :quizzes="quizzes" @imported="fetchCoreData" />
       </div>
 
       <!-- Management Hub -->
@@ -110,6 +111,16 @@
       @confirm="handleModalConfirm"
       @cancel="confirmModal.show = false"
     />
+
+    <!-- Hidden File Input for Course Materials -->
+    <input 
+      type="file" 
+      ref="materialInput" 
+      class="hidden" 
+      accept="image/*,.pdf"
+      @change="handleMaterialUpload"
+    >
+
     <AppFooter />
   </div>
 </template>
@@ -133,6 +144,7 @@ import AIGenerator from '../components/Admin/AIGenerator.vue';
 import CourseInventory from '../components/Admin/CourseInventory.vue';
 import QuizInventory from '../components/Admin/QuizInventory.vue';
 import StudentRegistry from '../components/Admin/StudentRegistry.vue';
+import BatchImporter from '../components/Admin/BatchImporter.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();
@@ -145,6 +157,8 @@ const allSubmissions = ref([]);
 const totalStudents = ref(0);
 const incomingScholars = ref([]);
 const loadingStats = ref(true);
+const materialInput = ref(null);
+const currentUploadingCourseId = ref(null);
 
 // 🛡️ MODAL SYSTEM
 const confirmModal = ref({
@@ -272,10 +286,63 @@ const handleSendEmail = async () => {
   finally { emailLoading.value = false; }
 };
 
-// ── Inventory Actions ───────────────────────────────────────── (Placeholder for logic)
-const toggleUpload = (id) => console.log('Upload toggle for', id);
-const startRename = (c) => console.log('Rename start for', c);
-const startQuizRename = (q) => console.log('Quiz rename for', q);
+// ── Inventory Actions ─────────────────────────────────────────
+const toggleUpload = (courseId) => {
+  currentUploadingCourseId.value = courseId;
+  materialInput.value?.click();
+};
+
+const handleMaterialUpload = async (event) => {
+  const file = event.target.files[0];
+  if (!file || !currentUploadingCourseId.value) return;
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    successMsg.value = 'Uploading Material...';
+    await api.post(`/courses/${currentUploadingCourseId.value}/materials`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    });
+    successMsg.value = 'Material Uplinked';
+    fetchCoreData();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Upload failed');
+  } finally {
+    setTimeout(() => successMsg.value = '', 3000);
+    event.target.value = ''; // Reset input
+  }
+};
+
+const startRename = async (course) => {
+  const newTitle = prompt('Enter new course title:', course.title);
+  if (!newTitle || newTitle === course.title) return;
+
+  try {
+    await api.put(`/courses/${course._id}/rename`, { title: newTitle });
+    successMsg.value = 'Course Renamed';
+    fetchCoreData();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Rename failed');
+  } finally {
+    setTimeout(() => successMsg.value = '', 3000);
+  }
+};
+
+const startQuizRename = async (quiz) => {
+  const newTitle = prompt('Enter new quiz title:', quiz.title);
+  if (!newTitle || newTitle === quiz.title) return;
+
+  try {
+    await api.put(`/quizzes/${quiz._id}/rename`, { title: newTitle });
+    successMsg.value = 'Quiz Renamed';
+    fetchCoreData();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Rename failed');
+  } finally {
+    setTimeout(() => successMsg.value = '', 3000);
+  }
+};
 
 const handleDeleteCourse = (id) => {
   openConfirm({
