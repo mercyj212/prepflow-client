@@ -9,12 +9,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Identity Updated</h2>
+        <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Password Updated</h2>
         <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">
-          Your security credentials have been successfully hardened. You may now re-enter the Command Center.
+          Your account credentials have been successfully updated. You may now return to the login screen and enter the student dashboard.
         </p>
         <router-link to="/login" class="inline-block w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">
-          Return to Portal ->
+          Return to Login ->
         </router-link>
       </div>
 
@@ -28,8 +28,8 @@
               </svg>
             </div>
           </div>
-          <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Credential Override</h2>
-          <p class="text-zinc-500 dark:text-zinc-400 mt-2 text-sm">Hardening your scholar identity profile.</p>
+          <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Password Reset</h2>
+          <p class="text-zinc-500 dark:text-zinc-400 mt-2 text-sm">Updating your student security credentials.</p>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -78,7 +78,7 @@
             class="w-full flex justify-center items-center py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
           >
             <div v-if="loading" class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
-            {{ loading ? 'Synchronizing...' : 'Update Identity ->' }}
+            {{ loading ? 'Updating...' : 'Confirm New Password ->' }}
           </button>
         </form>
       </div>

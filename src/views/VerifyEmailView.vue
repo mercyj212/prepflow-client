@@ -5,8 +5,8 @@
     <div v-if="loading" class="flex flex-col items-center gap-6 animate-pulse">
       <div class="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
       <div class="text-center">
-        <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Identity Analysis</h2>
-        <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Validating your academic credentials...</p>
+        <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Account Verification</h2>
+        <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Validating your registration link...</p>
       </div>
     </div>
 
@@ -18,13 +18,13 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
         </svg>
       </div>
-      <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Identity Confirmed</h2>
+      <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Email Verified</h2>
       <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
         Your PrepUp CBT account is now officially activated. You have full access to our global academic network.
       </p>
       <router-link to="/login" 
                    class="inline-block w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-zinc-950/20 dark:shadow-none">
-        Enter Command Center ->
+        Go to Dashboard ->
       </router-link>
     </div>
 
@@ -38,7 +38,7 @@
       </div>
       <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Link Invalid</h2>
       <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
-        This verification beacon has expired or is invalid. Please request a new identity badge from your dashboard.
+        This verification link has expired or is invalid. Please request a new verification email from your dashboard.
       </p>
       <router-link to="/register" 
                    class="inline-block w-full py-4 border-2 border-zinc-900 dark:border-white text-zinc-900 dark:text-white font-black uppercase tracking-widest rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all">

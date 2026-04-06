@@ -9,12 +9,12 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
           </svg>
         </div>
-        <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Beacon Dispatched</h2>
+        <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Recovery Link Sent</h2>
         <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">
-          If an account exists for <span class="font-black text-black dark:text-white">{{ email }}</span>, a recovery link will arrive shortly. Check your inbox to reset your credentials.
+          If an account exists for <span class="font-black text-black dark:text-white">{{ email }}</span>, a secure reset link will arrive shortly. Please check your inbox.
         </p>
         <router-link to="/login" class="inline-block w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">
-          Back to Terminal
+          Back to Login ->
         </router-link>
       </div>
 
@@ -28,13 +28,13 @@
               </svg>
             </div>
           </div>
-          <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Recovery Hub</h2>
-          <p class="text-zinc-500 dark:text-zinc-400 mt-2 text-sm">Enter your email to request an identity override link.</p>
+          <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Account Recovery</h2>
+          <p class="text-zinc-500 dark:text-zinc-400 mt-2 text-sm">Enter your email to receive password reset instructions.</p>
         </div>
 
         <form @submit.prevent="handleSubmit" class="space-y-6">
           <div>
-            <label for="email" class="block text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Identification Node</label>
+            <label for="email" class="block text-xs font-black uppercase tracking-widest text-zinc-500 dark:text-zinc-400 mb-2">Registered Email Address</label>
             <input
               id="email"
               type="email"
@@ -55,7 +55,7 @@
             class="w-full flex justify-center items-center py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
           >
             <div v-if="loading" class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
-            {{ loading ? 'Synchronizing...' : 'Dispatch Beacon ->' }}
+            {{ loading ? 'Processing...' : 'Send Recovery Link ->' }}
           </button>
           
           <div class="text-center pt-4">
