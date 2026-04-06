@@ -33,10 +33,16 @@
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white dark:bg-zinc-950 transition-colors duration-300">
       <div class="w-full max-w-sm relative">
         
-        <!-- 🍱 OTP VERIFICATION MODAL -->
+        <!--  OTP VERIFICATION MODAL -->
         <div v-if="showOTPModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
-          <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"></div>
+          <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md" @click="showOTPModal = false"></div>
           <div class="relative bg-white dark:bg-zinc-900 w-full max-w-md rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
+            
+            <!-- Close Button -->
+            <button @click="showOTPModal = false" class="absolute top-6 right-6 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
             <div class="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
@@ -75,10 +81,15 @@
                 Verifying...
               </span>
             </button>
+
+            <div class="mt-6 text-sm">
+              <span class="text-zinc-500">Didn't receive the code? </span>
+              <button @click="handleResendOTP" :disabled="authStore.loading" class="font-bold text-black dark:text-white hover:underline transition-all disabled:opacity-50">Resend Code</button>
+            </div>
           </div>
         </div>
 
-        <!-- 🍱 REGISTRY CONFLICT MODAL -->
+        <!--  REGISTRY CONFLICT MODAL -->
         <div v-if="showErrorModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
           <div class="absolute inset-0 bg-zinc-950/40 backdrop-blur-md" @click="showErrorModal = false"></div>
           <div class="relative bg-white dark:bg-zinc-900 w-full max-w-sm rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
@@ -147,7 +158,7 @@
               </button>
             </div>
             
-            <!-- 🛡️ SECURITY SENTINEL CHECKLIST -->
+            <!-- ️ SECURITY SENTINEL CHECKLIST -->
             <div class="mt-2.5 grid grid-cols-2 gap-x-4 gap-y-1.5 text-[10px] sm:text-xs">
               <div :class="password.length >= 8 ? 'text-emerald-500' : 'text-zinc-500'" class="flex items-center gap-1.5 transition-colors font-medium">
                 <i class="fas h-3 w-3" :class="password.length >= 8 ? 'fa-check-circle text-emerald-500' : 'fa-circle-notch'"></i>
@@ -216,30 +227,30 @@ const phone = ref('');
 const showPassword = ref(false);
 const countryCode = ref('+234');
 
-// 🔟 OTP STATE
+//  OTP STATE
 const showOTPModal = ref(false);
 const otpInputs = ref(['', '', '', '', '', '']);
 const digitRefs = ref([]);
 const verifyError = ref('');
 
-// 🚩 UI STATE
+//  UI STATE
 const showErrorModal = ref(false);
 const errorMsg = ref('');
 
 const countries = [
-  { code: 'NG', dial: '+234', flag: '🇳🇬' },
-  { code: 'US', dial: '+1', flag: '🇺🇸' },
-  { code: 'GB', dial: '+44', flag: '🇬🇧' },
-  { code: 'GH', dial: '+233', flag: '🇬🇭' },
-  { code: 'ZA', dial: '+27', flag: '🇿🇦' },
-  { code: 'CA', dial: '+1', flag: '🇨🇦' },
-  { code: 'IN', dial: '+91', flag: '🇮🇳' },
+  { code: 'NG', dial: '+234', flag: '' },
+  { code: 'US', dial: '+1', flag: '' },
+  { code: 'GB', dial: '+44', flag: '' },
+  { code: 'GH', dial: '+233', flag: '' },
+  { code: 'ZA', dial: '+27', flag: '' },
+  { code: 'CA', dial: '+1', flag: '' },
+  { code: 'IN', dial: '+91', flag: '' },
 ];
 
 const authStore = useAuthStore();
 const router = useRouter();
 
-// 🛡️ PASSWORDS
+// ️ PASSWORDS
 const passwordChecks = computed(() => [
   { label: '8+ Characters', valid: password.value.length >= 8 },
   { label: 'Uppercase', valid: /[A-Z]/.test(password.value) },
@@ -254,7 +265,7 @@ const strengthColor = computed(() => {
   return 'bg-emerald-500';
 });
 
-// 🔟 OTP HANDLERS
+//  OTP HANDLERS
 const handleDigitInput = (e, index) => {
   const val = e.target.value;
   if (val && index < 5) {
@@ -292,6 +303,18 @@ const handleVerifyOTP = async () => {
     router.push('/dashboard');
   } catch (err) {
     verifyError.value = err.response?.data?.message || 'Verification failed. Try again.';
+};
+
+const handleResendOTP = async () => {
+  try {
+    // When registering, calling login on unverified user resends OTP
+    await authStore.login(email.value, password.value);
+  } catch (err) {
+    if (err.response?.status === 403) {
+      verifyError.value = "A fresh code was dispatched. Check your inbox.";
+    } else {
+      verifyError.value = "Failed to resend code.";
+    }
   }
 };
 </script>

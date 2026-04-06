@@ -25,7 +25,7 @@ export const useAuthStore = defineStore('auth', {
         return data; 
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('🛡️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
+          console.error('️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
         }
         this.error = err.response?.data?.message || 'Registration failed';
         throw err;
@@ -57,7 +57,7 @@ export const useAuthStore = defineStore('auth', {
         localStorage.setItem('user', JSON.stringify(data));
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('🛡️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
+          console.error('️ SMTP DISPATCH ERRROR:', err.response.data.serverDiagnostic);
         }
         this.error = err.response?.data?.message || 'Login failed';
         throw err;

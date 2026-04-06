@@ -32,10 +32,16 @@
     <!-- Right panel - Form -->
     <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-24 bg-white dark:bg-zinc-950 transition-colors duration-300">
       <div class="w-full max-w-sm relative">
-        <!-- 🍱 OTP VERIFICATION MODAL -->
+        <!--  OTP VERIFICATION MODAL -->
         <div v-if="showOTPModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
-          <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md"></div>
+          <div class="absolute inset-0 bg-zinc-950/60 backdrop-blur-md" @click="showOTPModal = false"></div>
           <div class="relative bg-white dark:bg-zinc-900 w-full max-w-md rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
+            
+            <!-- Close Button -->
+            <button @click="showOTPModal = false" class="absolute top-6 right-6 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+
             <div class="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
               <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
@@ -74,6 +80,11 @@
                 Verifying...
               </span>
             </button>
+
+            <div class="mt-6 text-sm">
+              <span class="text-zinc-500">Didn't receive the code? </span>
+              <button @click="handleResendOTP" :disabled="authStore.loading" class="font-bold text-black dark:text-white hover:underline transition-all disabled:opacity-50">Resend Code</button>
+            </div>
           </div>
         </div>
 
@@ -142,12 +153,12 @@
                 @click="showPassword = !showPassword"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
               >
-                <!-- 👁️ EYE ICON (Visible) -->
+                <!-- ️ EYE ICON (Visible) -->
                 <svg v-if="!showPassword" class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
-                <!-- 👁️🚫 EYE ICON (Struck) -->
+                <!-- ️ EYE ICON (Struck) -->
                 <svg v-else class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
                 </svg>
@@ -195,7 +206,7 @@ const router = useRouter();
 
 const showSuccess = ref(false);
 
-// 🔟 OTP STATE
+//  OTP STATE
 const showOTPModal = ref(false);
 const unverifiedEmail = ref('');
 const otpInputs = ref(['', '', '', '', '', '']);
@@ -232,6 +243,18 @@ const handleVerifyOTP = async () => {
   }
 };
 
+const handleResendOTP = async () => {
+  try {
+    await authStore.login(unverifiedEmail.value || email.value, password.value);
+  } catch (err) {
+    if (err.response?.status === 403) {
+      verifyError.value = "A fresh code was dispatched. Check your inbox.";
+    } else {
+      verifyError.value = "Failed to resend code.";
+    }
+  }
+};
+
 const handleLogin = async () => {
   try {
     await authStore.login(email.value, password.value);
@@ -248,7 +271,7 @@ const handleLogin = async () => {
     }, 1500); // Show fancy display for 1.5s
     
   } catch (error) {
-    // 🛡️ CATCH UNVERIFIED IDENTITY (403)
+    // ️ CATCH UNVERIFIED IDENTITY (403)
     if (error.response?.status === 403 && error.response?.data?.requiresVerification) {
       unverifiedEmail.value = error.response.data.email || email.value;
       showOTPModal.value = true;
