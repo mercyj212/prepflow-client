@@ -91,6 +91,25 @@ export const useAuthStore = defineStore('auth', {
         this.loading = false;
       }
     },
+    async verifyOTP(email, otp) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.post('/auth/verify-otp', { email, otp });
+        // After verification, log the user in automatically if token is returned
+        if (data.token) {
+          // Fetch full user profile or store minimal info
+          this.user = { ...this.user, isVerified: true, token: data.token };
+          localStorage.setItem('user', JSON.stringify(this.user));
+        }
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Verification failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
     logout() {
       this.user = null;
       localStorage.removeItem('user');
