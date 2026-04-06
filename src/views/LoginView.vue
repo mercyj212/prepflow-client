@@ -167,6 +167,14 @@
           </button>
         </form>
 
+        <!-- Google Social Hub -->
+        <div class="relative my-6 text-center text-[10px] uppercase font-bold tracking-widest text-zinc-400">
+          <span class="bg-white dark:bg-zinc-950 px-3 relative z-10">Or continue with</span>
+          <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-zinc-100 dark:border-zinc-800"></span></div>
+        </div>
+
+        <div id="googleBtn" class="flex justify-center w-full scale-[0.9] origin-center"></div>
+
         <div class="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-6">
           Don't have an account?
           <router-link to="/register" class="font-medium text-black dark:text-white hover:underline transition-all">
@@ -179,7 +187,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onMounted } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
@@ -273,6 +281,44 @@ const handleLogin = async () => {
     }, 4000);
   }
 };
+
+// 🛡️ GOOGLE IDENTITY HUB INTEGRATION
+const handleGoogleLogin = async (response) => {
+  try {
+    await authStore.loginWithGoogle(response.credential);
+    showSuccess.value = true;
+    setTimeout(() => {
+      if (authStore.user && authStore.user.role === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
+    }, 1500);
+  } catch (error) {
+    console.error('[GOOGLE HUB ERROR]:', error);
+  }
+};
+
+onMounted(() => {
+  /* global google */
+  if (typeof google !== 'undefined') {
+    google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE',
+      callback: handleGoogleLogin,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("googleBtn"),
+      { 
+        theme: "outline", 
+        size: "large", 
+        width: "100%", 
+        text: "continue_with",
+        shape: "rectangular",
+        logo_alignment: "left"
+      }
+    );
+  }
+});
 </script>
 
 <style scoped>

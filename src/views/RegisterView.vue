@@ -195,6 +195,14 @@
             Continue to Verification ->
           </button>
         </form>
+
+        <!-- Google Social Hub -->
+        <div class="relative my-8 text-center text-[10px] uppercase font-black tracking-[0.2em] text-zinc-400">
+          <span class="bg-white dark:bg-zinc-950 px-4 relative z-10">Instant Enrollment Hub</span>
+          <div class="absolute inset-0 flex items-center"><span class="w-full border-t border-zinc-100 dark:border-zinc-800"></span></div>
+        </div>
+
+        <div id="googleBtn" class="flex justify-center w-full scale-[0.9] origin-center mb-6"></div>
         
         <div class="mt-8 text-center text-xs sm:text-sm font-medium">
           <span class="text-zinc-500">Already have an identity node? </span>
@@ -208,7 +216,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, nextTick, onMounted } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
@@ -309,6 +317,37 @@ const handleResendOTP = async () => {
     verifyError.value = err.response?.data?.message || "Failed to resend code.";
   }
 };
+
+// 🛡️ GOOGLE IDENTITY HUB INTEGRATION
+const handleGoogleLogin = async (response) => {
+  try {
+    await authStore.loginWithGoogle(response.credential);
+    router.push('/dashboard');
+  } catch (error) {
+    console.error('[GOOGLE HUB ERROR]:', error);
+  }
+};
+
+onMounted(() => {
+  /* global google */
+  if (typeof google !== 'undefined') {
+    google.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+      callback: handleGoogleLogin,
+    });
+    google.accounts.id.renderButton(
+      document.getElementById("googleBtn"),
+      { 
+        theme: "outline", 
+        size: "large", 
+        width: "100%", 
+        text: "signup_with",
+        shape: "rectangular",
+        logo_alignment: "left"
+      }
+    );
+  }
+});
 </script>
 
 <style scoped>
