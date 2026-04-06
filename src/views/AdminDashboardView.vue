@@ -67,6 +67,17 @@
               <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-400 mb-1">Description</label>
               <textarea v-model="courseForm.description" class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg px-4 py-2 text-zinc-900 dark:text-white focus:ring-black focus:border-black" rows="3" placeholder="Course overview..."></textarea>
             </div>
+            <div class="flex items-center gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-xl border border-zinc-100 dark:border-zinc-800 transition-all hover:bg-zinc-100 dark:hover:bg-zinc-800">
+              <input 
+                id="notify-students" 
+                v-model="courseForm.notifyStudents" 
+                type="checkbox" 
+                class="w-5 h-5 rounded-md border-zinc-300 dark:border-zinc-700 text-indigo-600 focus:ring-indigo-500/20 bg-white dark:bg-zinc-900 transition-all"
+              >
+              <label for="notify-students" class="text-xs font-bold text-zinc-600 dark:text-zinc-400 cursor-pointer select-none uppercase tracking-wider">
+                Notify Students 📧
+              </label>
+            </div>
             <button type="submit" :disabled="creatingCourse" class="w-full bg-black dark:bg-white hover:bg-zinc-800 dark:hover:bg-zinc-200 text-white dark:text-black font-semibold py-2 px-4 rounded-lg transition disabled:opacity-50">
               {{ creatingCourse ? 'Creating...' : 'Create Course' }}
             </button>
@@ -596,7 +607,7 @@ const handleModalConfirm = async () => {
 };
 
 // ── Forms ────────────────────────────────────────────────────
-const courseForm = ref({ title: '', description: '' });
+const courseForm = ref({ title: '', description: '', notifyStudents: false });
 const quizForm = ref({ course: '', title: '', timeLimit: 30 });
 const aiForm = ref({ quizId: '', material: '', count: 100 });
 
@@ -888,6 +899,7 @@ const handleCreateCourse = async () => {
     alert(err.response?.data?.message || 'Error creating course');
   } finally {
     creatingCourse.value = false;
+    courseForm.value = { title: '', description: '', notifyStudents: false };
     setTimeout(() => successMsg.value = '', 3000);
   }
 };
