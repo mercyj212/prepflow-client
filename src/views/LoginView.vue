@@ -4,14 +4,7 @@
     <!-- Left panel - Branding / Decorative -->
     <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
       <div class="z-10 mt-8 flex justify-between w-full pr-12">
-        <div class="flex items-center gap-3">
-          <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-2xl transition-transform hover:scale-110">
-            <svg class="w-6 h-6 text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-          </div>
-          <span class="text-white font-black text-2xl tracking-tighter uppercase">PrepUp.<span class="text-indigo-500">CBT</span></span>
-        </div>
+        <BrandLogo size="lg" />
         <ThemeToggle />
       </div>
       
@@ -90,14 +83,7 @@
 
         <!-- Mobile Header -->
         <div class="flex items-center justify-between mb-12 lg:hidden">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-xl bg-black dark:bg-white flex items-center justify-center shadow-lg">
-              <svg class="w-6 h-6 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
-            </div>
-            <span class="text-black dark:text-white font-black text-2xl tracking-tighter uppercase">PrepUp.<span class="text-indigo-500">CBT</span></span>
-          </div>
+          <BrandLogo size="lg" />
           <ThemeToggle />
         </div>
 
@@ -196,6 +182,7 @@
 import { ref, nextTick } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
+import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
 
 const email = ref('');

@@ -3,10 +3,7 @@
     <div class="max-w-7xl mx-auto">
       <!-- Header -->
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6 transition-colors gap-4">
-        <div class="flex items-end gap-2 group cursor-pointer">
-          <span class="font-black text-3xl tracking-tighter text-zinc-900 dark:text-white leading-none">PrepUp</span>
-          <span class="text-[12px] font-bold uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500 mb-1">CBT</span>
-        </div>
+        <BrandLogo size="lg" />
         <div class="flex gap-4 items-center">
           <ThemeToggle />
           <router-link to="/dashboard" class="text-zinc-600 dark:text-zinc-400 hover:text-black dark:hover:text-white transition text-sm font-medium underline">
@@ -529,6 +526,7 @@ import axios from 'axios';
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
+import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
 
 const authStore = useAuthStore();

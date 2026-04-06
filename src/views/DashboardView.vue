@@ -3,10 +3,7 @@
     <!-- Navbar -->
     <nav class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-6 py-4 transition-colors">
       <div class="max-w-6xl mx-auto flex items-center justify-between">
-        <div class="flex items-end gap-1.5 group cursor-pointer">
-          <span class="font-black text-2xl tracking-tighter text-zinc-900 dark:text-white leading-none">PrepUp</span>
-          <span class="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500 mb-0.5">CBT</span>
-        </div>
+        <BrandLogo />
         
         <div class="flex items-center gap-4">
           <ThemeToggle />
@@ -250,6 +247,7 @@ import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
+import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import axios from 'axios';
 
