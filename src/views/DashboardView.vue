@@ -132,20 +132,20 @@
     </div>
 
     <main class="max-w-7xl mx-auto px-6 py-12 relative w-full flex-grow">
-      <!-- Premium Decor -->
-      <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden flex justify-center">
-        <div class="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] rounded-full blur-[120px] bg-emerald-500/10 dark:bg-emerald-500/15 animate-pulse"></div>
-        <div class="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] rounded-full blur-[120px] bg-sky-500/10 dark:bg-violet-500/15 animate-pulse" style="animation-delay: 2s;"></div>
+      <!-- Subtle Decor -->
+      <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute top-[-10%] left-[-5%] w-[45vw] h-[45vw] rounded-full blur-[140px] bg-zinc-900/[0.035] dark:bg-white/[0.025]"></div>
+        <div class="absolute bottom-[5%] right-[-8%] w-[35vw] h-[35vw] rounded-full blur-[120px] bg-zinc-900/[0.03] dark:bg-white/[0.02]"></div>
       </div>
 
       <div class="relative z-10 w-full">
         <header class="mb-12 lg:mb-16">
           <div class="inline-flex items-center gap-2 px-3 py-1 mb-4 rounded-full bg-white/50 dark:bg-zinc-800/50 backdrop-blur-md border border-zinc-200 dark:border-zinc-700 text-xs font-bold tracking-wider uppercase text-zinc-600 dark:text-zinc-400 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+            <span class="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500"></span>
             Student Portal
           </div>
           <h1 class="text-4xl lg:text-5xl font-black tracking-tight text-zinc-900 dark:text-white mb-3">
-            Welcome back, <span class="bg-gradient-to-br from-indigo-500 to-violet-500 bg-clip-text text-transparent">{{ user?.fullName?.split(' ')[0] || 'Student' }}</span>.
+            Welcome back, <span class="text-zinc-500 dark:text-zinc-400">{{ user?.fullName?.split(' ')[0] || 'Student' }}</span>.
           </h1>
           <p class="text-zinc-500 dark:text-zinc-400 text-lg sm:text-xl">Here is your progress and available quizzes.</p>
         </header>
@@ -159,10 +159,10 @@
         <template v-else>
           <!-- Metrics -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 lg:gap-8 mb-16">
-            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+              <div class="absolute inset-0 bg-zinc-50/50 dark:bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-6 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center border border-emerald-200 dark:border-emerald-800">
+                <div class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
                 </div>
                 Performance
@@ -173,10 +173,10 @@
               </div>
             </div>
             
-            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+              <div class="absolute inset-0 bg-zinc-50/50 dark:bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-6 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-sky-100 dark:bg-sky-900/40 text-sky-600 dark:text-sky-400 flex items-center justify-center border border-sky-200 dark:border-sky-800">
+                <div class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                 </div>
                 Completed
@@ -186,10 +186,10 @@
               </div>
             </div>
 
-            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden">
-              <div class="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="group relative bg-white/60 dark:bg-zinc-900/40 backdrop-blur-xl p-8 rounded-3xl border border-zinc-200/50 dark:border-zinc-800/50 shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-1 overflow-hidden">
+              <div class="absolute inset-0 bg-zinc-50/50 dark:bg-white/[0.02] opacity-0 group-hover:opacity-100 transition-opacity"></div>
               <h3 class="text-sm font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-6 flex items-center gap-3">
-                <div class="w-8 h-8 rounded-xl bg-violet-100 dark:bg-violet-900/40 text-violet-600 dark:text-violet-400 flex items-center justify-center border border-violet-200 dark:border-violet-800">
+                <div class="w-8 h-8 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
                 </div>
                 Standing
@@ -222,33 +222,30 @@
               <div 
                 v-for="quiz in quizStore.quizzes" 
                 :key="quiz._id"
-                class="group flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl p-6 hover:border-indigo-500/30 dark:hover:border-indigo-500/50 hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300"
+                class="group flex flex-col sm:flex-row sm:items-center justify-between gap-6 bg-white/70 dark:bg-zinc-900/60 backdrop-blur-xl border border-zinc-200/50 dark:border-zinc-800/50 rounded-2xl p-6 hover:border-zinc-400 dark:hover:border-zinc-600 hover:shadow-lg transition-all duration-300"
               >
                 <div class="flex-1">
                   <div class="flex items-center gap-3 mb-3">
-                    <span class="relative flex h-2.5 w-2.5">
-                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                    </span>
+                    <span class="w-2 h-2 rounded-full bg-zinc-400 dark:bg-zinc-500"></span>
                     <span class="text-xs font-bold tracking-widest text-zinc-500 dark:text-zinc-400 uppercase">{{ quiz.timeLimit }} Minutes</span>
                     <span class="text-zinc-300 dark:text-zinc-700 text-xs">&bull;</span>
                     <span class="text-xs font-bold tracking-widest text-zinc-500 dark:text-zinc-400 uppercase">{{ quiz.questions.length }} Questions</span>
                   </div>
-                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-indigo-500 group-hover:to-violet-500 transition-all">{{ quiz.title }}</h3>
+                  <h3 class="text-xl font-bold text-zinc-900 dark:text-white group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">{{ quiz.title }}</h3>
                   <p class="text-base text-zinc-500 dark:text-zinc-400 mt-2 line-clamp-2 md:pr-12">{{ quiz.description || 'Test your knowledge on this course.' }}</p>
                 </div>
 
                 <div class="flex items-center gap-4 shrink-0">
                   <button 
                     @click.stop="startStudy(quiz._id)" 
-                    class="px-5 py-3 bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-white dark:hover:bg-zinc-700 hover:scale-105 text-zinc-700 dark:text-zinc-200 text-sm font-bold rounded-xl transition-all flex items-center gap-2 shadow-sm"
+                    class="px-5 py-3 bg-zinc-100/80 dark:bg-zinc-800/80 border border-zinc-200/80 dark:border-zinc-700/80 hover:bg-white dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 text-sm font-bold rounded-xl transition-all flex items-center gap-2 shadow-sm"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"></path></svg>
                     Study Cards
                   </button>
                   <button 
                     @click.stop="startQuiz(quiz._id)"
-                    class="px-6 py-3 bg-gradient-to-r from-zinc-900 to-black dark:from-white dark:to-zinc-100 hover:from-indigo-600 hover:to-violet-600 dark:hover:from-indigo-500 dark:hover:to-violet-500 hover:scale-105 hover:shadow-lg hover:shadow-indigo-500/25 border border-transparent text-white dark:text-black dark:hover:text-white text-sm font-bold rounded-xl transition-all duration-300"
+                    class="px-6 py-3 bg-zinc-900 dark:bg-white hover:opacity-85 text-white dark:text-zinc-900 text-sm font-bold rounded-xl shadow-md transition-all duration-200"
                   >
                     Take Quiz
                   </button>

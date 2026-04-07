@@ -121,25 +121,20 @@ import AppFooter from '../components/AppFooter.vue';
 </script>
 
 <style scoped>
-/* 
-  PREMIUM AESTHETICS - CUSTOM CSS
-  Using a mix of CSS variables that respond to the global html class (dark vs light).
-*/
+/* MONOCHROMATIC PREMIUM — Neutral zinc palette only */
 
 .homepage-wrapper {
   --bg-color: #ffffff;
   --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --nav-bg: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(0, 0, 0, 0.08);
-  --blob-1: rgba(16, 185, 129, 0.4);
-  --blob-2: rgba(56, 189, 248, 0.4);
-  --gradient-text: linear-gradient(135deg, #059669 0%, #0284c7 100%);
-  --card-bg: rgba(255, 255, 255, 0.6);
-  --card-border: rgba(0, 0, 0, 0.05);
-  --glow-color: rgba(0, 0, 0, 0.1);
-  --btn-glow: 0 10px 25px -5px rgba(16, 185, 129, 0.3);
-  
+  --text-secondary: #64748b;
+  --nav-bg: rgba(255, 255, 255, 0.75);
+  --border-color: rgba(0, 0, 0, 0.07);
+  --blob-color: rgba(0, 0, 0, 0.04);
+  --card-bg: rgba(255, 255, 255, 0.7);
+  --card-border: rgba(0, 0, 0, 0.06);
+  --glow-color: rgba(0, 0, 0, 0.06);
+  --btn-glow: 0 8px 20px -4px rgba(0, 0, 0, 0.2);
+
   background-color: var(--bg-color);
   color: var(--text-primary);
 }
@@ -148,48 +143,40 @@ import AppFooter from '../components/AppFooter.vue';
 
 <style>
 html.dark .homepage-wrapper {
-  --bg-color: #030712;
+  --bg-color: #0a0a0a;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
-  --nav-bg: rgba(3, 7, 18, 0.6);
-  --border-color: rgba(255, 255, 255, 0.08);
-  --blob-1: rgba(16, 185, 129, 0.15);
-  --blob-2: rgba(139, 92, 246, 0.15);
-  --gradient-text: linear-gradient(135deg, #34d399 0%, #a78bfa 100%);
-  --card-bg: rgba(255, 255, 255, 0.02);
-  --card-border: rgba(255, 255, 255, 0.05);
-  --glow-color: rgba(255, 255, 255, 0.05);
-  --btn-glow: 0 15px 35px -5px rgba(52, 211, 153, 0.25);
+  --nav-bg: rgba(10, 10, 10, 0.75);
+  --border-color: rgba(255, 255, 255, 0.07);
+  --blob-color: rgba(255, 255, 255, 0.025);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --glow-color: rgba(255, 255, 255, 0.04);
+  --btn-glow: 0 8px 25px -4px rgba(0, 0, 0, 0.5);
 }
 </style>
 
 <style scoped>
 
-/* Background Blobs */
+/* Background shapes — very subtle, no color */
 .bg-shape {
   position: absolute;
-  filter: blur(100px);
+  filter: blur(120px);
   border-radius: 50%;
   z-index: 0;
   pointer-events: none;
-  animation: blob-float 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+  animation: blob-float 25s infinite alternate ease-in-out;
 }
-
 .shape-1 {
-  top: -10%;
-  left: -5%;
-  width: 50vw;
-  height: 50vw;
-  background: var(--blob-1);
+  top: -10%; left: -5%;
+  width: 45vw; height: 45vw;
+  background: var(--blob-color);
 }
-
 .shape-2 {
-  top: 40%;
-  right: -10%;
-  width: 40vw;
-  height: 40vw;
-  background: var(--blob-2);
-  animation-delay: -5s;
+  bottom: 5%; right: -8%;
+  width: 35vw; height: 35vw;
+  background: var(--blob-color);
+  animation-delay: -8s;
 }
 
 /* Navbar */
@@ -199,45 +186,37 @@ html.dark .homepage-wrapper {
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-color);
 }
+.nav-link { color: var(--text-secondary); }
+.nav-link:hover { color: var(--text-primary); }
 
-.nav-link {
-  color: var(--text-secondary);
-}
-.nav-link:hover {
-  color: var(--text-primary);
-  text-shadow: 0 0 12px var(--glow-color);
-}
-
-/* Buttons */
+/* Buttons — black/white only */
 .premium-btn {
-  position: relative;
   border-radius: 10px;
   background: var(--text-primary);
   color: var(--bg-color);
   padding: 0.5rem 1.25rem;
-  overflow: hidden;
+  transition: all 0.2s ease;
 }
 .premium-btn:hover {
   transform: translateY(-1px);
-  box-shadow: 0 6px 20px var(--glow-color);
+  box-shadow: var(--btn-glow);
 }
 
 .glow-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
+  background: var(--text-primary);
+  color: var(--bg-color);
   padding: 1rem 2rem;
   border-radius: 14px;
   font-weight: 700;
   box-shadow: var(--btn-glow);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.25s ease;
 }
 .glow-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 20px 40px -10px rgba(16, 185, 129, 0.5);
-  filter: brightness(1.1);
+  transform: translateY(-2px);
+  opacity: 0.85;
 }
 
 .outline-btn {
@@ -245,13 +224,12 @@ html.dark .homepage-wrapper {
   align-items: center;
   justify-content: center;
   background: transparent;
-  backdrop-filter: blur(8px);
   color: var(--text-primary);
   border: 1px solid var(--border-color);
   padding: 1rem 2rem;
   border-radius: 14px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.25s ease;
 }
 .outline-btn:hover {
   background: var(--card-bg);
@@ -259,41 +237,35 @@ html.dark .homepage-wrapper {
   transform: translateY(-2px);
 }
 
-/* Typography & Hero */
+/* Badge */
 .badge-wrapper {
   background: var(--card-bg);
   border: 1px solid var(--border-color);
-  backdrop-filter: blur(10px);
-}
-.pulse-dot {
-  width: 8px;
-  height: 8px;
-  background-color: #34d399;
-  border-radius: 50%;
-  box-shadow: 0 0 12px #34d399;
-  animation: pulse 2s infinite;
-}
-
-.text-gradient {
-  background: var(--gradient-text);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-.hero-desc {
+  backdrop-filter: blur(8px);
   color: var(--text-secondary);
 }
+.pulse-dot {
+  width: 7px; height: 7px;
+  background-color: var(--text-primary);
+  border-radius: 50%;
+  opacity: 0.5;
+  animation: pulse 2.5s infinite;
+}
 
-/* Feature Cards (Glassmorphism) */
+/* Hero text — no gradient, just muted */
+.text-gradient { color: var(--text-secondary); }
+.hero-desc { color: var(--text-secondary); }
+
+/* Feature Cards */
 .feature-card {
   position: relative;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 24px;
   padding: 2.5rem;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.35s cubic-bezier(0.25, 0.8, 0.25, 1);
   overflow: hidden;
   animation: slide-up 0.8s forwards;
   opacity: 0;
@@ -301,20 +273,16 @@ html.dark .homepage-wrapper {
   animation-delay: var(--delay);
 }
 .feature-card:hover {
-  transform: translateY(-8px);
-  border-color: rgba(16, 185, 129, 0.3);
-  box-shadow: 0 25px 50px -12px var(--glow-color);
+  transform: translateY(-6px);
+  border-color: var(--text-secondary);
+  box-shadow: 0 20px 40px -12px var(--glow-color);
 }
-.card-content {
-  position: relative;
-  z-index: 10;
-}
+.card-content { position: relative; z-index: 10; }
 .icon-box {
-  width: 56px;
-  height: 56px;
+  width: 52px; height: 52px;
   background: var(--bg-color);
   border: 1px solid var(--border-color);
-  border-radius: 16px;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -323,64 +291,49 @@ html.dark .homepage-wrapper {
   transition: all 0.3s ease;
 }
 .feature-card:hover .icon-box {
-  background: var(--gradient-text);
-  color: #fff;
+  background: var(--text-primary);
+  color: var(--bg-color);
   border-color: transparent;
-  transform: scale(1.1) rotate(-5deg);
+  transform: scale(1.05) rotate(-4deg);
 }
 .card-glow {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.08) 0%, transparent 70%);
+  background: radial-gradient(circle at 50% 0%, var(--glow-color) 0%, transparent 60%);
   opacity: 0;
   transition: opacity 0.4s;
 }
-.feature-card:hover .card-glow {
-  opacity: 1;
-}
+.feature-card:hover .card-glow { opacity: 1; }
 
 /* Animations */
-.animate-slide-up {
-  animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
+.animate-slide-up { animation: slide-up 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-float { animation: float 6s ease-in-out infinite; }
 
 @keyframes slide-up {
   from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 }
-
 @keyframes blob-float {
-  0% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
+  0%   { transform: translate(0, 0) scale(1); }
+  50%  { transform: translate(20px, -30px) scale(1.04); }
   100% { transform: translate(0, 0) scale(1); }
 }
-
 @keyframes float {
   0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-20px); }
+  50%       { transform: translateY(-16px); }
 }
-
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+  0%, 100% { opacity: 0.5; }
+  50%       { opacity: 1; }
 }
 
-/* Visual Glow behind image */
 .visual-glow {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 300px;
-  height: 300px;
-  background: var(--blob-1);
-  filter: blur(80px);
+  width: 280px; height: 280px;
+  background: var(--blob-color);
+  filter: blur(70px);
   border-radius: 50%;
   z-index: 0;
 }
