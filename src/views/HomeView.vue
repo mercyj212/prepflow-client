@@ -144,7 +144,10 @@ import AppFooter from '../components/AppFooter.vue';
   color: var(--text-primary);
 }
 
-:global(.dark) .homepage-wrapper {
+</style>
+
+<style>
+html.dark .homepage-wrapper {
   --bg-color: #030712;
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
@@ -158,6 +161,9 @@ import AppFooter from '../components/AppFooter.vue';
   --glow-color: rgba(255, 255, 255, 0.05);
   --btn-glow: 0 15px 35px -5px rgba(52, 211, 153, 0.25);
 }
+</style>
+
+<style scoped>
 
 /* Background Blobs */
 .bg-shape {
