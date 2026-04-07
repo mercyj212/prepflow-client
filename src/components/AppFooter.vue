@@ -8,11 +8,8 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
         <!-- Brand Section -->
         <div class="col-span-1 md:col-span-2">
-          <div class="flex items-center gap-3 mb-6 group cursor-pointer">
-            <div class="w-10 h-10 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center text-white dark:text-zinc-950 transition-transform group-hover:rotate-6 shadow-lg shadow-zinc-200 dark:shadow-none">
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L1 12h3v9h6v-6h4v6h6v-9h3L12 2z"/></svg>
-            </div>
-            <span class="text-2xl font-black tracking-tight uppercase italic text-zinc-900 dark:text-white">PrepUp</span>
+          <div class="mb-6 opacity-90 hover:opacity-100 transition-opacity">
+            <BrandLogo />
           </div>
           <p class="text-zinc-500 dark:text-zinc-400 font-medium max-w-sm leading-relaxed mb-8">
             Empowering students with a high-fidelity CBT environment and intelligent curriculum tracking for global academic excellence.
@@ -69,6 +66,7 @@
 </template>
 
 <script setup>
+import BrandLogo from './BrandLogo.vue';
 </script>
 
 <style scoped>
