@@ -5,3 +5,17 @@
 }
 
 @variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  /* 📱 Prevent iOS/Android auto-zoom on focus by enforcing 16px font */
+  input, textarea, select {
+    font-size: 16px !important;
+  }
+  
+  html, body {
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+}

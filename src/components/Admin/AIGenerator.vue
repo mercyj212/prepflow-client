@@ -59,7 +59,7 @@
         </div>
         <div class="group/textarea relative">
           <textarea v-model="form.material" 
-            class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-[28px] px-8 py-6 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm h-48 font-mono resize-none leading-relaxed" 
+            class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-[28px] px-8 py-6 text-base text-zinc-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm h-48 font-mono resize-none leading-relaxed" 
             placeholder="Paste your lecture notes, documents, or curriculum data here..."></textarea>
           <div class="absolute bottom-6 right-8 text-[9px] font-black uppercase tracking-widest text-zinc-300 pointer-events-none group-focus-within/textarea:text-indigo-400 transition-colors">
             RAW TEXT FEED
