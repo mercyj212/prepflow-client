@@ -183,7 +183,7 @@
           
           <div class="relative group">
             <!-- Professional Custom Button Base -->
-            <div class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 text-white transition-all font-bold text-sm shadow-lg hover:shadow-indigo-500/20 hover:scale-[1.01] cursor-pointer">
+            <div class="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-zinc-900/90 dark:bg-white/10 backdrop-blur-xl border border-zinc-800 dark:border-white/20 text-white transition-all font-bold text-sm hover:scale-[1.02] hover:bg-black dark:hover:bg-white/20 cursor-pointer shadow-xl">
               <div class="bg-white p-1 rounded-full shadow-inner">
                 <svg class="w-4 h-4" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
