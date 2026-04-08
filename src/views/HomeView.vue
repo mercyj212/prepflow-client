@@ -19,7 +19,10 @@
           <a href="#contact" class="hover:text-white">Contact</a>
         </div>
         <div class="flex items-center gap-3">
-          <router-link to="/register" class="text-[14px] font-semibold text-slate-900 bg-white border border-white px-4 py-2 rounded-lg hover:bg-slate-100 transition">
+          <router-link to="/login" class="hidden sm:block text-[14px] font-semibold text-white/90 hover:text-white transition px-4 py-2">
+            Log in
+          </router-link>
+          <router-link to="/register" class="text-[14px] font-semibold text-slate-900 bg-white border border-white px-4 py-2 rounded-lg hover:bg-slate-100 transition shadow-lg shadow-white/5">
             Get started
           </router-link>
         </div>

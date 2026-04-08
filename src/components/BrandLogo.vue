@@ -5,7 +5,7 @@
     @click="$router.push('/')"
   >
     <span 
-      class="font-black tracking-tighter text-white leading-none capitalize"
+      class="font-black tracking-tighter text-black dark:text-white leading-none capitalize"
       :class="primarySizeClass"
     >
       PrepUp
