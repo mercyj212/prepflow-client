@@ -15,6 +15,7 @@ import ForgotPasswordView from '../views/ForgotPasswordView.vue';
 import ResetPasswordView from '../views/ResetPasswordView.vue';
 import HelpCenterView from '../views/HelpCenterView.vue';
 import SubjectSelectorView from '../views/SubjectSelectorView.vue';
+import NotFoundView from '../views/NotFoundView.vue';
 
 const routes = [
   {
@@ -98,6 +99,12 @@ const routes = [
     name: 'subjects',
     component: SubjectSelectorView,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'not-found',
+    component: NotFoundView,
+    meta: { requiresAuth: false }
   },
 ];
 
