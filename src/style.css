@@ -1,13 +1,34 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", "Outfit", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --color-brand: #1a3c8f;
+  --color-success: #1D9E75;
+  --color-warning: #BA7517;
+  --color-danger: #A32D2D;
+  --color-surface-primary: #ffffff;
+  --color-surface-secondary: #f7f6f2;
+  --color-border-light: #e5e5e5;
+  --color-border-dark: #2a2a2a;
+  --font-sans: "Inter", "Outfit", "ui-sans-serif", "system-ui", "-apple-system", "BlinkMacSystemFont", "Segoe UI", "Roboto", "Helvetica Neue", "Arial", "Noto Sans", "sans-serif";
+}
+
+@layer base {
+  body {
+    @apply antialiased text-slate-900 bg-surface-primary;
+    font-weight: 400;
+  }
 }
 
 @variant dark (&:where(.dark, .dark *));
 
+@layer components {
+  .flat-card {
+    @apply rounded-[12px] border-[0.5px] border-border-light bg-surface-primary dark:border-border-dark dark:bg-zinc-900;
+  }
+}
+
 @layer base {
-  /* 📱 Prevent iOS/Android auto-zoom on focus by enforcing 16px font */
   input, textarea, select {
     font-size: 16px !important;
   }
@@ -17,5 +38,14 @@
     position: relative;
     width: 100%;
     -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Font weights: 400 and 500 only */
+  body {
+    font-weight: 400;
+  }
+  
+  .font-medium, h1, h2, h3, h4, strong {
+    font-weight: 500;
   }
 }

@@ -188,7 +188,6 @@
         </div>
       </div>
     </div>
-    <AppFooter />
   </div>
 </template>
 
@@ -198,7 +197,6 @@ import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
-import AppFooter from '../components/AppFooter.vue';
 
 const fullName = ref('');
 const email = ref('');

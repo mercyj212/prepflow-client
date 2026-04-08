@@ -1,98 +1,117 @@
 <template>
-  <div class="min-h-screen bg-black flex flex-col items-center justify-center px-4">
-    
-    <div v-if="quizStore.loading" class="text-white text-center">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-      <p>{{ isSubmitting ? 'Calculating Score...' : 'Loading Quiz...' }}</p>
-    </div>
-
-    <div v-else-if="quizStore.error" class="text-red-500 text-center bg-zinc-900 border border-zinc-800 p-8 rounded-2xl">
-      <h2 class="text-xl font-bold mb-2">Error</h2>
-      <p>{{ quizStore.error }}</p>
-      <button @click="$router.push('/')" class="mt-4 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white">Go Back</button>
-    </div>
-
-    <div v-else-if="quiz" class="w-full max-w-2xl rounded-2xl bg-zinc-900 p-6 sm:p-8 shadow-2xl border border-zinc-800">
-      
-      <div class="flex items-center justify-between mb-4 pb-4 border-b border-zinc-800">
-        <div>
-          <h2 class="text-white font-bold">{{ quiz.title }}</h2>
-          <p class="text-sm text-zinc-400 mt-1">
-            Question {{ currentIndex + 1 }} of {{ quiz.questions.length }}
-          </p>
+  <div class="min-h-screen bg-white dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 pb-24">
+    <!-- Quiz Top Bar -->
+    <nav class="sticky top-0 z-40 bg-white dark:bg-zinc-950 border-b border-border-light dark:border-border-dark">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <button @click="goBack" type="button" class="w-10 h-10 rounded-lg border-[0.5px] border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-50 transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          <div class="pl-2">
+            <p v-if="quiz" class="text-[14px] font-medium text-slate-900 dark:text-zinc-200">
+              Question {{ currentIndex + 1 }} <span class="text-slate-400 font-normal">of {{ quiz.questions.length }}</span>
+            </p>
+          </div>
         </div>
-        <div class="flex flex-col items-end">
-          <p class="text-sm font-semibold text-red-400 flex items-center gap-1.5 bg-red-500/10 px-3 py-1.5 rounded-full">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <div class="flex items-center gap-3">
+          <div class="px-3 py-1.5 rounded-full border-[0.5px] border-warning/30 bg-warning/5 text-[13px] font-medium text-warning flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
             {{ formattedTime }}
-          </p>
+          </div>
+          <ThemeToggle />
         </div>
       </div>
-
-      <div class="w-full bg-zinc-800 rounded-full h-1.5 mb-8">
-        <div
-          class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300"
-          :style="{ width: progress + '%' }"
-        ></div>
+      <!-- Progress Bar -->
+      <div v-if="quiz" class="h-[3px] bg-slate-100 dark:bg-zinc-800">
+        <div class="h-full bg-brand transition-all duration-300 ease-out" :style="{ width: `${progress}%` }"></div>
       </div>
+    </nav>
 
-      <div class="mb-8">
-        <h1 class="text-white text-xl sm:text-2xl font-semibold leading-relaxed">
-          {{ currentQuestion.text }}
-        </h1>
-      </div>
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 py-10">
+      <section v-if="quizStore.loading" class="py-16 text-center text-[15px] font-normal text-slate-500 dark:text-zinc-400">
+        {{ isSubmitting ? 'Submitting your quiz...' : 'Loading quiz questions...' }}
+      </section>
 
-      <div class="space-y-3">
+      <section v-else-if="quizStore.error" class="flat-card p-8 text-center">
+        <p class="text-[16px] font-medium text-danger">{{ quizStore.error }}</p>
+        <button @click="goBack" class="mt-4 text-brand font-medium">Return to dashboard</button>
+      </section>
+
+      <section v-else-if="quiz && currentQuestion">
+        <!-- Question Text Area -->
+        <article class="mb-10">
+          <h1 class="text-[22px] sm:text-[26px] leading-relaxed font-normal text-slate-900 dark:text-white">
+            {{ currentQuestion.text }}
+          </h1>
+        </article>
+
+        <!-- Option Cards -->
+        <div class="grid grid-cols-1 gap-4">
+          <QuizOptionCard
+            v-for="(option, index) in currentQuestion.options"
+            :key="option._id"
+            :label="optionLabels[index]"
+            :text="option.text"
+            :disabled="answered"
+            :card-class="[getOptionClass(option), focusedOptionIndex === index && !answered ? 'border-brand' : '']"
+            :badge-class="getBadgeClass(option)"
+            @click="selectAnswer(option)"
+          />
+        </div>
+
+        <!-- Inline Explanation Panel -->
+        <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0">
+          <article v-if="answered" class="mt-8 flat-card p-6 bg-slate-50 dark:bg-zinc-900/50">
+            <div class="flex items-center gap-2 mb-3">
+              <div :class="localAnswers[currentIndex]?.isSelectedCorrect ? 'bg-success' : 'bg-danger'" class="w-1.5 h-1.5 rounded-full"></div>
+              <p
+                class="text-[14px] font-medium"
+                :class="localAnswers[currentIndex]?.isSelectedCorrect ? 'text-success' : 'text-danger'"
+              >
+                {{ localAnswers[currentIndex]?.isSelectedCorrect ? 'Correct explanation' : 'Incorrect choice explanation' }}
+              </p>
+            </div>
+            <p class="text-[15px] leading-relaxed font-normal text-slate-600 dark:text-zinc-300 sentence-case">
+              {{ currentQuestion.explanation || 'No detailed explanation available for this question.' }}
+            </p>
+          </article>
+        </transition>
+      </section>
+    </main>
+
+    <!-- Footer Bar -->
+    <footer v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-950 border-t border-border-light dark:border-border-dark">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between gap-4">
         <button
-          v-for="(option, index) in currentQuestion.options"
-          :key="option._id"
-          @click="selectAnswer(option)"
-          :disabled="answered"
-          :class="[
-            'w-full rounded-xl border px-5 py-4 text-left text-white transition-all flex items-center group',
-            getOptionClass(option)
-          ]"
-          :style="answered && option.isCorrect ? { borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', color: '#10b981' } : {}"
+          @click="toggleFlag"
+          type="button"
+          class="flex items-center gap-2 px-5 py-2.5 rounded-lg border-[0.5px] text-[14px] font-medium transition-all"
+          :class="isFlagged ? 'border-warning text-warning bg-warning/5' : 'border-border-light dark:border-border-dark text-slate-600 dark:text-zinc-300 hover:bg-slate-50'"
         >
-          <span 
-            class="w-8 h-8 rounded-full border border-zinc-600 flex items-center justify-center mr-4 text-sm tracking-wide font-medium transition-colors shrink-0" 
-            :class="[
-              isSelected(option) ? 'bg-white/10' : '',
-              !answered ? 'group-hover:border-indigo-400 group-hover:text-indigo-400' : ''
-            ]"
-            :style="answered && option.isCorrect ? { borderColor: '#10b981', color: '#10b981' } : (answered && isSelected(option) && !option.isCorrect ? { borderColor: '#f87171', color: '#f87171' } : {})"
-          >
-            {{ optionLabels[index] }}
-          </span>
-          <span class="text-sm sm:text-base" :style="answered && option.isCorrect ? { color: '#10b981', fontWeight: '600' } : (answered && isSelected(option) && !option.isCorrect ? { color: '#f87171', fontWeight: '600' } : {})">{{ option.text }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ 'fill-warning': isFlagged }"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+          {{ isFlagged ? 'Flagged' : 'Flag' }}
+        </button>
+
+        <button
+          @click="onNextClick"
+          type="button"
+          :disabled="!answered"
+          class="flex items-center gap-2 px-6 py-2.5 rounded-lg border-[0.5px] border-brand bg-brand text-white text-[14px] font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-all active:scale-[0.98]"
+        >
+          {{ currentIndex === quiz.questions.length - 1 ? 'Submit results' : 'Next question' }}
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
         </button>
       </div>
+    </footer>
 
-      <div
-        v-if="answered"
-        class="mt-8 pt-6 border-t border-zinc-800"
-      >
-        <div class="flex items-center justify-between">
-          <p v-if="localAnswers[currentIndex]?.isSelectedCorrect" class="text-emerald-400 font-semibold flex items-center gap-2">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
-            Answered
-          </p>
-          <p v-else class="text-zinc-400 font-medium flex items-center gap-2">
-            Answer Recorded
-          </p>
-
-          <button
-            @click="nextQuestion"
-            class="inline-flex items-center gap-2 rounded-xl bg-indigo-600 px-6 py-2.5 font-medium text-white hover:bg-indigo-700 transition"
-          >
-            {{ currentIndex === quiz.questions.length - 1 ? 'Submit Quiz' : 'Next Question' }}
-            <svg v-if="currentIndex !== quiz.questions.length - 1" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-          </button>
-        </div>
-      </div>
-      
-    </div>
+    <!-- Review Panel -->
+    <FlagReviewPanel
+      :open="showFlagReview"
+      :flagged-indexes="flaggedQuestionIndexes"
+      @close="showFlagReview = false"
+      @jump="jumpToFlaggedQuestion"
+      @submit="submitQuizFinal"
+    />
   </div>
 </template>
 
@@ -100,6 +119,9 @@
 import { computed, ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuizStore } from '../store/quiz';
+import ThemeToggle from '../components/ThemeToggle.vue';
+import QuizOptionCard from '../components/quiz/QuizOptionCard.vue';
+import FlagReviewPanel from '../components/quiz/FlagReviewPanel.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -108,14 +130,19 @@ const quizStore = useQuizStore();
 const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 
 const currentIndex = ref(0);
-const studentAnswers = ref([]); // Tracks all answers { questionId, selectedOptionId }
+const studentAnswers = ref([]);
 const answered = ref(false);
 const isSubmitting = ref(false);
+const flaggedQuestions = ref(new Set());
+const showFlagReview = ref(false);
+const focusedOptionIndex = ref(0);
 
 const timeLeft = ref(0);
 let timer = null;
+const isTabActive = ref(true);
+let onBlur = null;
+let onFocus = null;
 
-// Temporary local state to show selection before submission
 const localAnswers = ref({});
 
 const quiz = computed(() => quizStore.currentQuiz);
@@ -135,25 +162,68 @@ const formattedTime = computed(() => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 });
 
+const isFlagged = computed(() => {
+  if (!currentQuestion.value) return false;
+  return flaggedQuestions.value.has(currentQuestion.value._id);
+});
+
 onMounted(async () => {
   const quizId = route.params.id;
   await quizStore.fetchQuizById(quizId);
   
   if (quiz.value) {
-    console.log('--- DEBUG: QUIZ LOADED ---');
-    console.log('Title:', quiz.value.title);
-    console.log('Q1 Options Correctness:', quiz.value.questions[0].options.map(o => `${o.text}: ${o.isCorrect}`));
     timeLeft.value = (quiz.value.timeLimit || 30) * 60;
     startTimer();
   }
+
+  onBlur = () => { isTabActive.value = false; };
+  onFocus = () => { isTabActive.value = true; };
+  window.addEventListener('blur', onBlur);
+  window.addEventListener('focus', onFocus);
+
+  // Keyboard support: arrow keys
+  window.addEventListener('keydown', handleKeyPress);
 });
 
 onBeforeUnmount(() => {
   clearInterval(timer);
+  window.removeEventListener('keydown', handleKeyPress);
+  if (onBlur) window.removeEventListener('blur', onBlur);
+  if (onFocus) window.removeEventListener('focus', onFocus);
 });
+
+function handleKeyPress(e) {
+  if (!quiz.value || !currentQuestion.value) return;
+
+  if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+    e.preventDefault();
+    focusedOptionIndex.value = (focusedOptionIndex.value + 1) % currentQuestion.value.options.length;
+    return;
+  }
+
+  if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+    e.preventDefault();
+    focusedOptionIndex.value = (focusedOptionIndex.value - 1 + currentQuestion.value.options.length) % currentQuestion.value.options.length;
+    return;
+  }
+
+  if ((e.key === 'Enter' || e.key === ' ') && !answered.value) {
+    e.preventDefault();
+    const focusedOption = currentQuestion.value.options[focusedOptionIndex.value];
+    if (focusedOption) selectAnswer(focusedOption);
+    return;
+  }
+
+  if (answered.value) {
+    if (e.key === 'Enter') onNextClick();
+    return;
+  }
+}
 
 function startTimer() {
   timer = setInterval(() => {
+    if (!isTabActive.value) return; // Pause if tab blurred
+    
     if (timeLeft.value > 0) {
       timeLeft.value--;
     } else {
@@ -181,41 +251,73 @@ function selectAnswer(option) {
   answered.value = true;
 }
 
-const isSelected = (option) => {
-  const local = localAnswers.value[currentIndex.value];
-  return local && local.selectedOption._id === option._id;
-};
-
 function getOptionClass(option) {
   if (!answered.value) {
-    return 'border-zinc-800 bg-zinc-900/50 hover:bg-zinc-800/80 hover:border-zinc-600 cursor-pointer';
+    return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 hover:border-brand/50 cursor-pointer';
   }
 
   const isCorrect = option.isCorrect;
   const selected = isSelected(option);
 
   if (isCorrect) {
-    return 'border-emerald-500 bg-emerald-500/10 text-emerald-400 cursor-default shadow-[0_0_20px_rgba(16,185,129,0.2)] z-10';
+    return 'border-success bg-success/5 text-success cursor-default';
   }
 
   if (selected && !isCorrect) {
-    return 'border-red-500 bg-red-500/10 text-red-400 cursor-default shadow-[0_0_20px_rgba(239,68,68,0.2)] z-10';
+    return 'border-danger bg-danger/5 text-danger cursor-default';
   }
 
-  return 'border-zinc-800 bg-zinc-900/30 opacity-40 cursor-default';
+  return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 opacity-50 cursor-default';
+}
+
+function getBadgeClass(option) {
+  if (!answered.value) {
+    return 'border-border-light dark:border-border-dark text-slate-400 group-hover:border-brand group-hover:text-brand';
+  }
+  
+  const isCorrect = option.isCorrect;
+  const selected = isSelected(option);
+  
+  if (isCorrect) return 'bg-success text-white border-success';
+  if (selected && !isCorrect) return 'bg-danger text-white border-danger';
+  
+  return 'border-border-light dark:border-border-dark text-slate-300 opacity-50';
+}
+
+const isSelected = (option) => {
+  const local = localAnswers.value[currentIndex.value];
+  return local && local.selectedOption._id === option._id;
+};
+
+function toggleFlag() {
+  if (!currentQuestion.value) return;
+  const id = currentQuestion.value._id;
+  if (flaggedQuestions.value.has(id)) {
+    flaggedQuestions.value.delete(id);
+  } else {
+    flaggedQuestions.value.add(id);
+  }
 }
 
 async function nextQuestion() {
   if (currentIndex.value < quiz.value.questions.length - 1) {
     currentIndex.value++;
     answered.value = !!localAnswers.value[currentIndex.value];
+    focusedOptionIndex.value = 0;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   } else {
+    if (flaggedQuestions.value.size > 0) {
+      showFlagReview.value = true;
+      return;
+    }
     clearInterval(timer);
     await submitQuizFinal();
   }
 }
 
 async function submitQuizFinal() {
+  clearInterval(timer);
+  showFlagReview.value = false;
   isSubmitting.value = true;
   const timeTaken = ((quiz.value.timeLimit || 30) * 60) - timeLeft.value;
   
@@ -231,6 +333,33 @@ async function submitQuizFinal() {
     });
   } catch (err) {
     console.error("Failed to submit", err);
+  } finally {
+    isSubmitting.value = false;
   }
+}
+
+function goBack() {
+  if (confirm('Are you sure you want to end the test? Progress will not be saved.')) {
+    router.push('/dashboard');
+  }
+}
+
+function onNextClick() {
+  nextQuestion();
+}
+
+const flaggedQuestionIndexes = computed(() => {
+  if (!quiz.value) return [];
+  return quiz.value.questions
+    .map((question, index) => (flaggedQuestions.value.has(question._id) ? index : -1))
+    .filter((index) => index !== -1);
+});
+
+function jumpToFlaggedQuestion(index) {
+  currentIndex.value = index;
+  answered.value = !!localAnswers.value[currentIndex.value];
+  focusedOptionIndex.value = 0;
+  showFlagReview.value = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 </script>

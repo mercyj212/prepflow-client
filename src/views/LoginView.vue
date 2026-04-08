@@ -3,12 +3,16 @@
     <div class="flex-grow flex">
     
     <!-- Left panel - Branding / Decorative -->
-    <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
+    <div
+      class="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12 bg-cover bg-center"
+      style="background-image: url('/inspo%203.jpg');"
+    >
+      <div class="absolute inset-0 bg-black/85"></div>
       <div class="z-10 mt-8 flex justify-between w-full pr-12">
         <BrandLogo size="lg" />
         <ThemeToggle />
       </div>
-      
+
       <div class="z-10 mb-20 max-w-md">
         <h1 class="text-4xl font-semibold text-white tracking-tight leading-[1.1] mb-6">
           Elevate your academic performance.
@@ -205,7 +209,6 @@
       </div>
     </div>
     </div>
-    <AppFooter />
   </div>
 </template>
 
@@ -215,7 +218,6 @@ import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
-import AppFooter from '../components/AppFooter.vue';
 
 const email = ref('');
 const password = ref('');

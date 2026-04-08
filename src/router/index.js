@@ -14,6 +14,7 @@ import VerifyEmailView from '../views/VerifyEmailView.vue';
 import ForgotPasswordView from '../views/ForgotPasswordView.vue';
 import ResetPasswordView from '../views/ResetPasswordView.vue';
 import HelpCenterView from '../views/HelpCenterView.vue';
+import SubjectSelectorView from '../views/SubjectSelectorView.vue';
 
 const routes = [
   {
@@ -91,6 +92,12 @@ const routes = [
     name: 'helpCenter',
     component: HelpCenterView,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/subjects',
+    name: 'subjects',
+    component: SubjectSelectorView,
+    meta: { requiresAuth: true }
   },
 ];
 
