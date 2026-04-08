@@ -28,10 +28,11 @@
       <!-- Content Creation Hub -->
       <h2 class="text-[11px] font-black mb-8 text-zinc-400 uppercase tracking-[0.3em] border-b border-zinc-100 dark:border-zinc-900 pb-4 text-center">Architect & Engineering Hub</h2>
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
-        <AIGenerator :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
-        <CourseCreator :loading="creatingCourse" @create="handleCreateCourse" />
-        <QuizCreator :loading="creatingQuiz" :courses="courses" @create="handleCreateQuiz" />
-        <BatchImporter class="lg:col-span-2" :quizzes="quizzes" @imported="fetchCoreData" />
+        <AIGenerator class="lg:col-span-2" :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
+        <div class="lg:col-span-2 grid grid-cols-1 gap-8">
+          <CourseCreator :loading="creatingCourse" @create="handleCreateCourse" />
+          <QuizCreator :loading="creatingQuiz" :courses="courses" @create="handleCreateQuiz" />
+        </div>
       </div>
 
       <!-- Management Hub -->
@@ -145,7 +146,7 @@ import AIGenerator from '../components/Admin/AIGenerator.vue';
 import CourseInventory from '../components/Admin/CourseInventory.vue';
 import QuizInventory from '../components/Admin/QuizInventory.vue';
 import StudentRegistry from '../components/Admin/StudentRegistry.vue';
-import BatchImporter from '../components/Admin/BatchImporter.vue';
+// import BatchImporter from '../components/Admin/BatchImporter.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();
