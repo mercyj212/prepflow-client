@@ -4,7 +4,7 @@
     
     <!-- Left panel - Branding / Decorative -->
     <div
-      class="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col justify-between p-12 bg-cover bg-center"
+      class="hidden lg:flex lg:w-1/2 relative overflow-hidden flex-col p-12 bg-cover bg-center"
       style="background-image: url('/inspo%203.jpg');"
     >
       <div class="absolute inset-0 bg-black/85"></div>
@@ -13,7 +13,7 @@
         <ThemeToggle />
       </div>
 
-      <div class="z-10 mb-20 max-w-md">
+      <div class="z-10 mt-12 max-w-md">
         <h1 class="text-4xl font-semibold text-white tracking-tight leading-[1.1] mb-6">
           Elevate your academic performance.
         </h1>

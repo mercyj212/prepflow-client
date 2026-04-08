@@ -84,12 +84,12 @@
     <!-- MAIN INTERFACE -->
     <div class="flex-grow flex">
       <!-- Left panel - Branding -->
-      <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
+      <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col p-12">
         <div class="z-10 mt-8 flex justify-between w-full pr-12">
           <BrandLogo size="lg" />
           <ThemeToggle />
         </div>
-        <div class="z-10 mb-20 max-w-md">
+        <div class="z-10 mt-12 max-w-md">
           <h1 class="text-4xl font-semibold text-white tracking-tight leading-[1.1] mb-6">Start your journey today.</h1>
           <p class="text-zinc-400 text-lg leading-relaxed font-light">Join thousands of students and enhance your test scores actively. Track your limits and discover your potential.</p>
         </div>
