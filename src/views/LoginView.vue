@@ -327,14 +327,14 @@ const handleGoogleLogin = async (response) => {
 
 onMounted(() => {
   /* global google */
-  if (typeof google !== 'undefined') {
+  if (typeof google !== 'undefined' && !window.googleInitialized) {
     google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE',
       callback: handleGoogleLogin,
-      auto_select: false, // Don't auto-select to keep professional control
+      auto_select: false,
     });
 
-    // 🛡️ Enable One-Tap (The clean top-right prompt)
+    // 🛡️ Enable One-Tap
     google.accounts.id.prompt(); 
 
     google.accounts.id.renderButton(
@@ -343,9 +343,10 @@ onMounted(() => {
         type: "standard",
         theme: "outline", 
         size: "large", 
-        width: "400", // Large enough to cover our custom button container
+        width: "400",
       }
     );
+    window.googleInitialized = true;
   }
 });
 </script>
