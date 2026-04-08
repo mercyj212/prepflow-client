@@ -45,7 +45,18 @@
       </div>
 
       <div class="space-y-3">
-        <label class="text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Source Material Feed</label>
+        <div class="flex items-center justify-between ml-1">
+          <label class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Source Material Feed</label>
+          <button 
+            v-if="form.material" 
+            type="button" 
+            @click="form.material = ''" 
+            class="text-[9px] font-black text-red-500 hover:text-red-600 uppercase tracking-widest transition-colors flex items-center gap-1.5"
+          >
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            Clear Feed
+          </button>
+        </div>
         <div class="group/textarea relative">
           <textarea v-model="form.material" 
             class="w-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700 rounded-[28px] px-8 py-6 text-sm text-zinc-900 dark:text-white focus:outline-none focus:ring-4 focus:ring-indigo-500/10 transition-all shadow-sm h-48 font-mono resize-none leading-relaxed" 
@@ -82,8 +93,8 @@
               <p class="text-[8px] font-bold text-zinc-400 uppercase">{{ (f.size / 1024 / 1024).toFixed(2) }} MB</p>
             </div>
             <button @click="removeFile(i)" type="button" 
-              class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/file:opacity-100 transition-all hover:scale-110 shadow-lg">
-              &times;
+              class="absolute -top-2 -right-2 w-7 h-7 sm:w-6 sm:h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-100 lg:opacity-0 lg:group-hover/file:opacity-100 transition-all hover:scale-110 shadow-lg z-20">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
           </div>
         </div>

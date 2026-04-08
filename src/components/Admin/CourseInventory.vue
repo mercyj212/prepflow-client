@@ -37,8 +37,9 @@
             <a :href="mat.url" target="_blank" class="text-[9px] font-bold text-indigo-500 hover:underline uppercase tracking-widest">View Resource</a>
           </div>
         </div>
-        <button @click="emit('delete-material', course._id, mat._id)" class="p-2 text-zinc-300 hover:text-red-500 transition-colors opacity-0 group-hover/mat:opacity-100">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        <button @click="emit('delete-material', course._id, mat._id)" 
+                class="p-2 text-red-400 lg:text-zinc-300 hover:text-red-500 transition-colors opacity-100 lg:opacity-0 lg:group-hover/mat:opacity-100">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
     </div>
