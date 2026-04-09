@@ -101,7 +101,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
+import api from '../api/axios';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import BrandLogo from '../components/BrandLogo.vue';
 
@@ -120,8 +120,7 @@ const isCorrect = computed(() => selectedOption.value?.isCorrect);
 const fetchQuiz = async () => {
   loading.value = true;
   try {
-    // We intentionally ignore auth for practice links
-    const res = await axios.get(`https://prepflow-server.onrender.com/api/quizzes/${route.params.id}/study/public`);
+    const res = await api.get(`/quizzes/${route.params.id}/study/public`);
     quiz.value = res.data;
   } catch (err) {
     console.error(err);

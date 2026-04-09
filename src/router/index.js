@@ -86,7 +86,7 @@ const routes = [
     path: '/admin',
     name: 'admin',
     component: AdminDashboardView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true, requiresAdmin: true }
   },
   {
     path: '/help',
@@ -119,6 +119,10 @@ router.beforeEach((to, from) => {
   
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     return '/login';
+  }
+
+  if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
+    return '/dashboard';
   }
   
   if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {

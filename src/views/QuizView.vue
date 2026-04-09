@@ -63,16 +63,13 @@
         <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0">
           <article v-if="answered" class="mt-8 flat-card p-6 bg-slate-50 dark:bg-zinc-900/50">
             <div class="flex items-center gap-2 mb-3">
-              <div :class="localAnswers[currentIndex]?.isSelectedCorrect ? 'bg-success' : 'bg-danger'" class="w-1.5 h-1.5 rounded-full"></div>
-              <p
-                class="text-[14px] font-medium"
-                :class="localAnswers[currentIndex]?.isSelectedCorrect ? 'text-success' : 'text-danger'"
-              >
-                {{ localAnswers[currentIndex]?.isSelectedCorrect ? 'Correct explanation' : 'Incorrect choice explanation' }}
+              <div class="bg-brand w-1.5 h-1.5 rounded-full"></div>
+              <p class="text-[14px] font-medium text-brand">
+                Answer recorded
               </p>
             </div>
             <p class="text-[15px] leading-relaxed font-normal text-slate-600 dark:text-zinc-300 sentence-case">
-              {{ currentQuestion.explanation || 'No detailed explanation available for this question.' }}
+              Your response has been saved. Continue through the quiz and submit to see your final score.
             </p>
           </article>
         </transition>
@@ -262,12 +259,9 @@ function startTimer() {
 
 function selectAnswer(option) {
   if (answered.value) return;
-
-  const isCorrect = option.isCorrect;
   
   localAnswers.value[currentIndex.value] = {
-    selectedOption: option,
-    isSelectedCorrect: isCorrect
+    selectedOption: option
   };
   
   studentAnswers.value.push({
@@ -283,15 +277,10 @@ function getOptionClass(option) {
     return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 hover:border-brand/50 cursor-pointer';
   }
 
-  const isCorrect = option.isCorrect;
   const selected = isSelected(option);
 
-  if (isCorrect) {
-    return 'border-success bg-success/5 text-success cursor-default';
-  }
-
-  if (selected && !isCorrect) {
-    return 'border-danger bg-danger/5 text-danger cursor-default';
+  if (selected) {
+    return 'border-brand bg-brand/5 text-brand cursor-default';
   }
 
   return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 opacity-50 cursor-default';
@@ -302,11 +291,9 @@ function getBadgeClass(option) {
     return 'border-border-light dark:border-border-dark text-slate-400 group-hover:border-brand group-hover:text-brand';
   }
   
-  const isCorrect = option.isCorrect;
   const selected = isSelected(option);
   
-  if (isCorrect) return 'bg-success text-white border-success';
-  if (selected && !isCorrect) return 'bg-danger text-white border-danger';
+  if (selected) return 'bg-brand text-white border-brand';
   
   return 'border-border-light dark:border-border-dark text-slate-300 opacity-50';
 }
