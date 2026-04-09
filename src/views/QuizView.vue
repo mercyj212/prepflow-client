@@ -112,6 +112,16 @@
       @jump="jumpToFlaggedQuestion"
       @submit="submitQuizFinal"
     />
+    <!-- Confirm Modal -->
+    <ConfirmModal
+      :show="confirmModal.show"
+      :title="confirmModal.title"
+      :message="confirmModal.message"
+      :confirmText="confirmModal.confirmText"
+      :isDanger="confirmModal.isDanger"
+      @confirm="handleConfirm"
+      @cancel="confirmModal.show = false"
+    />
   </div>
 </template>
 
@@ -122,6 +132,7 @@ import { useQuizStore } from '../store/quiz';
 import ThemeToggle from '../components/ThemeToggle.vue';
 import QuizOptionCard from '../components/quiz/QuizOptionCard.vue';
 import FlagReviewPanel from '../components/quiz/FlagReviewPanel.vue';
+import ConfirmModal from '../components/ConfirmModal.vue';
 
 const route = useRoute();
 const router = useRouter();
@@ -136,6 +147,22 @@ const isSubmitting = ref(false);
 const flaggedQuestions = ref(new Set());
 const showFlagReview = ref(false);
 const focusedOptionIndex = ref(0);
+
+const confirmModal = ref({
+  show: false,
+  title: '',
+  message: '',
+  confirmText: 'Confirm',
+  isDanger: true,
+  onConfirm: null
+});
+
+const handleConfirm = () => {
+  if (confirmModal.value.onConfirm) {
+    confirmModal.value.onConfirm();
+  }
+  confirmModal.value.show = false;
+};
 
 const timeLeft = ref(0);
 let timer = null;
@@ -339,9 +366,16 @@ async function submitQuizFinal() {
 }
 
 function goBack() {
-  if (confirm('Are you sure you want to end the test? Progress will not be saved.')) {
-    router.push('/dashboard');
-  }
+  confirmModal.value = {
+    show: true,
+    title: 'End Test Early?',
+    message: 'Are you sure you want to end the test? Progress will not be saved.',
+    confirmText: 'End Test',
+    isDanger: true,
+    onConfirm: () => {
+      router.push('/dashboard');
+    }
+  };
 }
 
 function onNextClick() {

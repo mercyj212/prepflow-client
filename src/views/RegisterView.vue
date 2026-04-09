@@ -84,17 +84,18 @@
     <!-- MAIN INTERFACE -->
     <div class="flex-grow flex">
       <!-- Left panel - Branding -->
-      <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 overflow-hidden flex-col justify-between p-12">
+      <div class="hidden lg:flex lg:w-1/2 relative bg-zinc-900 bg-[url('/register-bg.jpg')] bg-cover bg-center overflow-hidden flex-col justify-between p-12 shadow-2xl">
+        <!-- Image Dark Overlay -->
+        <div class="absolute inset-0 bg-zinc-950/50 backdrop-blur-[2px]"></div>
+
         <div class="z-10 mt-8 flex justify-between w-full pr-12">
           <BrandLogo size="lg" />
           <ThemeToggle />
         </div>
         <div class="z-10 mb-36 max-w-md">
-          <h1 class="text-4xl font-semibold text-white tracking-tight leading-[1.1] mb-6">Start your journey today.</h1>
-          <p class="text-zinc-400 text-lg leading-relaxed font-light">Join thousands of students and enhance your test scores actively. Track your limits and discover your potential.</p>
+          <h1 class="text-4xl font-semibold text-white tracking-tight leading-[1.1] mb-6 drop-shadow-lg">Start your journey today.</h1>
+          <p class="text-zinc-300 text-lg leading-relaxed font-light drop-shadow-md">Join thousands of students and enhance your test scores actively. Track your limits and discover your potential.</p>
         </div>
-        <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-zinc-800/50 rounded-full blur-3xl mix-blend-overlay"></div>
-        <div class="absolute bottom-[-10%] left-[10%] w-[30rem] h-[30rem] bg-indigo-500/10 rounded-full blur-3xl mix-blend-overlay"></div>
       </div>
 
       <!-- Right panel - Form -->

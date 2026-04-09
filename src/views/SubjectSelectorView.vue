@@ -2,13 +2,13 @@
   <div class="min-h-screen bg-surface-primary dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 pb-12">
     <nav class="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-border-light dark:border-border-dark px-4 sm:px-6 py-4">
       <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
-        <div class="flex items-center gap-3">
-          <button @click="router.push('/dashboard')" type="button" class="w-10 h-10 rounded-lg border-[0.5px] border-border-light flex items-center justify-center text-slate-600">
-            ←
+        <BrandLogo />
+        <div class="flex items-center gap-6">
+          <button @click="router.push('/dashboard')" type="button" class="text-[13px] font-bold text-slate-500 hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 transition-all uppercase tracking-widest flex items-center gap-2">
+            ← Dashboard
           </button>
-          <BrandLogo />
+          <ThemeToggle />
         </div>
-        <ThemeToggle />
       </div>
     </nav>
 
@@ -47,8 +47,13 @@
             <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-zinc-800 border-[0.5px] border-border-light dark:border-border-dark flex items-center justify-center text-[22px]">
               {{ getIcon(quiz.title) }}
             </div>
-            <div class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-[11px] font-medium text-slate-600 dark:text-zinc-400">
-              {{ quiz.questions?.length || 0 }} topics
+            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+              <button type="button" @click.stop="$router.push(`/flashcards/${quiz._id}`)" class="px-3 py-1 rounded-md bg-brand/10 text-brand dark:text-indigo-400 text-[11px] font-bold uppercase tracking-widest hover:bg-brand hover:text-white transition-colors">
+                Flashcards
+              </button>
+              <div class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-[11px] font-medium text-slate-600 dark:text-zinc-400">
+                {{ quiz.questions?.length || 0 }} topics
+              </div>
             </div>
           </div>
           
