@@ -101,6 +101,29 @@
       </div>
     </footer>
 
+    <!-- Success/Result Modal -->
+    <div v-if="resultModal.show" class="fixed inset-0 z-[100] flex items-center justify-center px-4">
+      <div class="absolute inset-0 bg-zinc-950/80 backdrop-blur-sm"></div>
+      <div class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-[32px] p-8 text-center shadow-2xl border border-border-light dark:border-border-dark animate-bounce-in">
+        <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl shadow-emerald-500/20">
+          <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <h3 class="text-2xl font-black tracking-tighter uppercase text-slate-900 dark:text-white mb-2">Quiz Finished!</h3>
+        <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-400 mb-8">
+            You scored <span class="text-emerald-500 font-bold text-xl px-1">{{ resultModal.score }}/{{ resultModal.total }}</span> correctly in this diagnostic.
+        </p>
+        
+        <div class="flex flex-col gap-3">
+          <button @click="retakeQuiz" class="w-full py-4 rounded-2xl bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 font-black uppercase tracking-widest text-[11px] hover:scale-[1.02] active:scale-[0.98] transition-all">
+            Retake Quiz
+          </button>
+          <button @click="goToResults" class="w-full py-4 rounded-2xl bg-white dark:bg-zinc-800 border-[0.5px] border-border-light dark:border-border-dark text-slate-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-slate-50 dark:hover:bg-zinc-700 transition-all">
+            View Full Analysis
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Review Panel -->
     <FlagReviewPanel
       :open="showFlagReview"
@@ -140,6 +163,12 @@ const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F'];
 const currentIndex = ref(0);
 const studentAnswers = ref([]);
 const answered = ref(false);
+const resultModal = ref({
+  show: false,
+  score: 0,
+  total: 0
+});
+
 const isSubmitting = ref(false);
 const flaggedQuestions = ref(new Set());
 const showFlagReview = ref(false);
@@ -341,32 +370,51 @@ async function nextQuestion() {
       return;
     }
     clearInterval(timer);
-    await submitQuizFinal();
+    await handleFinish();
   }
 }
 
-async function submitQuizFinal() {
-  clearInterval(timer);
-  showFlagReview.value = false;
-  isSubmitting.value = true;
-  const timeTaken = ((quiz.value.timeLimit || 30) * 60) - timeLeft.value;
+const handleFinish = async () => {
+  if (isSubmitting.value) return;
   
+  const score = Object.values(localAnswers.value).filter(a => a.selectedOption.isCorrect).length;
+  const total = quiz.value.questions.length;
+  
+  resultModal.value = {
+    show: true,
+    score,
+    total
+  };
+
+  isSubmitting.value = true;
   try {
-    const result = await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, timeTaken, quiz.value.questions.length);
-    router.push({
-      path: '/result',
-      query: {
-        score: result.score,
-        total: result.totalQuestions,
-        quizId: quiz.value._id
-      },
-    });
+    await quizStore.submitQuiz(
+      quiz.value._id,
+      studentAnswers.value,
+      (quiz.value.timeLimit * 60) - timeLeft.value,
+      total
+    );
   } catch (err) {
-    console.error("Failed to submit", err);
+    console.error('Submission failed:', err);
   } finally {
     isSubmitting.value = false;
   }
-}
+};
+
+const retakeQuiz = () => {
+  window.location.reload();
+};
+
+const goToResults = () => {
+  router.push({
+     path: '/result',
+     query: { 
+       score: resultModal.value.score, 
+       total: resultModal.value.total, 
+       quizId: quiz.value._id 
+     }
+  });
+};
 
 function goBack() {
   confirmModal.value = {
