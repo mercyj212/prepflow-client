@@ -92,8 +92,8 @@
       </div>
     </main>
 
-    <footer class="py-8 bg-white dark:bg-zinc-950 border-t border-zinc-200 dark:border-zinc-800 text-center">
-      <p class="text-xs text-zinc-400">Powered by PrepUp Interactive Learning</p>
+    <footer class="py-10 bg-black border-t border-white/5 text-center">
+      <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-600">Powered by PrepUp Interactive Learning</p>
     </footer>
   </div>
 </template>

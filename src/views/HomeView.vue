@@ -118,8 +118,8 @@
       </div>
     </main>
 
-    <footer class="border-t border-white/10 py-6 text-center text-[12px] text-white/60">
-      © 2026 PrepUp CBT. Built for focused learners.
+    <footer class="bg-black border-t border-white/5 py-10 text-center text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-600">
+      © 2026 PrepUp CBT • Excellence in Practice
     </footer>
   </div>
 </template>
