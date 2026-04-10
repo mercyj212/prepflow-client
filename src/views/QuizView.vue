@@ -61,15 +61,15 @@
 
         <!-- Inline Explanation Panel -->
         <transition enter-active-class="transition duration-300 ease-out" enter-from-class="opacity-0 translate-y-4" enter-to-class="opacity-100 translate-y-0">
-          <article v-if="answered" class="mt-8 flat-card p-6 bg-slate-50 dark:bg-zinc-900/50">
-            <div class="flex items-center gap-2 mb-3">
-              <div class="bg-brand w-1.5 h-1.5 rounded-full"></div>
-              <p class="text-[14px] font-medium text-brand">
-                Answer recorded
+          <article v-if="answered" class="mt-8 flat-card p-6" :class="isCurrentCorrect ? 'bg-success/5 border-success/20' : 'bg-danger/5 border-danger/20'">
+            <div class="flex items-center gap-3 mb-3">
+              <div :class="[isCurrentCorrect ? 'bg-success' : 'bg-danger', 'w-2 h-2 rounded-full']"></div>
+              <p class="text-[14px] font-medium" :class="isCurrentCorrect ? 'text-success' : 'text-danger'">
+                {{ isCurrentCorrect ? 'Correct Answer' : 'Incorrect Choice' }}
               </p>
             </div>
             <p class="text-[15px] leading-relaxed font-normal text-slate-600 dark:text-zinc-300 sentence-case">
-              Your response has been saved. Continue through the quiz and submit to see your final score.
+              {{ currentQuestion.explanation || 'Explore the curriculum to understand the reasoning behind this answer.' }}
             </p>
           </article>
         </transition>
@@ -186,6 +186,12 @@ const formattedTime = computed(() => {
   return `${minutes}:${seconds.toString().padStart(2, '0')}`;
 });
 
+const isCurrentCorrect = computed(() => {
+  if (!answered.value || !currentQuestion.value) return false;
+  const local = localAnswers.value[currentIndex.value];
+  return local && local.selectedOption.isCorrect;
+});
+
 const isFlagged = computed(() => {
   if (!currentQuestion.value) return false;
   return flaggedQuestions.value.has(currentQuestion.value._id);
@@ -193,7 +199,7 @@ const isFlagged = computed(() => {
 
 onMounted(async () => {
   const quizId = route.params.id;
-  await quizStore.fetchQuizById(quizId);
+  await quizStore.fetchStudyQuizById(quizId);
   
   if (quiz.value) {
     timeLeft.value = (quiz.value.timeLimit || 30) * 60;
@@ -274,26 +280,36 @@ function selectAnswer(option) {
 
 function getOptionClass(option) {
   if (!answered.value) {
-    return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 hover:border-brand/50 cursor-pointer';
+    return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 status-idle hover:border-brand/50 cursor-pointer';
   }
 
-  const selected = isSelected(option);
-
-  if (selected) {
-    return 'border-brand bg-brand/5 text-brand cursor-default';
+  // Highlight correct answer
+  if (option.isCorrect === true || option.isCorrect === 'true') {
+    return 'border-success bg-success/10 text-success dark:text-emerald-400 font-bold border-2';
   }
 
-  return 'border-border-light dark:border-border-dark bg-white dark:bg-zinc-900 opacity-50 cursor-default';
+  // Highlight selected wrong answer
+  if (isSelected(option)) {
+    return 'border-danger bg-danger/10 text-danger dark:text-red-400';
+  }
+
+  return 'border-border-light dark:border-border-dark opacity-40 grayscale-[0.5]';
 }
 
 function getBadgeClass(option) {
   if (!answered.value) {
     return 'border-border-light dark:border-border-dark text-slate-400 group-hover:border-brand group-hover:text-brand';
   }
-  
-  const selected = isSelected(option);
-  
-  if (selected) return 'bg-brand text-white border-brand';
+
+  // If this is the correct answer, always show as success when answered
+  if (option.isCorrect) {
+    return 'bg-success text-white border-success';
+  }
+
+  // If this was the selected wrong answer, show as danger
+  if (isSelected(option)) {
+    return 'bg-danger text-white border-danger';
+  }
   
   return 'border-border-light dark:border-border-dark text-slate-300 opacity-50';
 }
