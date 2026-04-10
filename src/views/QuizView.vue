@@ -77,13 +77,13 @@
     </main>
 
     <!-- Footer Bar -->
-    <footer v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-zinc-950 border-t border-border-light dark:border-border-dark">
+    <footer v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-40 bg-black border-t border-white/10">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 py-5 flex items-center justify-between gap-4">
         <button
           @click="toggleFlag"
           type="button"
           class="flex items-center gap-2 px-5 py-2.5 rounded-lg border-[0.5px] text-[14px] font-medium transition-all"
-          :class="isFlagged ? 'border-warning text-warning bg-warning/5' : 'border-border-light dark:border-border-dark text-slate-600 dark:text-zinc-300 hover:bg-slate-50'"
+          :class="isFlagged ? 'border-warning text-warning bg-warning/10' : 'border-white/20 text-white/70 hover:bg-white/5 hover:text-white'"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ 'fill-warning': isFlagged }"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
           {{ isFlagged ? 'Flagged' : 'Flag' }}
