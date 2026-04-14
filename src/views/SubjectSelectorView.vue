@@ -1,83 +1,66 @@
 <template>
-  <div class="min-h-screen bg-surface-primary dark:bg-zinc-950 text-slate-900 dark:text-zinc-100 pb-12">
-    <nav class="sticky top-0 z-50 bg-white dark:bg-zinc-950 border-b border-border-light dark:border-border-dark px-4 sm:px-6 py-4">
-      <div class="max-w-6xl mx-auto flex items-center justify-between gap-4">
-        <BrandLogo />
-        <div class="flex items-center gap-6">
-          <button @click="router.push('/dashboard')" type="button" class="text-[13px] font-bold text-slate-500 hover:text-slate-900 border-b-2 border-transparent hover:border-slate-900 transition-all uppercase tracking-widest flex items-center gap-2">
-            ← Dashboard
-          </button>
-          <ThemeToggle />
-        </div>
-      </div>
-    </nav>
-
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
-      <header class="mb-10">
-        <h1 class="text-[32px] font-medium text-slate-900 dark:text-white leading-tight">Pick a subject</h1>
-        <p class="mt-2 text-[16px] font-normal text-slate-500">Select an exam body to filter available subjects.</p>
+  <NeoAppShell>
+    <div class="px-4 sm:px-8 py-8">
+      <!-- Header -->
+      <header class="mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Courses</h1>
+        <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-500">Select an exam body to filter available subjects.</p>
       </header>
 
       <!-- Filter Tabs -->
-      <div class="flex items-center gap-2 border-b border-border-light dark:border-border-dark mb-10 overflow-x-auto no-scrollbar">
+      <div class="flex items-center gap-2 border-b border-black/10 dark:border-white/10 mb-8 overflow-x-auto no-scrollbar">
         <button
           v-for="body in examBodies"
           :key="body"
           @click="selectedBody = body"
-          class="px-6 py-3 text-[14px] font-medium transition-all relative"
-          :class="selectedBody === body ? 'text-brand' : 'text-slate-500 hover:text-slate-700'"
+          class="px-5 py-2.5 text-[13px] font-semibold transition-all relative whitespace-nowrap"
+          :class="selectedBody === body ? 'text-slate-900 dark:text-zinc-100' : 'text-slate-500 hover:text-slate-700 dark:hover:text-zinc-300'"
         >
           {{ body }}
-          <div v-if="selectedBody === body" class="absolute bottom-0 left-0 right-0 h-[2px] bg-brand"></div>
+          <div v-if="selectedBody === body" class="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-800 dark:bg-zinc-200 rounded-full"></div>
         </button>
       </div>
 
       <!-- Subject Grid -->
       <div v-if="filteredQuizzes.length === 0" class="py-20 text-center">
-        <p class="text-slate-500">No subjects found for {{ selectedBody }}.</p>
+        <p class="text-slate-400 dark:text-zinc-500 text-[15px]">No subjects found for {{ selectedBody }}.</p>
       </div>
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
         <div
           v-for="quiz in filteredQuizzes"
           :key="quiz._id"
-          class="flat-card p-6 group cursor-pointer hover:border-brand/30 transition-colors"
+          class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo border border-white/20 dark:border-white/5 p-6 group cursor-pointer hover:shadow-neo-md transition-all duration-300"
           @click="startQuiz(quiz._id)"
         >
-          <div class="flex items-start justify-between mb-6">
-            <div class="w-12 h-12 rounded-xl bg-slate-50 dark:bg-zinc-800 border-[0.5px] border-border-light dark:border-border-dark flex items-center justify-center text-[22px]">
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-11 h-11 rounded-[14px] bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-[20px]">
               {{ getIcon(quiz.title) }}
             </div>
-            <div class="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-              <button type="button" @click.stop="$router.push(`/flashcards/${quiz._id}`)" class="px-3 py-1 rounded-md bg-brand/10 text-brand dark:text-indigo-400 text-[11px] font-bold uppercase tracking-widest hover:bg-brand hover:text-white transition-colors">
-                Flashcards
-              </button>
-              <div class="px-2.5 py-1 rounded-md bg-slate-100 dark:bg-zinc-800 text-[11px] font-medium text-slate-600 dark:text-zinc-400">
-                {{ quiz.questions?.length || 0 }} topics
-              </div>
+            <div class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-zinc-800 text-[11px] font-medium text-slate-500 dark:text-zinc-500">
+              {{ quiz.questions?.length || 0 }} Q
             </div>
           </div>
           
-          <h3 class="text-[18px] font-medium text-slate-900 dark:text-white mb-1">{{ quiz.title }}</h3>
-          <p class="text-[13px] font-normal text-slate-500 mb-6">{{ quiz.description || 'Comprehensive practice set' }}</p>
+          <h3 class="text-[17px] font-semibold text-slate-800 dark:text-zinc-100 mb-1">{{ quiz.title }}</h3>
+          <p class="text-[13px] text-slate-500 dark:text-zinc-500 mb-5">{{ quiz.description || 'Comprehensive practice set' }}</p>
           
-          <div class="pt-5 border-t border-dashed border-border-light dark:border-border-dark flex items-center justify-between">
-            <div class="text-[12px] font-normal text-slate-500">
-              Last score: <span class="font-medium text-slate-900 dark:text-zinc-200">{{ getLastScore(quiz._id) }}%</span>
+          <div class="pt-4 border-t border-dashed border-black/10 dark:border-white/10 flex items-center justify-between">
+            <div class="text-[12px] text-slate-500">
+              Last score: <span class="font-semibold text-slate-800 dark:text-zinc-200">{{ getLastScore(quiz._id) }}%</span>
             </div>
-            <span class="text-brand text-[13px] font-medium group-hover:translate-x-1 transition-transform">Start test →</span>
+            <span class="text-[13px] font-medium text-slate-500 group-hover:translate-x-1 transition-transform">Start →</span>
           </div>
         </div>
       </div>
-    </main>
-  </div>
+    </div>
+  </NeoAppShell>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuizStore } from '../store/quiz';
-import BrandLogo from '../components/BrandLogo.vue';
-import ThemeToggle from '../components/ThemeToggle.vue';
+import NeoAppShell from '../components/layout/NeoAppShell.vue';
 
 const router = useRouter();
 const quizStore = useQuizStore();
@@ -97,13 +80,8 @@ onMounted(() => {
 
 const getIcon = (title) => {
   const icons = {
-    'Mathematics': '🧮',
-    'English': '📘',
-    'Physics': '🧪',
-    'Biology': '🌿',
-    'Chemistry': '⚗️',
-    'Economics': '📈',
-    'Government': '🏛️'
+    'Mathematics': '🧮', 'English': '📘', 'Physics': '🧪',
+    'Biology': '🌿', 'Chemistry': '⚗️', 'Economics': '📈', 'Government': '🏛️'
   };
   return icons[title] || '📚';
 };
@@ -121,11 +99,6 @@ const startQuiz = (id) => {
 </script>
 
 <style scoped>
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>

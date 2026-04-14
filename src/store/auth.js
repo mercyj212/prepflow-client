@@ -147,6 +147,31 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    async uploadAvatar(formData) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.put('/auth/profile/avatar', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        });
+        
+        // Update user state synchronously with backend response
+        this.user = {
+          ...this.user,
+          ...data
+        };
+        localStorage.setItem('user', JSON.stringify(this.user));
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Avatar upload failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+
     logout() {
       this.user = null;
       localStorage.removeItem('user');

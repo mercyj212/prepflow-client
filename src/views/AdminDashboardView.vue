@@ -1,77 +1,72 @@
 <template>
-  <div class="min-h-screen bg-[#FBFBFB] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black transition-colors duration-300 px-4 py-8 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
-      <!-- Header -->
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6 transition-colors gap-4">
-        <BrandLogo size="lg" />
-        <div class="flex gap-4 items-center">
-          <ThemeToggle />
-          <router-link to="/dashboard" class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500 hover:text-black dark:hover:text-white transition underline decoration-2 underline-offset-4">
-            Student View
-          </router-link>
-          <button @click="logout" class="px-6 py-2.5 bg-zinc-100 dark:bg-transparent border border-zinc-200 dark:border-zinc-700 rounded-xl hover:bg-zinc-200 dark:hover:bg-zinc-800 transition text-[10px] font-black uppercase tracking-[0.2em] text-red-600 dark:text-red-400">
-            Secure Logout
-          </button>
-        </div>
-      </div>
+  <NeoAppShell>
+    <!-- Simplified 2-column paradigm -->
+    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
+      
+      <!-- Main Content Column -->
+      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
+        
+        <header class="mb-12">
+          <h1 class="text-[34px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight mb-1">Architect Hub</h1>
+          <p class="text-[15px] font-normal text-slate-500 dark:text-zinc-500">System management and content engineering.</p>
+        </header>
 
-      <!-- Analytics Section -->
-      <AnalyticsGrid 
-        :loading="loadingStats"
-        :courses-count="courses.length"
-        :quizzes-count="quizzes.length"
-        :students-count="totalStudents"
-        :submissions-count="allSubmissions.length"
-        :global-average="globalAverage"
-      />
+        <!-- Analytics Section -->
+        <AnalyticsGrid 
+          :loading="loadingStats"
+          :courses-count="courses.length"
+          :quizzes-count="quizzes.length"
+          :students-count="totalStudents"
+          :submissions-count="allSubmissions.length"
+          :global-average="globalAverage"
+          class="mb-12"
+        />
 
-      <!-- Content Creation Hub -->
-      <h2 class="text-[11px] font-black mb-8 text-zinc-400 uppercase tracking-[0.3em] border-b border-zinc-100 dark:border-zinc-900 pb-4 text-center">Architect & Engineering Hub</h2>
-      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
-        <AIGenerator class="lg:col-span-2" :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
-        <div class="lg:col-span-2 grid grid-cols-1 gap-8">
-          <CourseCreator :loading="creatingCourse" @create="handleCreateCourse" />
-          <QuizCreator :loading="creatingQuiz" :courses="courses" @create="handleCreateQuiz" />
-        </div>
-      </div>
-
-      <!-- Management Hub -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-        <!-- Course Inventory -->
-        <section>
-          <div class="flex items-center justify-between mb-8">
-            <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase">Course Assets</h2>
-            <div v-if="successMsg" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest animate-pulse">{{ successMsg }}</div>
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 mb-16">
+          <AIGenerator class="lg:col-span-2" :loading="generatingAI" :quizzes="quizzes" @generate="handleGenerativeAI" />
+          <div class="lg:col-span-2 grid grid-cols-1 gap-8">
+            <CourseCreator :loading="creatingCourse" @create="handleCreateCourse" />
+            <QuizCreator :loading="creatingQuiz" :courses="courses" @create="handleCreateQuiz" />
           </div>
-          <CourseInventory 
-            :courses="courses" 
-            :quizzes="quizzes"
-            @upload="toggleUpload"
-            @rename="startRename"
-            @delete="handleDeleteCourse"
-            @delete-material="handleDeleteMaterial"
-          />
-        </section>
+        </div>
 
-        <!-- Quiz Inventory -->
-        <section>
-          <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-8">Assessment Paths</h2>
-          <QuizInventory 
-            :quizzes="quizzes"
-            @rename="startQuizRename"
-            @delete="handleDeleteQuiz"
-            @copy="copyLink"
-          />
-        </section>
-      </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+          <!-- Course Inventory -->
+          <section>
+            <div class="flex items-center justify-between mb-8">
+              <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Courses</h2>
+              <div v-if="successMsg" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest animate-pulse">{{ successMsg }}</div>
+            </div>
+            <CourseInventory 
+              :courses="courses" 
+              :quizzes="quizzes"
+              @upload="toggleUpload"
+              @rename="startRename"
+              @delete="handleDeleteCourse"
+              @delete-material="handleDeleteMaterial"
+            />
+          </section>
 
-      <!-- Student Registry -->
-      <StudentRegistry 
-        :students="incomingScholars"
-        @email-blast="openEmailModal()"
-        @email-direct="openEmailModal"
-        @delete="handleDeleteStudent"
-      />
+          <!-- Quiz Inventory -->
+          <section>
+            <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mb-8">Assessments</h2>
+            <QuizInventory 
+              :quizzes="quizzes"
+              @rename="startQuizRename"
+              @delete="handleDeleteQuiz"
+              @copy="copyLink"
+            />
+          </section>
+        </div>
+
+        <!-- Student Registry -->
+        <StudentRegistry 
+          :students="incomingScholars"
+          @email-blast="openEmailModal()"
+          @email-direct="openEmailModal"
+          @delete="handleDeleteStudent"
+        />
+      </section>
     </div>
 
     <!-- 📧 EMAIL COMPOSER MODAL -->
@@ -84,7 +79,7 @@
               {{ isBlastMode ? 'Global Announcement' : 'Direct Message' }}
             </h2>
             <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-              {{ isBlastMode ? `Dispatch to ${incomingScholars.length} Scholars` : `Target: ${emailTargetName}` }}
+               {{ isBlastMode ? `Dispatch to ${incomingScholars.length} Scholars` : `Target: ${emailTargetName}` }}
             </p>
           </div>
           <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
@@ -122,9 +117,7 @@
       accept="image/*,.pdf"
       @change="handleMaterialUpload"
     >
-
-    <AppFooter />
-  </div>
+  </NeoAppShell>
 </template>
 
 <script setup>
@@ -133,6 +126,8 @@ import api from '../api/axios'; // Centralized axios instance
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
+import NeoAppShell from '../components/layout/NeoAppShell.vue';
+import NeoCard from '../components/common/NeoCard.vue';
 
 // Sub-Components
 import BrandLogo from '../components/BrandLogo.vue';

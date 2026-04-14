@@ -16,6 +16,12 @@ import ResetPasswordView from '../views/ResetPasswordView.vue';
 import HelpCenterView from '../views/HelpCenterView.vue';
 import SubjectSelectorView from '../views/SubjectSelectorView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
+import MockExamView from '../views/MockExamView.vue';
+import ProgressView from '../views/ProgressView.vue';
+import NotificationsView from '../views/NotificationsView.vue';
+import FlashcardLandingView from '../views/FlashcardLandingView.vue';
+import PracticeLandingView from '../views/PracticeLandingView.vue';
+import SettingsView from '../views/SettingsView.vue';
 
 const routes = [
   {
@@ -43,10 +49,16 @@ const routes = [
     meta: { requiresAuth: false }
   },
   {
+    path: '/practice',
+    name: 'practice-landing',
+    component: PracticeLandingView,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/practice/:id',
     name: 'practice',
     component: PracticeView,
-    meta: { requiresAuth: false }
+    meta: { requiresAuth: true }
   },
   {
     path: '/login',
@@ -71,6 +83,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/flashcards',
+    name: 'flashcards-landing',
+    component: FlashcardLandingView,
+    meta: { requiresAuth: true }
+  },
+  {
     path: '/flashcards/:id',
     name: 'flashcards',
     component: FlashcardView,
@@ -80,6 +98,24 @@ const routes = [
     path: '/result',
     name: 'result',
     component: ResultView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/mock-exam',
+    name: 'mock-exam',
+    component: MockExamView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/progress',
+    name: 'progress',
+    component: ProgressView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/notifications',
+    name: 'notifications',
+    component: NotificationsView,
     meta: { requiresAuth: true }
   },
   {
@@ -98,6 +134,12 @@ const routes = [
     path: '/subjects',
     name: 'subjects',
     component: SubjectSelectorView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/settings',
+    name: 'settings',
+    component: SettingsView,
     meta: { requiresAuth: true }
   },
   {

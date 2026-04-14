@@ -1,13 +1,11 @@
 <template>
-  <div class="min-h-screen bg-black flex flex-col items-center justify-center px-4 relative overflow-hidden">
+  <NeoAppShell>
+    <div class="flex flex-col items-center justify-center px-4 min-h-full relative overflow-hidden py-8">
     <!-- Abstract background blobs -->
     <div class="absolute top-0 left-0 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
     <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
 
-    <div v-if="quizStore.loading" class="text-white text-center z-10">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-500 mx-auto mb-4"></div>
-      <p>Loading Flashcards...</p>
-    </div>
+    <NeoLoader v-if="quizStore.loading" label="Loading flashcards..." />
 
     <div v-else-if="quizStore.error" class="text-red-500 text-center bg-zinc-900 border border-zinc-800 p-8 rounded-2xl z-10">
       <h2 class="text-xl font-bold mb-2">Error</h2>
@@ -103,15 +101,17 @@
       <p>This study set has no questions yet.</p>
       <button @click="$router.push('/')" class="mt-4 px-4 py-2 bg-zinc-800 rounded-lg text-white">Return Home</button>
     </div>
-  </div>
+    </div>
+  </NeoAppShell>
 </template>
 
 <script setup>
 import { computed, ref, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuizStore } from '../store/quiz';
-import axios from 'axios';
 import { useAuthStore } from '../store/auth';
+import NeoAppShell from '../components/layout/NeoAppShell.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const router = useRouter();

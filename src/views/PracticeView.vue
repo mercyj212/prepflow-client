@@ -1,52 +1,35 @@
 <template>
-  <div class="min-h-screen bg-[#FBFBFB] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 font-sans transition-colors duration-300 flex flex-col">
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800 px-6 py-4">
-      <div class="max-w-4xl mx-auto flex items-center justify-between">
-        <BrandLogo />
-        <ThemeToggle />
-      </div>
-    </nav>
-
-    <main class="flex-grow max-w-2xl mx-auto w-full px-6 py-12">
+  <NeoAppShell>
+    <div class="max-w-2xl mx-auto px-4 sm:px-8 py-8">
       <!-- Loading State -->
-      <div v-if="loading" class="flex flex-col items-center justify-center py-20">
-        <div class="w-6 h-6 border-2 border-zinc-300 dark:border-zinc-700 border-t-zinc-900 dark:border-t-white rounded-full animate-spin mb-4"></div>
-        <p class="text-sm text-zinc-500">Preparing your session...</p>
-      </div>
+      <NeoLoader v-if="loading" label="Preparing your session..." />
 
       <!-- Result State -->
       <div v-else-if="finished" class="text-center py-20 animate-fade-in">
         <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h2 class="text-3xl font-bold mb-2">Practice Complete!</h2>
-        <p class="text-zinc-500 dark:text-zinc-400 mb-8">You scored {{ score }} out of {{ quiz.questions.length }}</p>
-        
+        <h2 class="text-3xl font-bold mb-2 text-slate-800 dark:text-zinc-100">Practice Complete!</h2>
+        <p class="text-slate-500 dark:text-zinc-400 mb-8">You scored {{ score }} out of {{ quiz.questions.length }}</p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-           <button @click="resetPractice" class="px-8 py-3 bg-black dark:bg-white text-white dark:text-black font-semibold rounded-xl hover:opacity-90 transition">
+           <button @click="resetPractice" class="px-8 py-3 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 font-semibold rounded-xl hover:opacity-90 transition">
              Practice Again
            </button>
-           <router-link to="/register" class="px-8 py-3 border border-zinc-200 dark:border-zinc-800 text-zinc-600 dark:text-zinc-400 font-semibold rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-900 transition">
-             Create Full Account
+           <router-link to="/subjects" class="px-8 py-3 border border-black/10 dark:border-white/10 text-slate-600 dark:text-zinc-400 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition">
+             Browse Courses
            </router-link>
         </div>
       </div>
 
       <!-- Quiz State -->
       <div v-else-if="quiz" class="animate-fade-in">
-        <div class="mb-8 border-b border-zinc-200 dark:border-zinc-800 pb-6 flex items-center justify-between">
-          <div>
-            <h2 class="text-xl font-bold">{{ quiz.title }}</h2>
-            <p class="text-sm text-zinc-500">Question {{ currentIndex + 1 }} of {{ quiz.questions.length }}</p>
-          </div>
-          <div class="text-right">
-             <span class="text-xs font-bold uppercase tracking-widest text-zinc-400">Score: {{ score }}</span>
-          </div>
-        </div>
+        <header class="mb-8">
+          <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-1">Practice</h1>
+          <p class="text-[15px] font-medium text-slate-500">{{ quiz.title }} · Question {{ currentIndex + 1 }} of {{ quiz.questions.length }}</p>
+        </header>
 
-        <div class="mb-10">
-          <h3 class="text-2xl font-medium leading-relaxed">{{ currentQuestion.text }}</h3>
+        <div class="mb-8">
+          <h3 class="text-xl font-semibold leading-relaxed text-slate-800 dark:text-zinc-100">{{ currentQuestion.text }}</h3>
         </div>
 
         <div class="space-y-3">
@@ -56,54 +39,50 @@
             @click="selectAnswer(option)"
             :disabled="answered"
             :class="[
-              'w-full flex items-center p-4 rounded-xl border text-left transition-all duration-200 group',
+              'w-full flex items-center p-4 rounded-[18px] border text-left transition-all duration-200 group',
               getOptionClass(option)
             ]"
           >
             <span 
-              class="w-10 h-10 rounded-full border flex items-center justify-center mr-4 text-sm font-bold transition-colors"
+              class="w-9 h-9 rounded-full border flex items-center justify-center mr-4 text-[13px] font-bold transition-colors shrink-0"
               :class="getLabelClass(option)"
             >
               {{ String.fromCharCode(65 + index) }}
             </span>
-            <span class="text-lg">{{ option.text }}</span>
+            <span class="text-[15px]">{{ option.text }}</span>
           </button>
         </div>
 
         <!-- Feedback & Next Section -->
-        <div v-if="answered" class="mt-10 p-6 rounded-2xl border transition-all animate-bounce-in" :class="feedbackClass">
+        <div v-if="answered" class="mt-8 p-6 rounded-[18px] border transition-all animate-bounce-in" :class="feedbackClass">
           <div class="flex items-start gap-4">
             <div class="mt-1">
-               <svg v-if="isCorrect" class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-               <svg v-else class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+               <svg v-if="isCorrect" class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+               <svg v-else class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
             </div>
             <div class="flex-1">
-              <h4 class="font-bold mb-1">{{ isCorrect ? 'Correct!' : 'Incorrect' }}</h4>
-              <p class="text-sm opacity-90 leading-relaxed">{{ currentQuestion.explanation || 'Review the source material to explore why this answer is consistent with the curriculum.' }}</p>
+              <h4 class="font-bold mb-1 text-[15px]">{{ isCorrect ? 'Correct!' : 'Incorrect' }}</h4>
+              <p class="text-[13px] opacity-90 leading-relaxed">{{ currentQuestion.explanation || 'Review the source material to explore why this answer is consistent with the curriculum.' }}</p>
             </div>
           </div>
           <button 
             @click="nextQuestion" 
-            class="mt-6 w-full py-3 bg-black dark:bg-white text-white dark:text-black font-bold rounded-xl transition hover:opacity-90"
+            class="mt-5 w-full py-3 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 font-bold rounded-xl transition hover:opacity-90 text-[13px] uppercase tracking-widest"
           >
             {{ currentIndex === quiz.questions.length - 1 ? 'Finish Practice' : 'Continue' }}
           </button>
         </div>
       </div>
-    </main>
-
-    <footer class="py-10 bg-black border-t border-white/5 text-center">
-      <p class="text-[11px] font-bold uppercase tracking-[0.2em] text-zinc-600">Powered by PrepUp Interactive Learning</p>
-    </footer>
-  </div>
+    </div>
+  </NeoAppShell>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import api from '../api/axios';
-import ThemeToggle from '../components/ThemeToggle.vue';
-import BrandLogo from '../components/BrandLogo.vue';
+import NeoAppShell from '../components/layout/NeoAppShell.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const loading = ref(true);
