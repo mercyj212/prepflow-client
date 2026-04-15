@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrepUp CBT | Healing, Growth, Transformation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --surface: #141414;
+            --text-main: #f5f5f0;
+            --accent: #c9a96e;
+            --glow: rgba(180, 80, 20, 0.15);
+            --glow-secondary: rgba(20, 60, 80, 0.15);
+            --font-display: 'Cormorant Garamond', serif;
+            --font-ui: 'Outfit', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Utils */
+        .fade-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .fade-up.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(60px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .section-label {
+            text-transform: uppercase;
+            letter-spacing: 0.25em;
+            font-size: 11px;
+            opacity: 0.5;
+            font-weight: 500;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .brand-name {
+            font-family: var(--font-ui);
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 400;
+            position: relative;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Scroll Progress */
+        .scroll-progress-container {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 100px;
+            width: 1px;
+            background-color: rgba(245, 245, 240, 0.1);
+            z-index: 50;
+        }
+
+        .scroll-progress-bar {
+            width: 1px;
+            background-color: var(--accent);
+            height: 0%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            padding: 0 10vw;
+            background: radial-gradient(ellipse at 80% 10%, var(--glow) 0%, transparent 60%),
+                        radial-gradient(ellipse at 10% 90%, var(--glow-secondary) 0%, transparent 60%),
+                        var(--bg-color);
+        }
+
+        .hero-label {
+            position: absolute;
+            top: 6rem;
+            left: 10vw;
+        }
+
+        .hero-title {
+            font-family: var(--font-display);
+            font-weight: 300;
+            font-size: clamp(64px, 8vw, 120px);
+            line-height: 1.1;
+        }
+
+        .hero-word {
+            display: block;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: textFadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+        }
+
+        .hero-word:nth-child(1) { animation-delay: 0.1s; }
+        .hero-word:nth-child(2) { animation-delay: 0.25s; }
+        .hero-word:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes textFadeUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-scroll-cta {
+            margin-top: 4rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .hero-counter {
+            position: absolute;
+            bottom: 3rem;
+            right: 3rem;
+            font-family: var(--font-ui);
+            font-size: 12px;
+            letter-spacing: 0.1em;
+            opacity: 0.6;
+        }
+
+        /* Reusable section styling */
+        section {
+            padding: 8rem 10vw;
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: 4rem;
+        }
+
+        .h2-display {
+            font-family: var(--font-display);
+            font-weight: 300;
+            font-size: clamp(40px, 5vw, 64px);
+            margin-top: 1rem;
+            line-height: 1.2;
+        }
+
+        /* Services / Accordion */
+        .accordion-list {
+            list-style: none;
+            border-top: 1px solid rgba(201, 169, 110, 0.2);
+        }
+
+        .accordion-row {
+            border-bottom: 1px solid rgba(201, 169, 110, 0.2);
+        }
+
+        .accordion-header {
+            padding: 2rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .accordion-header:hover {
+            color: var(--accent);
+        }
+
+        .accordion-icon {
+            font-weight: 300;
+            font-size: 24px;
+            transition: transform 0.4s ease;
+        }
+
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            color: rgba(245, 245, 240, 0.7);
+            font-size: 15px;
+        }
+        
+        .accordion-content-inner {
+            padding-bottom: 2rem;
+            max-width: 600px;
+        }
+
+        .accordion-row.open .accordion-content {
+            max-height: 400px;
+        }
+
+        .accordion-row.open .accordion-icon {
+            transform: rotate(45deg);
+        }
+
+        /* Stats Section */
+        .stats-section {
+            background: radial-gradient(ellipse at 90% 50%, var(--glow) 0%, transparent 50%), var(--bg-color);
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: clamp(80px, 12vw, 160px);
+            font-weight: 300;
+            color: var(--accent);
+            line-height: 1;
+            margin: 1rem 0;
+        }
+
+        .stat-body {
+            font-size: clamp(16px, 2vw, 22px);
+            font-weight: 300;
+            color: rgba(245, 245, 240, 0.8);
+            max-width: 480px;
+        }
+
+        /* Testimonials */
+        .cards-scroll {
+            display: flex;
+            gap: 2rem;
+            margin-top: 4rem;
+            overflow-x: auto;
+            padding-bottom: 2rem;
+            scrollbar-width: none;
+        }
+        
+        .cards-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .testimonial-card {
+            background-color: var(--surface);
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            min-width: 380px;
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.03);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 280px;
+        }
+
+        .quote-text {
+            font-family: var(--font-display);
+            font-style: italic;
+            font-size: 24px;
+            color: rgba(245, 245, 240, 0.9);
+            margin-bottom: 2rem;
+        }
+
+        .quote-label {
+            font-size: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        /* Contact Section */
+        .contact-section {
+            padding-bottom: 4rem;
+        }
+
+        .contact-form {
+            margin-top: 4rem;
+            max-width: 600px;
+        }
+
+        .form-group {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(245, 245, 240, 0.2);
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: 18px;
+            padding: 1rem 0;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            border-bottom-color: var(--accent);
+        }
+
+        .form-input::placeholder {
+            color: rgba(245, 245, 240, 0.4);
+            font-weight: 300;
+        }
+
+        .submit-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-family: var(--font-ui);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+            margin-left: auto;
+            padding-bottom: 4px;
+        }
+        
+        .submit-btn::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+        
+        .submit-btn:hover::after {
+            width: 100%;
+        }
+
+        .footer-grid {
+            margin-top: 8rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            max-width: 400px;
+            gap: 2rem;
+        }
+
+        .footer-link {
+            color: rgba(245, 245, 240, 0.5);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s ease;
+            display: block;
+            margin-bottom: 1rem;
+        }
+
+        .footer-link:hover {
+            color: var(--text-main);
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
+            .stats-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            section {
+                padding: 6rem 1.5rem;
+            }
+            .hero-label {
+                left: 1.5rem;
+            }
+            .testimonial-card {
+                min-width: 300px;
+            }
+            .scroll-progress-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="brand-name">PrepUp CBT</div>
+        <div class="nav-links">
+            <a href="#services" class="nav-link">Services</a>
+            <a href="#approach" class="nav-link">Approach</a>
+            <a href="#about" class="nav-link">About</a>
+            <a href="#contact" class="nav-link">Contact</a>
+        </div>
+    </nav>
+
+    <div class="scroll-progress-container">
+        <div class="scroll-progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="section-label hero-label">Cognitive Behavioral Therapy</div>
+        <h1 class="hero-title">
+            <span class="hero-word">Heal.</span>
+            <span class="hero-word">Grow.</span>
+            <span class="hero-word">Thrive.</span>
+        </h1>
+        <div class="hero-scroll-cta">
+            <span style="font-size: 1.2rem;">↘</span> Scroll to explore
+        </div>
+        <div class="hero-counter" id="scrollCounter">01 — 05</div>
+    </section>
+
+    <!-- Services -->
+    <section id="services">
+        <div class="section-header">
+            <div class="section-label fade-up" style="transition-delay: 200ms;">What We Offer</div>
+            <h2 class="h2-display fade-up">Our Approach</h2>
+        </div>
+        
+        <ul class="accordion-list">
+            <li class="accordion-row fade-up staggered-0">
+                <div class="accordion-header">
+                    Individual CBT Therapy <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">One-on-one sessions tailored to your unique cognitive patterns. We work together to unpack underlying thoughts and redesign responses.</div>
+                </div>
+            </li>
+            <li class="accordion-row fade-up staggered-1">
+                <div class="accordion-header">
+                    Anxiety & Stress Management <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">Evidence-based techniques to regulate the nervous system, challenge catastrophic thinking, and regain a sense of profound calm.</div>
+                </div>
+            </li>
+            <li class="accordion-row fade-up staggered-2">
+                <div class="accordion-header">
+                    Depression Support <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">Structured goal setting and behavioral activation to gradually lift you from dark spaces and reconnect with vitality.</div>
+                </div>
+            </li>
+            <li class="accordion-row fade-up staggered-3">
+                <div class="accordion-header">
+                    Trauma-Informed Care <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">A gentle, deeply respectful approach to processing difficult memories without re-traumatization, fostering authentic healing.</div>
+                </div>
+            </li>
+            <li class="accordion-row fade-up staggered-4">
+                <div class="accordion-header">
+                    Mindfulness & Resilience <span class="accordion-icon">+</span>
+                </div>
+                <div class="accordion-content">
+                    <div class="accordion-content-inner">Cultivate present-moment awareness to detach from racing thoughts and build long-term emotional durability.</div>
+                </div>
+            </li>
+        </ul>
+    </section>
+
+    <!-- Stats / About -->
+    <section class="stats-section" id="about">
+        <div class="stats-left fade-up">
+            <div class="section-label">Experience</div>
+            <div class="stat-number" id="experienceCounter">0</div>
+            <div class="section-label">Clients Helped</div>
+        </div>
+        <div class="stats-right fade-up delay-1">
+            <p class="stat-body">
+                We believe healing is a partnership. Through evidence-based CBT techniques, we help you identify patterns, challenge distortions, and build lasting resilience — one session at a time.
+            </p>
+        </div>
+    </section>
+
+    <!-- Case Stories -->
+    <section id="approach">
+        <div class="section-header">
+            <div class="section-label fade-up" style="transition-delay: 200ms;">Transformations</div>
+            <h2 class="h2-display fade-up">Stories of Growth</h2>
+        </div>
+        <div class="cards-scroll">
+            <div class="testimonial-card slide-in-right">
+                <div class="quote-text">"I finally understand my mind. The racing thoughts no longer control my daily life. True liberation."</div>
+                <div class="quote-label">Anxiety Recovery</div>
+            </div>
+            <div class="testimonial-card slide-in-right delay-1">
+                <div class="quote-text">"It wasn't just talking; it was rebuilding. I learned the tools to catch myself before the spiral begins."</div>
+                <div class="quote-label">Career Burnout</div>
+            </div>
+            <div class="testimonial-card slide-in-right delay-2">
+                <div class="quote-text">"A space of zero judgment. For the first time, I felt truly heard, and then I was given the blueprint to heal."</div>
+                <div class="quote-label">Depression Support</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact-section" id="contact">
+        <div class="section-header">
+            <div class="section-label fade-up" style="transition-delay: 200ms;">Start Your Journey</div>
+            <h2 class="h2-display fade-up">Get in Touch</h2>
+        </div>
+        
+        <div class="contact-form fade-up">
+            <div class="form-group">
+                <input type="email" class="form-input" placeholder="Your email">
+            </div>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder="Tell us about yourself">
+            </div>
+            <button class="submit-btn" type="button">Send <span>→</span></button>
+        </div>
+
+        <div class="footer-grid fade-up delay-1">
+            <div>
+                <a href="#" class="footer-link">Services</a>
+                <a href="#" class="footer-link">About</a>
+                <a href="#" class="footer-link">Blog</a>
+            </div>
+            <div>
+                <a href="#" class="footer-link">Instagram</a>
+                <a href="#" class="footer-link">LinkedIn</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Scroll progress
+        const progressBar = document.getElementById('progressBar');
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            progressBar.style.height = scrolled + '%';
+        });
+
+        // Intersection Observer for fade-in animations
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.15
+        };
+
+        let activeIndex = 0;
+
+        const observer = new IntersectionObserver((entries, obs) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    
+                    // Counter animation logic
+                    if (entry.target.id === 'experienceCounter' && !entry.target.dataset.counted) {
+                        entry.target.dataset.counted = "true";
+                        let count = 0;
+                        const target = 500;
+                        const duration = 2000;
+                        const frameRate = 30;
+                        const increment = target / (duration / frameRate);
+                        
+                        const counterInterval = setInterval(() => {
+                            count += increment;
+                            if (count >= target) {
+                                entry.target.innerText = target + '+';
+                                clearInterval(counterInterval);
+                            } else {
+                                entry.target.innerText = Math.floor(count) + '+';
+                            }
+                        }, frameRate);
+                    }
+                    
+                    obs.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Sections observer for the '01 - 05' counter (constant observation)
+        const sectionsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sections = Array.from(document.querySelectorAll('section'));
+                    const index = sections.indexOf(entry.target) + 1;
+                    const total = sections.length;
+                    document.getElementById('scrollCounter').innerText = `0${index} — 0${total}`;
+                }
+            });
+        }, { threshold: 0.5 }); // updates when half the section is visible
+
+        // Observe section for counter
+        document.querySelectorAll('section').forEach(section => {
+            sectionsObserver.observe(section);
+        });
+
+        // Track and observe elements
+        document.querySelectorAll('.fade-up, .slide-in-right, #experienceCounter').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Accordion Logic
+        const accordions = document.querySelectorAll('.accordion-row');
+        accordions.forEach(acc => {
+            const header = acc.querySelector('.accordion-header');
+            header.addEventListener('click', () => {
+                const isOpen = acc.classList.contains('open');
+                
+                // close all
+                accordions.forEach(a => a.classList.remove('open'));
+                
+                // toggle clicked
+                if (!isOpen) {
+                    acc.classList.add('open');
+                }
+            });
+        });
+
+        // Initial animation delays setup for staggered elements
+        document.querySelectorAll('.staggered-0').forEach(el => el.style.transitionDelay = '0ms');
+        document.querySelectorAll('.staggered-1').forEach(el => el.style.transitionDelay = '80ms');
+        document.querySelectorAll('.staggered-2').forEach(el => el.style.transitionDelay = '160ms');
+        document.querySelectorAll('.staggered-3').forEach(el => el.style.transitionDelay = '240ms');
+        document.querySelectorAll('.staggered-4').forEach(el => el.style.transitionDelay = '320ms');
+        
+        document.querySelectorAll('.delay-1').forEach(el => el.style.transitionDelay = '200ms');
+        document.querySelectorAll('.delay-2').forEach(el => el.style.transitionDelay = '400ms');
+    </script>
+</body>
+</html>

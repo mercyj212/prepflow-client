@@ -1,196 +1,363 @@
 <template>
   <NeoAppShell>
-    <div class="flex flex-col items-center justify-center px-4 min-h-full relative overflow-hidden py-8">
-    <!-- Abstract background blobs -->
-    <div class="absolute top-0 left-0 w-96 h-96 bg-purple-900/20 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
-    <div class="absolute bottom-0 right-0 w-96 h-96 bg-blue-900/20 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+    <div class="px-4 sm:px-8 py-8 max-w-2xl mx-auto">
 
-    <NeoLoader v-if="quizStore.loading" label="Loading flashcards..." />
+      <NeoLoader v-if="quizStore.loading" label="Loading flashcards..." />
 
-    <div v-else-if="quizStore.error" class="text-red-500 text-center bg-zinc-900 border border-zinc-800 p-8 rounded-2xl z-10">
-      <h2 class="text-xl font-bold mb-2">Error</h2>
-      <p>{{ quizStore.error }}</p>
-      <button @click="$router.push('/')" class="mt-4 px-4 py-2 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-white transition">Go Back</button>
-    </div>
-
-    <div v-else-if="quiz && quiz.questions.length > 0" class="w-full max-w-3xl z-10">
-      <div class="flex justify-between items-center mb-8 px-2">
-        <button @click="$router.push('/dashboard')" class="text-zinc-400 hover:text-white flex items-center gap-2 transition">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-          Back
-        </button>
-        <div class="text-center">
-          <h2 class="text-white font-bold text-lg">{{ quiz.title }} — Study Mode</h2>
-          <p class="text-sm text-zinc-400">Card {{ currentIndex + 1 }} of {{ quiz.questions.length }}</p>
-        </div>
-        <div class="w-20"></div> <!-- spacer for alignment -->
+      <div v-else-if="quizStore.error" class="flex flex-col items-center justify-center py-20 text-center">
+        <p class="text-rose-500 font-semibold mb-4">{{ quizStore.error }}</p>
+        <button @click="$router.push('/flashcards')" class="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-[13px] font-bold uppercase tracking-widest">← Back</button>
       </div>
 
-      <!-- Flashcard Container -->
-      <div class="relative w-full h-96 perspective-1000 group cursor-pointer" @click="flipCard">
-        <div 
-          class="w-full h-full absolute transition-all duration-500 transform-style-3d"
-          :class="{ 'rotate-y-180': isFlipped }"
-        >
-          
-          <!-- Front of card (Question) -->
-          <div class="absolute w-full h-full backface-hidden rounded-3xl bg-zinc-900 border border-zinc-700/50 shadow-2xl flex flex-col items-center justify-center p-8 sm:p-12 text-center group-hover:border-zinc-500 transition-colors">
-            <span class="absolute top-6 left-6 text-xs font-bold text-zinc-500 uppercase tracking-widest bg-zinc-800 px-3 py-1 rounded-full">Question</span>
-            <p class="text-2xl sm:text-3xl font-semibold text-white leading-tight">
-              {{ currentQuestion.text }}
-            </p>
-            <p class="absolute bottom-6 text-zinc-500 text-sm animate-pulse flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
-              Tap to flip
-            </p>
-          </div>
+      <div v-else-if="!quiz || quiz.questions.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="text-4xl mb-4">✧</div>
+        <p class="text-slate-500 dark:text-zinc-500 text-[15px]">This deck has no cards yet.</p>
+        <button @click="$router.push('/flashcards')" class="mt-6 px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-[13px] font-bold uppercase tracking-widest">← Back to Decks</button>
+      </div>
 
-          <!-- Back of card (Answer) -->
-          <div class="absolute w-full h-full backface-hidden rotate-y-180 rounded-3xl bg-gradient-to-br from-indigo-900/40 to-cyan-900/40 border border-indigo-500/30 shadow-[0_0_50px_rgba(99,102,241,0.1)] flex flex-col items-center justify-center p-8 sm:p-12 text-center">
-            <span class="absolute top-6 left-6 text-xs font-bold text-indigo-300 uppercase tracking-widest bg-indigo-500/20 px-3 py-1 rounded-full border border-indigo-500/20">Answer</span>
-            <p class="text-2xl sm:text-3xl font-bold text-white leading-tight">
-              {{ correctAnswerText }}
-            </p>
-            <div v-if="currentQuestion.explanation" class="mt-6 p-4 rounded-xl bg-black/40 text-left w-full border border-white/5">
-              <p class="text-sm font-semibold text-indigo-300 mb-1">Explanation:</p>
-              <p class="text-sm text-zinc-300">{{ currentQuestion.explanation }}</p>
+      <!-- Completion Summary -->
+      <div v-else-if="currentIndex >= quiz.questions.length" class="py-10 max-w-md mx-auto">
+        <div class="bg-[var(--neo-surface)] rounded-[32px] p-8 shadow-neo border border-white/20 dark:border-white/5 text-center">
+          <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
+            <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h2 class="text-2xl font-black text-slate-800 dark:text-zinc-100 mb-2">Session Complete!</h2>
+          <p class="text-slate-500 dark:text-zinc-500 text-[14px] mb-8">Great job! You've gone through the whole deck.</p>
+          
+          <div class="grid grid-cols-2 gap-4 mb-8">
+            <div class="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
+              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500/60 mb-1">Known</p>
+              <p class="text-2xl font-bold text-emerald-500">{{ knownCount }}</p>
+            </div>
+            <div class="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10">
+              <p class="text-[10px] font-black uppercase tracking-widest text-rose-500/60 mb-1">Review</p>
+              <p class="text-2xl font-bold text-rose-500">{{ reviewCount }}</p>
             </div>
           </div>
 
+          <div class="space-y-3">
+            <button @click="restartSession" class="w-full py-4 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-neo-pill hover:-translate-y-1 transition-all">
+              Restart Session
+            </button>
+            <button @click="$router.push(`/quiz/${quiz._id}`)" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-neo-pill hover:-translate-y-1 transition-all">
+              Take Final Quiz →
+            </button>
+          </div>
         </div>
       </div>
 
-      <!-- Controls -->
-      <div class="flex items-center justify-center gap-6 mt-12 w-full">
-        <button 
-          @click="prevCard" 
-          :disabled="currentIndex === 0"
-          class="p-4 rounded-full bg-zinc-900 border border-zinc-800 text-white hover:border-zinc-500 hover:bg-zinc-800 disabled:opacity-30 disabled:hover:border-zinc-800 disabled:hover:bg-zinc-900 transition-all shadow-lg active:scale-95"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
-        </button>
-        
-        <button 
-          v-if="currentIndex === quiz.questions.length - 1"
-          @click="$router.push(`/quiz/${quiz._id}`)"
-          class="px-8 py-4 rounded-2xl bg-indigo-600 font-bold text-white hover:bg-indigo-500 transition-all shadow-[0_0_20px_rgba(79,70,229,0.3)] min-w-[160px] active:scale-95"
-        >
-          Take Quiz Now
-        </button>
+      <template v-else>
 
-        <button 
-          v-else
-          @click="nextCard"
-          class="px-8 py-4 rounded-2xl bg-zinc-900 border border-zinc-700 font-bold text-white hover:bg-zinc-800 hover:border-zinc-500 transition-all min-w-[160px] active:scale-95"
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-6">
+          <button @click="$router.push('/flashcards')" class="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+            Decks
+          </button>
+          <button @click="$router.push(`/quiz/${quiz._id}`)" class="px-4 py-1.5 rounded-lg text-[12px] font-bold uppercase tracking-widest bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
+            Take Quiz →
+          </button>
+        </div>
+
+        <!-- Progress -->
+        <div class="mb-8">
+          <h1 class="text-2xl font-bold text-slate-800 dark:text-zinc-100 mb-3">{{ quiz.title }}</h1>
+          <div class="flex items-center gap-3">
+            <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 overflow-hidden">
+              <div class="h-full rounded-full bg-slate-800 dark:bg-zinc-200 transition-all duration-500"
+                :style="{ width: `${((currentIndex + 1) / quiz.questions.length) * 100}%` }"></div>
+            </div>
+            <span class="text-[12px] font-bold text-slate-400 dark:text-zinc-500 shrink-0">{{ currentIndex + 1 }} / {{ quiz.questions.length }}</span>
+          </div>
+        </div>
+
+        <!-- Card wrapper -->
+        <div
+          class="card-wrapper mb-4 group/wrapper"
+          @pointerdown.prevent="onPointerDown"
+          @dragstart.prevent
         >
-          Next Card
-        </button>
+          <!-- Swipe Indicators (Stamps) -->
+          <div 
+            class="absolute top-12 left-10 z-50 pointer-events-none transform -rotate-12 transition-opacity duration-100"
+            :style="{ opacity: stampKnownOpacity }"
+          >
+            <div class="px-6 py-2 border-4 border-emerald-500 rounded-xl">
+              <span class="text-3xl font-black text-emerald-500 uppercase tracking-tighter">KNOWN</span>
+            </div>
+          </div>
 
-        <button 
-          @click="nextCard" 
-          :disabled="currentIndex === quiz.questions.length - 1"
-          class="p-4 rounded-full bg-zinc-900 border border-zinc-800 text-white hover:border-zinc-500 hover:bg-zinc-800 disabled:opacity-30 disabled:hover:border-zinc-800 disabled:hover:bg-zinc-900 transition-all shadow-lg active:scale-95"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-        </button>
-      </div>
+          <div 
+            class="absolute top-12 right-10 z-50 pointer-events-none transform rotate-12 transition-opacity duration-100"
+            :style="{ opacity: stampReviewOpacity }"
+          >
+            <div class="px-6 py-2 border-4 border-rose-500 rounded-xl">
+              <span class="text-3xl font-black text-rose-500 uppercase tracking-tighter">REVIEW</span>
+            </div>
+          </div>
 
-    </div>
+          <!-- Visual drag layer -->
+          <div ref="cardTrackEl" class="card-track" style="height: 340px;">
+            <div class="card-inner" :class="{ 'is-flipped': isFlipped }">
 
-    <div v-else class="text-zinc-400 z-10 text-center">
-      <p>This study set has no questions yet.</p>
-      <button @click="$router.push('/')" class="mt-4 px-4 py-2 bg-zinc-800 rounded-lg text-white">Return Home</button>
-    </div>
+
+              <!-- Front -->
+              <div class="card-face card-front bg-[var(--neo-surface)] rounded-[28px] shadow-neo border border-white/20 dark:border-white/5 flex flex-col p-8">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">Question</span>
+                  <span class="text-[10px] font-bold text-slate-300 dark:text-zinc-600 uppercase tracking-widest">Tap to reveal</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                  <p class="text-[20px] sm:text-[22px] font-semibold text-slate-800 dark:text-zinc-100 leading-snug text-center">{{ currentQuestion.text }}</p>
+                </div>
+                <div class="flex justify-center mt-6">
+                  <span class="text-[12px] text-slate-300 dark:text-zinc-600 animate-pulse">↔ drag · tap to flip</span>
+                </div>
+              </div>
+
+              <!-- Back -->
+              <div class="card-face card-back bg-slate-900 dark:bg-zinc-900 rounded-[28px] shadow-neo border border-white/5 flex flex-col p-8">
+                <div class="flex items-center justify-between mb-6">
+                  <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Answer</span>
+                  <span class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Tap to go back</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center">
+                  <p class="text-[20px] sm:text-[22px] font-bold text-white leading-snug text-center">{{ correctAnswerText }}</p>
+                </div>
+                <div v-if="currentQuestion.explanation" class="mt-5 p-4 rounded-[16px] bg-white/5 border border-white/5">
+                  <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Explanation</p>
+                  <p class="text-[13px] text-zinc-400 leading-relaxed">{{ currentQuestion.explanation }}</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+
+      </template>
     </div>
   </NeoAppShell>
 </template>
 
 <script setup>
-import { computed, ref, onMounted, watch } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useQuizStore } from '../store/quiz';
-import { useAuthStore } from '../store/auth';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const router = useRouter();
 const quizStore = useQuizStore();
-const authStore = useAuthStore();
 
 const currentIndex = ref(0);
 const isFlipped = ref(false);
+const isDragging = ref(false);
+const cardTrackEl = ref(null);
 
-const quizId = route.params.id;
-// We need to fetch the quiz WITH correct answers visible for studying.
-// Since the standard /api/quizzes endpoint removes `isCorrect`, we need a special endpoint or just hit it and assume we are admin?
-// Actually, earlier the API returns `-questions.options.isCorrect`. 
-// To make Flashcards work, we will need to adjust the backend quizController OR create a specific study endpoint.
-// For now, let's load it. Wait, the API strips `isCorrect`.
-// I will need to quickly add `isCorrect` dynamically or fix the API to allow a study route! 
+// Session stats
+const knownCards = ref([]);
+const reviewCards = ref([]);
+const knownCount = computed(() => knownCards.value.length);
+const reviewCount = computed(() => reviewCards.value.length);
+
+// Visual stamps opacity
+const stampKnownOpacity = ref(0);
+const stampReviewOpacity = ref(0);
+
 const quiz = computed(() => quizStore.currentQuiz);
-
 const currentQuestion = computed(() => {
-  if (!quiz.value || quiz.value.questions.length === 0) return null;
+  if (!quiz.value?.questions?.length || currentIndex.value >= quiz.value.questions.length) return null;
   return quiz.value.questions[currentIndex.value];
 });
-
-// Since the standard API strips `isCorrect`, let's just show the correct answer if it exists, otherwise fallback to finding it if we update the backend.
 const correctAnswerText = computed(() => {
   if (!currentQuestion.value) return '';
-  const correctOpt = currentQuestion.value.options.find(o => o.isCorrect === true);
-  return correctOpt ? correctOpt.text : 'No correct answer found.';
+  const opt = currentQuestion.value.options?.find(o => o.isCorrect === true || o.isCorrect === 'true');
+  return opt ? opt.text : 'See quiz for the correct answer.';
 });
 
 onMounted(async () => {
   isFlipped.value = false;
-  await quizStore.fetchStudyQuizById(quizId);
+  
+  // Strict: Disable browser navigation gestures while in flashcard mode
+  document.body.style.overscrollBehaviorX = 'none';
+  
+  await quizStore.fetchStudyQuizById(route.params.id);
 });
 
-const flipCard = () => {
-  isFlipped.value = !isFlipped.value;
+onBeforeUnmount(() => {
+  // Restore browser behavior
+  document.body.style.overscrollBehaviorX = '';
+  
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
+});
+
+// ── Drag config ──────────────────────────────────────────────────────────────
+const THRESHOLD = 100; // Increased for better "intentional" swipe
+let startX = 0;
+let currentX = 0;
+let dragging = false;
+
+const setTranslate = (x, instant = false) => {
+  if (!cardTrackEl.value) return;
+  const rotation = x / 20; // Subtle rotation during drag
+  const opacity = 1 - Math.min(Math.abs(x) / 600, 0.4);
+  
+  // Update stamps visibility
+  stampKnownOpacity.value = x > 20 ? Math.min((x - 20) / 60, 1) : 0;
+  stampReviewOpacity.value = x < -20 ? Math.min((Math.abs(x) - 20) / 60, 1) : 0;
+
+  cardTrackEl.value.style.transition = instant ? 'none' : 'transform 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.35s ease';
+  cardTrackEl.value.style.transform = x === 0 ? '' : `translateX(${x}px) rotate(${rotation}deg)`;
+  cardTrackEl.value.style.opacity = x === 0 ? '' : String(opacity);
+};
+
+// ── Pointer Interaction (Unified Mouse/Touch) ──────────────────────────────────
+const onPointerDown = (e) => {
+  if (e.button !== undefined && e.button !== 0) return;
+
+  // Visual feedback: grab to grabbing
+  isDragging.value = true;
+  
+  startX = e.clientX;
+  currentX = 0;
+  dragging = true;
+  
+  // High-fidelity capture ensures events stay locked to this node
+  const el = e.currentTarget || e.target;
+  try {
+    el.setPointerCapture(e.pointerId);
+  } catch (err) { /* silent */ }
+  
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp, { once: true });
+  window.addEventListener('pointercancel', onPointerUp, { once: true });
+};
+
+const onPointerMove = (e) => {
+  if (!dragging) return;
+  // Prevent browser navigation gestures (back/forward)
+  e.preventDefault();
+  currentX = e.clientX - startX;
+  setTranslate(currentX, true);
+};
+
+const onPointerUp = (e) => {
+  if (!dragging) return;
+  dragging = false;
+  isDragging.value = false;
+  
+  try {
+    e.target.releasePointerCapture(e.pointerId);
+  } catch (err) { /* silent */ }
+  
+  window.removeEventListener('pointermove', onPointerMove);
+  window.removeEventListener('pointerup', onPointerUp);
+  window.removeEventListener('pointercancel', onPointerUp);
+  
+  // Execute final displacement check
+  settle(currentX);
+};
+
+// ── Shared: decide flip or navigate ─────────────────────────────────────────
+const settle = (delta) => {
+  const absDelta = Math.abs(delta);
+  
+  if (delta < -THRESHOLD) {
+    // Label as REVIEW (Swipe Left)
+    markAsReview();
+  } else if (delta > THRESHOLD) {
+    // Label as KNOWN (Swipe Right)
+    markAsKnown();
+  } else if (absDelta < 6) {
+    // Intentional minimalist tap for rotation
+    setTranslate(0);
+    flipCard();
+  } else {
+    // Snap back
+    stampKnownOpacity.value = 0;
+    stampReviewOpacity.value = 0;
+    setTranslate(0);
+  }
+};
+
+// Cleanup handled in onBeforeUnmount hook above
+
+// ── Card actions ─────────────────────────────────────────────────────────────
+const flipCard = () => { isFlipped.value = !isFlipped.value; };
+
+const markAsKnown = () => {
+  if (!currentQuestion.value) return;
+  knownCards.value.push(currentQuestion.value._id);
+  exitCard(600);
+};
+
+const markAsReview = () => {
+  if (!currentQuestion.value) return;
+  reviewCards.value.push(currentQuestion.value._id);
+  exitCard(-600);
+};
+
+const exitCard = (targetX) => {
+  setTranslate(targetX);
+  setTimeout(() => {
+    stampKnownOpacity.value = 0;
+    stampReviewOpacity.value = 0;
+    setTranslate(0, true);
+    nextCard();
+  }, 250);
 };
 
 const nextCard = () => {
-  if (currentIndex.value < quiz.value.questions.length - 1) {
-    if (isFlipped.value) {
-      isFlipped.value = false;
-      setTimeout(() => {
-        currentIndex.value++;
-      }, 300);
-    } else {
-      currentIndex.value++;
-    }
-  }
+  if (!quiz.value || currentIndex.value >= quiz.value.questions.length) return;
+  isFlipped.value = false;
+  currentIndex.value++;
 };
 
-const prevCard = () => {
-  if (currentIndex.value > 0) {
-    if (isFlipped.value) {
-      isFlipped.value = false;
-      setTimeout(() => {
-        currentIndex.value--;
-      }, 300);
-    } else {
-      currentIndex.value--;
-    }
-  }
+const restartSession = () => {
+  currentIndex.value = 0;
+  knownCards.value = [];
+  reviewCards.value = [];
+  isFlipped.value = false;
 };
-
 </script>
 
 <style scoped>
-.perspective-1000 {
-  perspective: 1000px;
+.card-wrapper {
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Prevent horizontal browser gestures (back/forward) */
+  touch-action: pan-y !important;
+  overscroll-behavior-x: none !important;
+  position: relative;
 }
-.transform-style-3d {
+.card-wrapper:active {
+  cursor: grabbing;
+}
+
+.card-track {
+  width: 100%;
+  will-change: transform;
+}
+
+.card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   transform-style: preserve-3d;
 }
-.backface-hidden {
+.card-inner.is-flipped { transform: rotateY(180deg); }
+
+.card-face {
+  position: absolute;
+  inset: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
-.rotate-y-180 {
-  transform: rotateY(180deg);
-}
+.card-back { transform: rotateY(180deg); }
 </style>

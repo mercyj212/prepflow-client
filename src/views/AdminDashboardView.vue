@@ -1,15 +1,31 @@
 <template>
   <NeoAppShell>
+    <template #header>
+      <div class="flex items-center justify-between w-full">
+        <div>
+          <h1 class="text-[26px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight leading-none mb-1">Architect Hub</h1>
+          <div class="flex items-center gap-3">
+            <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.4)]"></span>
+            <span class="text-[11px] font-black italic text-slate-400 uppercase tracking-widest">Core Synthesis System Active</span>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-4">
+          <div v-if="successMsg" class="px-5 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest animate-fade-inShadow">
+            {{ successMsg }}
+          </div>
+          <button @click="fetchCoreData" class="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 rounded-2xl shadow-neo text-slate-400 hover:text-brand transition-all">
+            <svg class="w-5 h-5" :class="loadingStats ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+          </button>
+        </div>
+      </div>
+    </template>
+
     <!-- Simplified 2-column paradigm -->
-    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
+    <div class="h-full px-4 sm:px-8 lg:px-12 py-10">
       
-      <!-- Main Content Column -->
-      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
-        
-        <header class="mb-12">
-          <h1 class="text-[34px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight mb-1">Architect Hub</h1>
-          <p class="text-[15px] font-normal text-slate-500 dark:text-zinc-500">System management and content engineering.</p>
-        </header>
+      <!-- Main Content Area -->
+      <section v-if="!loadingStats" class="max-w-[1600px] mx-auto animate-fade-inShadow pb-20">
 
         <!-- Analytics Section -->
         <AnalyticsGrid 
@@ -30,12 +46,14 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20 lg:mt-8">
           <!-- Course Inventory -->
           <section>
-            <div class="flex items-center justify-between mb-8">
-              <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase">Courses</h2>
-              <div v-if="successMsg" class="text-[10px] font-bold text-emerald-500 uppercase tracking-widest animate-pulse">{{ successMsg }}</div>
+            <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-brand">
+              <div>
+                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Curriculum Assets</h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master repositories and material nodes</p>
+              </div>
             </div>
             <CourseInventory 
               :courses="courses" 
@@ -49,7 +67,12 @@
 
           <!-- Quiz Inventory -->
           <section>
-            <h2 class="text-2xl font-black text-slate-900 dark:text-white tracking-tighter uppercase mb-8">Assessments</h2>
+            <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-purple-500">
+              <div>
+                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Protocol Gateways</h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active diagnostics and scholar access</p>
+              </div>
+            </div>
             <QuizInventory 
               :quizzes="quizzes"
               @rename="startQuizRename"
@@ -67,6 +90,11 @@
           @delete="handleDeleteStudent"
         />
       </section>
+
+      <!-- Full-page Loader -->
+      <div v-else class="h-[60vh] flex flex-col items-center justify-center">
+        <NeoLoader label="Synchronizing Core Matrix" class="text-brand" />
+      </div>
     </div>
 
     <!-- 📧 EMAIL COMPOSER MODAL -->
@@ -141,7 +169,7 @@ import AIGenerator from '../components/Admin/AIGenerator.vue';
 import CourseInventory from '../components/Admin/CourseInventory.vue';
 import QuizInventory from '../components/Admin/QuizInventory.vue';
 import StudentRegistry from '../components/Admin/StudentRegistry.vue';
-// import BatchImporter from '../components/Admin/BatchImporter.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();

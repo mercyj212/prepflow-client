@@ -1,32 +1,33 @@
 <template>
-  <div class="min-h-screen bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 md:pl-32 font-sans transition-colors duration-500 overflow-hidden h-screen">
-    <NeoSidebarRail />
+  <div 
+    class="min-h-screen bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-colors duration-500 overflow-hidden h-screen"
+    :class="[showSidebar ? 'md:pl-32' : 'md:px-12']"
+  >
+    <NeoSidebarRail v-if="showSidebar" />
 
     <!-- Application Canvas / Window -->
     <main class="flex-1 bg-[var(--neo-surface)] rounded-[28px] md:rounded-[40px] shadow-neo-md flex flex-col relative border border-white/20 dark:border-white/5 h-full overflow-hidden">
       <!-- "Mac" Window Header -->
       <header class="h-16 flex items-center px-6 md:px-8 shrink-0 relative z-20">
-        <!-- Project Brand Logo -->
-        <div class="flex items-center scale-[0.80] md:scale-90 origin-left">
-          <BrandLogo />
-        </div>
+        <slot name="header">
+          <!-- Default Header content -->
+          <div class="flex items-center scale-[0.80] md:scale-90 origin-left">
+            <BrandLogo />
+          </div>
 
-        <div class="ml-auto flex items-center gap-4 md:gap-6">
-           <!-- Avatar Upload Container -->
-           <div class="relative w-8 h-8 rounded-full border-[1.5px] border-white/40 dark:border-white/10 shadow-sm overflow-hidden bg-slate-200 cursor-pointer group" @click="triggerFileInput">
-             <!-- Actual Image -->
-             <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
-             
-             <!-- Hover/Loading Overlay -->
-             <div class="absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity" :class="isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'">
-               <span v-if="isUploading" class="animate-spin text-white">⚙</span>
-               <span v-else class="text-white text-xs">📷</span>
+          <div class="ml-auto flex items-center gap-4 md:gap-6">
+             <div class="relative w-8 h-8 rounded-full border-[1.5px] border-white/40 dark:border-white/10 shadow-sm overflow-hidden bg-slate-200 cursor-pointer group" @click="triggerFileInput">
+               <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
+               
+               <div class="absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity" :class="isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'">
+                 <span v-if="isUploading" class="animate-spin text-white">⚙</span>
+                 <span v-else class="text-white text-xs">📷</span>
+               </div>
+
+               <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
              </div>
-
-             <!-- Hidden File Input -->
-             <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
-           </div>
-        </div>
+          </div>
+        </slot>
       </header>
       
       <!-- Inner Scrollable Canvas -->
@@ -38,11 +39,18 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, defineProps } from 'vue';
 import { useRoute } from 'vue-router';
 import { useAuthStore } from '../../store/auth';
 import NeoSidebarRail from './NeoSidebarRail.vue';
 import BrandLogo from '../BrandLogo.vue';
+
+const props = defineProps({
+  showSidebar: {
+    type: Boolean,
+    default: true
+  }
+});
 
 const route = useRoute();
 const authStore = useAuthStore();

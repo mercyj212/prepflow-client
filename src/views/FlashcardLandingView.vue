@@ -1,32 +1,84 @@
 <template>
   <NeoAppShell>
-    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
-      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
-        <header class="mb-12">
-          <h1 class="text-[34px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight mb-1">Flashcards Directory</h1>
-          <p class="text-[15px] font-normal text-slate-500 dark:text-zinc-500">Select a course to review your flashcard deck.</p>
-        </header>
+    <div class="px-4 sm:px-8 py-8">
 
-        <!-- Redirecting user to courses or showing available courses -->
-        <div class="flex-1 flex flex-col items-center justify-center text-center px-4">
-             <div class="w-24 h-24 rounded-[24px] bg-slate-100 dark:bg-zinc-800 border border-slate-200 dark:border-white/5 flex items-center justify-center text-4xl mb-6 shadow-neo-inner">
-               ✧
-             </div>
-             <h2 class="text-2xl font-medium text-slate-800 dark:text-zinc-200 mb-2">Ready to study?</h2>
-             <p class="text-[14px] text-slate-500 mb-8 max-w-sm">Choose a subject from your courses directory to access its specific flashcard deck.</p>
-             
-             <button @click="$router.push('/subjects')" class="px-8 py-3 rounded-xl bg-brand text-white font-medium shadow-neo-md hover:scale-[1.02] transition-transform">
-               Browse Courses
-             </button>
+      <!-- Header -->
+      <header class="mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Flashcards</h1>
+        <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-500">Select a course to start your flashcard session.</p>
+      </header>
+
+      <!-- Loading -->
+      <NeoLoader v-if="quizStore.loading" label="Loading decks..." />
+
+      <!-- Empty State -->
+      <div v-else-if="quizStore.quizzes.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-20 h-20 rounded-[20px] bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-3xl mb-5">✧</div>
+        <h2 class="text-xl font-semibold text-slate-700 dark:text-zinc-300 mb-2">No decks available</h2>
+        <p class="text-[13px] text-slate-400 dark:text-zinc-500">Courses added by your admin will appear here.</p>
+      </div>
+
+      <!-- Course Card Grid -->
+      <div v-else class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div
+          v-for="quiz in quizStore.quizzes"
+          :key="quiz._id"
+          @click="$router.push(`/flashcards/${quiz._id}`)"
+          class="group cursor-pointer bg-[var(--neo-surface)] rounded-[24px] shadow-neo border border-white/20 dark:border-white/5 p-6 hover:shadow-neo-md transition-all duration-300 hover:-translate-y-0.5"
+        >
+          <!-- Icon + card count -->
+          <div class="flex items-start justify-between mb-5">
+            <div class="w-12 h-12 rounded-[16px] bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-[22px]">
+              {{ getIcon(quiz.title) }}
+            </div>
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-zinc-800">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-zinc-400">{{ quiz.questions?.length || 0 }} cards</span>
+            </div>
+          </div>
+
+          <!-- Title + description -->
+          <h3 class="text-[17px] font-semibold text-slate-800 dark:text-zinc-100 mb-1">{{ quiz.title }}</h3>
+          <p class="text-[13px] text-slate-500 dark:text-zinc-500 mb-5">{{ quiz.description || 'Tap to review the full flashcard deck.' }}</p>
+
+          <!-- Footer row -->
+          <div class="pt-4 border-t border-dashed border-black/10 dark:border-white/10 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <!-- Mini card preview stack -->
+              <div class="flex -space-x-1">
+                <div v-for="n in Math.min(3, quiz.questions?.length || 0)" :key="n"
+                  class="w-5 h-7 rounded-md border border-white/30 dark:border-white/10 shadow-sm"
+                  :class="n === 1 ? 'bg-slate-300 dark:bg-zinc-600' : n === 2 ? 'bg-slate-200 dark:bg-zinc-700' : 'bg-slate-100 dark:bg-zinc-800'">
+                </div>
+              </div>
+              <span class="text-[12px] text-slate-400 dark:text-zinc-500">Flashcard deck</span>
+            </div>
+            <span class="text-[13px] font-medium text-slate-500 group-hover:translate-x-1 transition-transform">Study →</span>
+          </div>
         </div>
-      </section>
+      </div>
     </div>
   </NeoAppShell>
 </template>
 
 <script setup>
-import NeoAppShell from '../components/layout/NeoAppShell.vue';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useQuizStore } from '../store/quiz';
+import NeoAppShell from '../components/layout/NeoAppShell.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
 
 const router = useRouter();
+const quizStore = useQuizStore();
+
+const getIcon = (title) => {
+  const icons = {
+    'Mathematics': '🧮', 'English': '📘', 'Physics': '🧪',
+    'Biology': '🌿', 'Chemistry': '⚗️', 'Economics': '📈', 'Government': '🏛️'
+  };
+  return icons[title] || '📚';
+};
+
+onMounted(() => {
+  quizStore.fetchQuizzes();
+});
 </script>
