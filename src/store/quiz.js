@@ -7,17 +7,27 @@ export const useQuizStore = defineStore('quiz', {
     currentQuiz: null,
     loading: false,
     error: null,
+    progressMetrics: null,
     mySubmissions: [],
     educationPath: localStorage.getItem('educationPath') || null,
     selectedDepartment: null,
     selectedLevel: null,
+    // ── Hierarchy State ──────────────────────────────────
+    faculties: [],
+    departments: [],
+    courses: [],
   }),
   actions: {
-    async fetchQuizzes() {
+    async fetchQuizzes(filters = {}) {
       this.loading = true;
       this.error = null;
       try {
-        const { data } = await api.get('/quizzes');
+        const params = new URLSearchParams();
+        if (filters.department) params.append('department', filters.department);
+        if (filters.level) params.append('level', filters.level);
+        if (filters.path) params.append('path', filters.path);
+        const query = params.toString() ? `?${params.toString()}` : '';
+        const { data } = await api.get(`/quizzes${query}`);
         this.quizzes = data;
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to fetch quizzes';
@@ -79,6 +89,19 @@ export const useQuizStore = defineStore('quiz', {
         this.loading = false;
       }
     },
+    async fetchProgressMetrics() {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.get('/submissions/progress');
+        this.progressMetrics = data;
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to fetch progress metrics';
+      } finally {
+        this.loading = false;
+      }
+    },
     async fetchAllSubmissions() {
       this.loading = true;
       this.error = null;
@@ -92,6 +115,45 @@ export const useQuizStore = defineStore('quiz', {
         this.loading = false;
       }
     },
+
+    // ── Hierarchy Actions ──────────────────────────────────
+    async fetchFaculties(path) {
+      try {
+        const query = path ? `?path=${path}` : '';
+        const { data } = await api.get(`/faculties${query}`);
+        this.faculties = data;
+        return data;
+      } catch (err) {
+        console.error('[FACULTIES_FETCH_ERR]:', err);
+        return [];
+      }
+    },
+    async fetchDepartments(facultyId) {
+      try {
+        const query = facultyId ? `?faculty=${facultyId}` : '';
+        const { data } = await api.get(`/departments${query}`);
+        this.departments = data;
+        return data;
+      } catch (err) {
+        console.error('[DEPTS_FETCH_ERR]:', err);
+        return [];
+      }
+    },
+    async fetchCoursesByDepartment(departmentId, level) {
+      try {
+        const params = new URLSearchParams();
+        if (departmentId) params.append('department', departmentId);
+        if (level) params.append('level', level);
+        const query = params.toString() ? `?${params.toString()}` : '';
+        const { data } = await api.get(`/courses${query}`);
+        this.courses = data;
+        return data;
+      } catch (err) {
+        console.error('[COURSES_FETCH_ERR]:', err);
+        return [];
+      }
+    },
+
     setEducationPath(path) {
       this.educationPath = path;
       localStorage.setItem('educationPath', path);
@@ -104,3 +166,4 @@ export const useQuizStore = defineStore('quiz', {
     }
   },
 });
+

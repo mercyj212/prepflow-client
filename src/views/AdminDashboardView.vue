@@ -46,6 +46,12 @@
           </div>
         </div>
 
+        <!-- Hierarchy Management -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-16">
+          <FacultyManager />
+          <DepartmentManager />
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 mb-20 lg:mt-8">
           <!-- Course Inventory -->
           <section>
@@ -230,6 +236,8 @@ import AIGenerator from '../components/Admin/AIGenerator.vue';
 import CourseInventory from '../components/Admin/CourseInventory.vue';
 import QuizInventory from '../components/Admin/QuizInventory.vue';
 import StudentRegistry from '../components/Admin/StudentRegistry.vue';
+import FacultyManager from '../components/Admin/FacultyManager.vue';
+import DepartmentManager from '../components/Admin/DepartmentManager.vue';
 import NeoLoader from '../components/common/NeoLoader.vue';
 
 const authStore = useAuthStore();

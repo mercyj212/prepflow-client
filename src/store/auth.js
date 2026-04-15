@@ -172,9 +172,15 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    logout() {
-      this.user = null;
-      localStorage.removeItem('user');
+    async logout() {
+      try {
+        await api.post('/auth/logout');
+      } catch (err) {
+        console.warn('[AUTH] Backend logout failed or already logged out', err);
+      } finally {
+        this.user = null;
+        localStorage.removeItem('user');
+      }
     },
   },
 });

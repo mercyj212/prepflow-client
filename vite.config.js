@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'https://prepflow-server.onrender.com', // PRODUCTION
-        // target: 'http://localhost:10000', // LOCAL DEV
+        // target: 'http://127.0.0.1:10000', // LOCAL DEV
         changeOrigin: true,
         secure: true
       }

@@ -2,30 +2,32 @@
   <NeoAppShell>
     <div class="px-6 sm:px-12 py-12">
       <!-- Breadcrumbs -->
-      <nav class="flex items-center gap-2 mb-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">
+      <nav class="flex items-center gap-2 mb-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 flex-wrap">
         <router-link to="/subjects" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Path</router-link>
         <span>/</span>
         <router-link :to="`/subjects/${path}`" class="hover:text-zinc-900 dark:hover:text-white transition-colors">{{ pathName }}</router-link>
         <span>/</span>
-        <span class="text-zinc-900 dark:text-zinc-100">{{ categoryName }}</span>
+        <router-link :to="`/subjects/${path}/${facultyId}`" class="hover:text-zinc-900 dark:hover:text-white transition-colors">{{ facultyName }}</router-link>
+        <span>/</span>
+        <span class="text-zinc-900 dark:text-zinc-100">{{ departmentName }}</span>
       </nav>
 
       <!-- Header Section -->
       <header class="mb-16">
         <h1 class="text-[42px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tighter leading-none mb-4">
-          {{ categoryName }} Subjects
+          {{ departmentName }} Courses
         </h1>
         <p class="text-[16px] font-normal text-zinc-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-          Browse specialized materials for {{ categoryName }}. Filter by level to find exactly what you need.
+          Browse courses and practice tests. Filter by level to find exactly what you need.
         </p>
       </header>
 
-      <!-- Adaptive Level Filter -->
-      <div v-if="path !== 'entrance'" class="flex items-center gap-4 mb-16 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
+      <!-- Level Filter -->
+      <div class="flex items-center gap-4 mb-16 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
         <button
           v-for="level in availableLevels"
           :key="level"
-          @click="selectedLevel = level"
+          @click="selectLevel(level)"
           class="px-8 h-12 rounded-full text-[11px] font-black uppercase tracking-[0.2em] transition-all whitespace-nowrap border flex items-center justify-center min-w-[120px]"
           :class="selectedLevel === level 
             ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 border-zinc-900 dark:border-white shadow-neo-pill' 
@@ -35,15 +37,19 @@
         </button>
       </div>
 
-      <!-- Subject Matrix -->
-      <div v-if="filteredQuizzes.length === 0" class="py-32 text-center">
-        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">No subjects found for this criteria.</p>
-        <button @click="selectedLevel = 'All'" class="mt-8 text-[11px] font-bold underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-300">Clear filter</button>
+      <!-- Loading -->
+      <NeoLoader v-if="loadingCourses" label="Loading courses..." />
+
+      <!-- Empty State -->
+      <div v-else-if="courses.length === 0" class="py-32 text-center">
+        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">No courses found for this criteria.</p>
+        <button @click="selectLevel('All')" class="mt-8 text-[11px] font-bold underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-300">Clear filter</button>
       </div>
       
+      <!-- Course Grid (shows quizzes linked to courses in this department) -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         <div
-          v-for="quiz in filteredQuizzes"
+          v-for="quiz in quizzes"
           :key="quiz._id"
           class="group cursor-pointer relative"
           @click="startQuiz(quiz._id)"
@@ -51,12 +57,7 @@
           <NeoCard variant="hoverable" class="p-8 h-full flex flex-col">
             <div class="flex items-start justify-between mb-8">
               <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
-                <component 
-                  :is="getIconComponent(quiz.title)" 
-                  :size="24" 
-                  :stroke-width="1.5"
-                  class="text-zinc-600 dark:text-zinc-400 transition-colors"
-                />
+                <Book :size="24" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400 transition-colors" />
               </div>
               <div class="flex flex-col items-end">
                 <span class="px-3 py-1.5 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em] mb-2">
@@ -73,7 +74,7 @@
                 {{ quiz.title }}
               </h3>
               <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
-                {{ quiz.description || 'A complete test covering the most important topics and problem-solving skills.' }}
+                {{ quiz.description || 'Practice test covering important topics.' }}
               </p>
             </div>
 
@@ -94,39 +95,33 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { 
-  ArrowRight,
-  Calculator,
-  Languages,
-  Atom,
-  Dna,
-  FlaskRound,
-  TrendingUp,
-  Landmark,
-  Book,
-  FileText
-} from 'lucide-vue-next';
+import { ArrowRight, Book } from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
+import api from '../api/axios';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const router = useRouter();
 const quizStore = useQuizStore();
 
+const loadingCourses = ref(true);
+const courses = ref([]);
+const quizzes = ref([]);
+const selectedLevel = ref('All');
+const facultyName = ref('');
+const departmentName = ref('');
+
 const path = computed(() => route.params.path || 'university');
-const category = computed(() => route.params.category || '');
+const facultyId = computed(() => route.params.facultyId);
+const departmentId = computed(() => route.params.departmentId);
 
 const pathName = computed(() => {
   const names = { 'university': 'University', 'polytechnic': 'Polytechnic', 'entrance': 'Entrance Exams' };
   return names[path.value] || path.value;
-});
-
-const categoryName = computed(() => {
-  if (!category.value) return '';
-  return category.value.charAt(0).toUpperCase() + category.value.slice(1);
 });
 
 const availableLevels = computed(() => {
@@ -135,64 +130,41 @@ const availableLevels = computed(() => {
   return ['All'];
 });
 
-const selectedLevel = ref('All');
+const fetchData = async () => {
+  loadingCourses.value = true;
+  try {
+    // Fetch faculty & department names for breadcrumb
+    const faculties = await quizStore.fetchFaculties(path.value);
+    const fac = faculties.find(f => f._id === facultyId.value);
+    facultyName.value = fac?.name || 'Faculty';
 
-// Smart Filtering Logic
-const filteredQuizzes = computed(() => {
-  let list = quizStore.quizzes;
+    const depts = await quizStore.fetchDepartments(facultyId.value);
+    const dept = depts.find(d => d._id === departmentId.value);
+    departmentName.value = dept?.name || 'Department';
 
-  if (path.value === 'entrance') {
-    list = list.filter(q => 
-      q.examBody?.toLowerCase() === category.value || 
-      q.examType?.toLowerCase() === category.value ||
-      q.title?.toLowerCase().includes(category.value)
-    );
-  } else {
-    const deptKeywords = {
-      'engineering': ['math', 'physics', 'tech', 'calc', 'eng'],
-      'sciences': ['bio', 'chem', 'math', 'comp', 'phys', 'sci'],
-      'health': ['bio', 'anat', 'pharm', 'nurse', 'health'],
-      'arts': ['hist', 'lit', 'phil', 'art', 'eng'],
-      'social': ['econ', 'psych', 'govt', 'soc'],
-      'management': ['acc', 'bus', 'fin', 'mgt']
-    };
-    
-    const keywords = deptKeywords[category.value] || [];
-    if (category.value !== 'all') {
-      list = list.filter(q => 
-        q.department === category.value ||
-        keywords.some(k => q.title?.toLowerCase().includes(k))
-      );
-    }
+    // Fetch courses for this department (with optional level filter)
+    const levelFilter = selectedLevel.value !== 'All' ? selectedLevel.value : undefined;
+    courses.value = await quizStore.fetchCoursesByDepartment(departmentId.value, levelFilter);
+
+    // Fetch all quizzes and filter by matched course IDs
+    await quizStore.fetchQuizzes();
+    const courseIds = courses.value.map(c => c._id);
+    quizzes.value = quizStore.quizzes.filter(q => courseIds.includes(q.course?._id || q.course));
+
+    // Fetch submissions for score display
+    await quizStore.fetchMySubmissions();
+  } catch (err) {
+    console.error('[SUBJ_VIEW_ERR]:', err);
+  } finally {
+    loadingCourses.value = false;
   }
+};
 
-  if (selectedLevel.value !== 'All') {
-    list = list.filter(q => {
-      const qLevel = q.level || (path.value === 'university' ? '100L' : 'ND1');
-      return qLevel === selectedLevel.value;
-    });
-  }
+onMounted(fetchData);
 
-  return list;
-});
-
-onMounted(() => {
-  quizStore.fetchQuizzes();
-  quizStore.fetchMySubmissions();
-});
-
-const getIconComponent = (title) => {
-  const lowerTitle = title.toLowerCase();
-  
-  if (lowerTitle.includes('math')) return Calculator;
-  if (lowerTitle.includes('english') || lowerTitle.includes('lit')) return Languages;
-  if (lowerTitle.includes('phys')) return Atom;
-  if (lowerTitle.includes('bio')) return Dna;
-  if (lowerTitle.includes('chem')) return FlaskRound;
-  if (lowerTitle.includes('econ') || lowerTitle.includes('acc') || lowerTitle.includes('fin')) return TrendingUp;
-  if (lowerTitle.includes('govt') || lowerTitle.includes('pol') || lowerTitle.includes('phil')) return Landmark;
-  
-  return Book;
+const selectLevel = (level) => {
+  selectedLevel.value = level;
+  fetchData();
 };
 
 const getLastScore = (id) => {

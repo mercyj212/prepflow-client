@@ -26,6 +26,7 @@ import ChatView from '../views/ChatView.vue';
 import GamesView from '../views/GamesView.vue';
 import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
 import DepartmentHubView from '../views/DepartmentHubView.vue';
+import DepartmentListView from '../views/DepartmentListView.vue';
 
 const routes = [
   {
@@ -142,12 +143,18 @@ const routes = [
   },
   {
     path: '/subjects/:path',
-    name: 'department-hub',
+    name: 'faculty-list',
     component: DepartmentHubView,
     meta: { requiresAuth: true }
   },
   {
-    path: '/subjects/:path/:category',
+    path: '/subjects/:path/:facultyId',
+    name: 'department-list',
+    component: DepartmentListView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/subjects/:path/:facultyId/:departmentId',
     name: 'subjects',
     component: SubjectSelectorView,
     meta: { requiresAuth: true }

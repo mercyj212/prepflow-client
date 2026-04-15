@@ -7,28 +7,55 @@
           <p class="text-[15px] font-normal text-zinc-500 dark:text-zinc-500">Analyze your historical performance matrices.</p>
         </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-           <NeoCard variant="extruded" class="!rounded-[28px] p-8 h-64 flex flex-col justify-center items-center opacity-50 relative overflow-hidden">
-             <div class="w-16 h-16 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-6 shadow-neo-inner">
-               <LineChart :size="32" :stroke-width="1.2" class="text-zinc-400" />
+        <NeoLoader v-if="quizStore.loading && !metrics" label="Loading analytics..." />
+
+        <div v-else-if="metrics" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+           <!-- Chart 1: Performance Over Time -->
+           <NeoCard variant="extruded" class="!rounded-[28px] p-6 h-80 flex flex-col relative overflow-hidden">
+             <div class="flex items-center gap-3 mb-4">
+               <div class="w-10 h-10 rounded-[14px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner">
+                 <LineChartIcon :size="20" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400" />
+               </div>
+               <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Performance Over Time</p>
              </div>
-             <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Performance Over Time</p>
-             <div class="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-zinc-200 dark:from-zinc-800 to-transparent"></div>
+             
+             <div class="flex-1 w-full min-h-0 relative">
+               <Line v-if="hasTimelineData" :data="timelineChartData" :options="lineChartOptions" />
+               <div v-else class="absolute inset-0 flex items-center justify-center text-xs text-zinc-400 uppercase tracking-widest opacity-50">Not enough data</div>
+             </div>
            </NeoCard>
            
-           <NeoCard variant="extruded" class="!rounded-[28px] p-8 h-64 flex flex-col justify-center items-center opacity-50 relative overflow-hidden">
-             <div class="w-16 h-16 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-6 shadow-neo-inner">
-               <Target :size="32" :stroke-width="1.2" class="text-zinc-400" />
+           <!-- Chart 2: Subject Mastery -->
+           <NeoCard variant="extruded" class="!rounded-[28px] p-6 h-80 flex flex-col relative overflow-hidden">
+             <div class="flex items-center gap-3 mb-4">
+               <div class="w-10 h-10 rounded-[14px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner">
+                 <Target :size="20" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400" />
+               </div>
+               <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Subject Mastery</p>
              </div>
-             <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Subject Mastery</p>
-             <div class="absolute bottom-0 w-full h-1/2 bg-gradient-to-t from-zinc-200 dark:from-zinc-800 to-transparent"></div>
+             
+             <div class="flex-1 w-full min-h-0 relative">
+               <Bar v-if="hasSubjectData" :data="subjectChartData" :options="barChartOptions" />
+               <div v-else class="absolute inset-0 flex items-center justify-center text-xs text-zinc-400 uppercase tracking-widest opacity-50">Not enough data</div>
+             </div>
            </NeoCard>
            
-           <NeoCard variant="depressed" class="!rounded-[28px] p-8 h-48 md:col-span-2 flex flex-col justify-center items-center opacity-50 relative border shadow-inner">
-             <div class="w-16 h-16 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/30 flex items-center justify-center mb-6 shadow-neo-inner">
-               <Microscope :size="32" :stroke-width="1.2" class="text-zinc-400" />
-             </div>
-             <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Weakness Analysis</p>
+           <!-- Summary Stats -->
+           <NeoCard variant="depressed" class="!rounded-[28px] p-8 md:col-span-2 flex flex-col sm:flex-row gap-6 justify-around items-center border shadow-inner">
+              <div class="text-center">
+                <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-2">Total Questions</p>
+                <p class="text-4xl font-light text-zinc-800 dark:text-zinc-100 tracking-tighter">{{ metrics.totalQuestionsDone }}</p>
+              </div>
+              <div class="w-px h-16 bg-zinc-200 dark:bg-zinc-800"></div>
+              <div class="text-center">
+                <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-2">Average Score</p>
+                <p class="text-4xl font-light text-zinc-800 dark:text-zinc-100 tracking-tighter">{{ metrics.averageScore }}<span class="text-xl text-zinc-400">%</span></p>
+              </div>
+              <div class="w-px h-16 bg-zinc-200 dark:bg-zinc-800"></div>
+              <div class="text-center">
+                <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400 mb-2">Active Streak</p>
+                <p class="text-4xl font-light text-zinc-800 dark:text-zinc-100 tracking-tighter">{{ metrics.streakDays }} <span class="text-[14px] text-zinc-400 uppercase tracking-widest font-normal">Days</span></p>
+              </div>
            </NeoCard>
         </div>
       </section>
@@ -37,7 +64,151 @@
 </template>
 
 <script setup>
-import { LineChart, Target, Microscope } from 'lucide-vue-next';
+import { computed, onMounted } from 'vue';
+import { LineChart as LineChartIcon, Target, Microscope } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import NeoLoader from '../components/common/NeoLoader.vue';
+import { useQuizStore } from '../store/quiz';
+
+import {
+  Chart as ChartJS,
+  Title,
+  Tooltip,
+  Legend,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  LineElement,
+  PointElement,
+  Filler
+} from 'chart.js';
+import { Line, Bar } from 'vue-chartjs';
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, Title, Tooltip, Legend, Filler);
+
+const quizStore = useQuizStore();
+
+onMounted(async () => {
+  await quizStore.fetchProgressMetrics();
+});
+
+const metrics = computed(() => quizStore.progressMetrics);
+
+// --- Timeline Chart (Line) ---
+const hasTimelineData = computed(() => metrics.value?.performanceOverTime?.length > 0);
+
+const timelineChartData = computed(() => {
+  const data = metrics.value?.performanceOverTime || [];
+  return {
+    labels: data.map(d => {
+      const parts = d.date.split('-'); // YYYY-MM-DD
+      return `${parts[1]}/${parts[2]}`; // MM/DD
+    }),
+    datasets: [{
+      label: 'Score %',
+      data: data.map(d => d.score),
+      borderColor: '#10b981', // emerald-500
+      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      borderWidth: 2,
+      pointBackgroundColor: '#10b981',
+      fill: true,
+      tension: 0.4
+    }]
+  };
+});
+
+const lineChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      titleFont: { size: 11, family: 'Outfit' },
+      bodyFont: { size: 13, family: 'Outfit', weight: 'bold' },
+      padding: 12,
+      cornerRadius: 12,
+      displayColors: false,
+      callbacks: {
+        label: (context) => `${context.parsed.y}% Avg`
+      }
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      max: 100,
+      grid: { color: 'rgba(150, 150, 150, 0.1)' },
+      ticks: {
+        font: { family: 'Outfit', size: 10 },
+        color: '#9ca3af',
+        stepSize: 25
+      }
+    },
+    x: {
+      grid: { display: false },
+      ticks: {
+        font: { family: 'Outfit', size: 10 },
+        color: '#9ca3af'
+      }
+    }
+  }
+};
+
+// --- Subject Mastery (Bar) ---
+const hasSubjectData = computed(() => metrics.value?.subjectMastery?.length > 0);
+
+const subjectChartData = computed(() => {
+  const data = metrics.value?.subjectMastery || [];
+  return {
+    labels: data.map(d => d.subject.length > 15 ? d.subject.substring(0, 15) + '...' : d.subject),
+    datasets: [{
+      label: 'Mastery %',
+      data: data.map(d => d.mastery),
+      backgroundColor: '#f59e0b', // amber-500
+      borderRadius: 6,
+      barThickness: 'flex',
+      maxBarThickness: 32
+    }]
+  };
+});
+
+const barChartOptions = {
+  responsive: true,
+  maintainAspectRatio: false,
+  plugins: {
+    legend: { display: false },
+    tooltip: {
+      backgroundColor: 'rgba(0,0,0,0.8)',
+      titleFont: { size: 11, family: 'Outfit' },
+      bodyFont: { size: 13, family: 'Outfit', weight: 'bold' },
+      padding: 12,
+      cornerRadius: 12,
+      displayColors: false,
+      callbacks: {
+        label: (context) => `Mastery: ${context.parsed.y}%`
+      }
+    }
+  },
+  scales: {
+    y: {
+      beginAtZero: true,
+      max: 100,
+      grid: { color: 'rgba(150, 150, 150, 0.1)' },
+      ticks: {
+        font: { family: 'Outfit', size: 10 },
+        color: '#9ca3af',
+        stepSize: 20
+      }
+    },
+    x: {
+      grid: { display: false },
+      ticks: {
+        font: { family: 'Outfit', size: 10 },
+        color: '#9ca3af'
+      }
+    }
+  }
+};
 </script>
