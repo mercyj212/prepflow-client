@@ -8,7 +8,7 @@
         
         <div class="flex-1">
           <div v-if="quiz" class="flex items-center gap-3">
-            <span class="text-[12px] font-black uppercase tracking-widest text-brand bg-brand/10 px-3 py-1 rounded-lg">Diagnostic</span>
+            <span class="text-[12px] font-black uppercase tracking-widest text-brand bg-brand/10 px-3 py-1 rounded-lg">Practice</span>
             <p class="text-[15px] font-bold text-slate-900 dark:text-zinc-100 hidden sm:block">
               Question {{ currentIndex + 1 }} <span class="text-slate-400 font-medium">/ {{ quiz.questions.length }}</span>
             </p>
@@ -29,7 +29,7 @@
       <!-- Progress Indicator -->
       <div v-if="quiz" class="mb-12">
         <div class="flex justify-between items-end mb-3">
-          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Hub Logic Processing</span>
+          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Your progress</span>
           <span class="text-[13px] font-bold text-slate-900 dark:text-white">{{ Math.round(progress) }}%</span>
         </div>
         <div class="h-1.5 w-full bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden border border-white/10">
@@ -39,7 +39,7 @@
 
       <div v-if="quizStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
         <NeoLoader color="#14b8a6" size="large" />
-        <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Disassembling Subject Node...</p>
+        <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Preparing your questions...</p>
       </div>
 
       <div v-else-if="quizStore.error" class="py-20">
@@ -47,9 +47,9 @@
             <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
             </div>
-            <h3 class="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-4">Diagnostic Failure</h3>
+            <h3 class="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-4">Something went wrong</h3>
             <p class="text-slate-500 mb-8">{{ quizStore.error }}</p>
-            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Return to Ops Center</button>
+            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Go back to Dashboard</button>
         </NeoCard>
       </div>
 
@@ -103,10 +103,10 @@
           <div v-if="answered" class="mt-12">
             <NeoCard variant="depressed" class="p-8 border-l-4" :class="isCurrentCorrect ? 'border-l-emerald-500' : 'border-l-red-500'">
                 <div class="flex items-center gap-3 mb-4">
-                  <span class="text-[10px] font-black uppercase tracking-[0.2em]" :class="isCurrentCorrect ? 'text-emerald-500' : 'text-red-500'">Diagnostic insight</span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.2em]" :class="isCurrentCorrect ? 'text-emerald-500' : 'text-red-500'">Explanation</span>
                 </div>
                 <p class="text-[16px] leading-relaxed text-slate-700 dark:text-zinc-300">
-                  {{ currentQuestion.explanation || 'Protocol reasoning remains encrypted. Reference core curriculum for thematic alignment.' }}
+                  {{ currentQuestion.explanation || 'An explanation is not available for this question. Check your course materials for more details.' }}
                 </p>
             </NeoCard>
           </div>
@@ -127,7 +127,7 @@
             :disabled="!answered"
             class="flex-1 md:flex-none md:min-w-[200px] h-12 rounded-2xl bg-brand text-white text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(20,184,166,0.2)] hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-30 flex items-center justify-center gap-3"
           >
-            {{ currentIndex === quiz.questions.length - 1 ? 'Compute Protocol results' : 'Continue Diagnostic' }}
+            {{ currentIndex === quiz.questions.length - 1 ? 'Finish and see results' : 'Next Question' }}
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
           </button>
        </div>
@@ -144,14 +144,14 @@
             <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h3 class="text-2xl font-black uppercase tracking-tight text-slate-800 dark:text-white mb-2">Protocol Finished</h3>
+            <h3 class="text-2xl font-black uppercase tracking-tight text-slate-800 dark:text-white mb-2">Test Finished</h3>
             <p class="text-[14px] text-slate-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
-                Analysis computed success rate of <span class="text-emerald-500 font-black text-2xl mx-1">{{ resultModal.score }}/{{ resultModal.total }}</span> nodes cleared.
+                You got <span class="text-emerald-500 font-black text-2xl mx-1">{{ resultModal.score }}/{{ resultModal.total }}</span> questions right.
             </p>
             
             <div class="flex flex-col gap-3">
-              <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Re-Verify Diagnostics</button>
-              <button @click="goToResults" class="w-full py-4 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-slate-200 transition-all">Full Subject Analysis</button>
+              <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Try Again</button>
+              <button @click="goToResults" class="w-full py-4 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-slate-200 transition-all">See Detailed Results</button>
             </div>
         </NeoCard>
     </div>
@@ -292,7 +292,7 @@ const handleFinish = async () => {
 const handleConfirm = () => { if (confirmModal.value.onConfirm) confirmModal.value.onConfirm(); confirmModal.value.show = false; };
 const retakeQuiz = () => window.location.reload();
 const goToResults = () => router.push({ path: '/result', query: { score: resultModal.value.score, total: resultModal.value.total, quizId: quiz.value._id } });
-const goBack = () => { confirmModal.value = { show: true, title: 'Abort Diagnostic?', message: 'Protocol termination will purge all current progress. Proceed?', confirmText: 'Terminate Protocol', isDanger: true, onConfirm: () => router.push('/dashboard') }; };
+const goBack = () => { confirmModal.value = { show: true, title: 'Leave Practice?', message: 'Leaving will lose your progress on this test. Are you sure?', confirmText: 'Leave', isDanger: true, onConfirm: () => router.push('/dashboard') }; };
 const onNextClick = () => nextQuestion();
 const flaggedQuestionIndexes = computed(() => quiz.value ? quiz.value.questions.map((q, i) => flaggedQuestions.value.has(q._id) ? i : -1).filter(i => i !== -1) : []);
 function jumpToFlaggedQuestion(index) { currentIndex.value = index; answered.value = !!localAnswers.value[index]; focusedOptionIndex.value = 0; showFlagReview.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }); }

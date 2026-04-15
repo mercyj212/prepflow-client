@@ -3,10 +3,10 @@
     <template #header>
       <div class="flex items-center justify-between w-full">
         <div>
-          <h1 class="text-[26px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight leading-none mb-1">Architect Hub</h1>
+          <h1 class="text-[26px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight leading-none mb-1">Admin Dashboard</h1>
           <div class="flex items-center gap-3">
             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.4)]"></span>
-            <span class="text-[11px] font-black italic text-slate-400 uppercase tracking-widest">Core Synthesis System Active</span>
+            <span class="text-[11px] font-black italic text-slate-400 uppercase tracking-widest">System Online</span>
           </div>
         </div>
 
@@ -51,14 +51,15 @@
           <section>
             <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-brand">
               <div>
-                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Curriculum Assets</h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Master repositories and material nodes</p>
+                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Courses</h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Manage your courses and learning materials</p>
               </div>
             </div>
             <CourseInventory 
               :courses="courses" 
               :quizzes="quizzes"
               @upload="toggleUpload"
+              @preview="handlePreviewExisting"
               @rename="startRename"
               @delete="handleDeleteCourse"
               @delete-material="handleDeleteMaterial"
@@ -69,8 +70,8 @@
           <section>
             <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-purple-500">
               <div>
-                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Protocol Gateways</h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Active diagnostics and scholar access</p>
+                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Practice Tests</h2>
+                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Manage practice tests and links</p>
               </div>
             </div>
             <QuizInventory 
@@ -93,7 +94,7 @@
 
       <!-- Full-page Loader -->
       <div v-else class="h-[60vh] flex flex-col items-center justify-center">
-        <NeoLoader label="Synchronizing Core Matrix" class="text-brand" />
+        <NeoLoader label="Updating information..." class="text-brand" />
       </div>
     </div>
 
@@ -104,10 +105,10 @@
           <div>
             <h2 class="text-[10px] font-black uppercase tracking-[0.2em] mb-1" 
                 :class="isBlastMode ? 'text-red-500' : 'text-indigo-500'">
-              {{ isBlastMode ? 'Global Announcement' : 'Direct Message' }}
+              {{ isBlastMode ? 'Send Email blast' : 'Direct Message' }}
             </h2>
             <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
-               {{ isBlastMode ? `Dispatch to ${incomingScholars.length} Scholars` : `Target: ${emailTargetName}` }}
+               {{ isBlastMode ? `Send to ${incomingScholars.length} Students` : `Target: ${emailTargetName}` }}
             </p>
           </div>
           <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
@@ -120,7 +121,7 @@
           <button @click="handleSendEmail" 
             :disabled="emailLoading"
             class="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-zinc-900/10 hover:translate-y-[-2px] transition-all disabled:opacity-50">
-            {{ emailLoading ? 'Dispatching...' : 'Execute Dispatch 🚀' }}
+            {{ emailLoading ? 'Sending...' : 'Send Email 🚀' }}
           </button>
         </div>
       </div>
@@ -145,6 +146,51 @@
       accept="image/*,.pdf"
       @change="handleMaterialUpload"
     >
+
+    <!-- 🖼️ PREVIEW MODAL -->
+    <div v-if="previewModal.show" class="fixed inset-0 z-[110] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+      <div class="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-8 py-6 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between shrink-0">
+          <div>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">
+              {{ previewModal.isLocal ? 'Upload Preview' : 'Resource View' }}
+            </h2>
+            <p class="text-lg font-black text-zinc-900 dark:text-zinc-100 tracking-tight truncate max-w-md">
+              {{ previewModal.title }}
+            </p>
+          </div>
+          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+        </div>
+
+        <div class="flex-1 overflow-auto p-8 flex items-center justify-center min-h-0 bg-zinc-50 dark:bg-zinc-950">
+          <div v-if="previewModal.type === 'image'" class="relative group">
+            <img :src="previewModal.url" class="max-w-full max-h-[50vh] rounded-2xl shadow-2xl transition-transform duration-500 group-hover:scale-[1.02]" />
+            <div class="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
+          </div>
+          <div v-else class="text-center py-20 px-10 bg-white dark:bg-zinc-900 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800 shadow-neo-inner">
+            <div class="text-6xl mb-6">📄</div>
+            <p class="text-sm font-black text-slate-500 uppercase tracking-widest">Document Preview Not Available</p>
+            <p class="text-[10px] text-slate-400 mt-2">Reference file metadata for verification</p>
+          </div>
+        </div>
+
+        <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
+          <div v-if="previewModal.isLocal" class="flex gap-4">
+            <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all">
+              Cancel
+            </button>
+            <button @click="confirmMaterialUpload" 
+              :disabled="emailLoading"
+              class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg hover:shadow-brand/20 transition-all">
+              Confirm & Upload 🚀
+            </button>
+          </div>
+          <button v-else @click="closePreview" class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
   </NeoAppShell>
 </template>
 
@@ -184,6 +230,9 @@ const incomingScholars = ref([]);
 const loadingStats = ref(true);
 const materialInput = ref(null);
 const currentUploadingCourseId = ref(null);
+const previewModal = ref({
+  show: false, title: '', url: '', isLocal: false, file: null, type: ''
+});
 
 // 🛡️ MODAL SYSTEM
 const confirmModal = ref({
@@ -193,7 +242,7 @@ const confirmModal = ref({
 const openConfirm = (options) => {
   confirmModal.value = {
     show: true,
-    title: options.title || 'Execute Protocol?',
+    title: options.title || 'Are you sure?',
     message: options.message || 'This operation is irreversible.',
     confirmText: options.confirmText || 'Confirm',
     isDanger: options.isDanger !== undefined ? options.isDanger : true,
@@ -218,7 +267,7 @@ const handleCreateCourse = async (formData) => {
   creatingCourse.value = true;
   try {
     await api.post('/courses', formData);
-    successMsg.value = 'Course Initialized';
+    successMsg.value = 'Course Created';
     fetchCoreData();
   } catch (err) { alert(err.response?.data?.message || 'Initialization Failed'); }
   finally { 
@@ -291,8 +340,8 @@ const isBlastMode = ref(false);
 const openEmailModal = (student = null) => {
   isBlastMode.value = !student;
   emailTargetId.value = student?._id || null;
-  emailTargetName.value = student?.fullName || 'All Scholars';
-  emailSubject.value = isBlastMode.value ? 'Global Briefing: PrepUp' : 'Scholar Update: PrepUp';
+  emailTargetName.value = student?.fullName || 'All Students';
+  emailSubject.value = isBlastMode.value ? 'New Update: PrepUp' : 'Student Update: PrepUp';
   emailMessage.value = '';
   emailModalVisible.value = true;
 };
@@ -307,7 +356,7 @@ const handleSendEmail = async () => {
       : { id: emailTargetId.value, subject: emailSubject.value, message: emailMessage.value };
     await api.post(endpoint, payload);
     emailModalVisible.value = false;
-  } catch (err) { alert('Dispatch Failed'); }
+  } catch (err) { alert('Failed to send email'); }
   finally { emailLoading.value = false; }
 };
 
@@ -317,25 +366,63 @@ const toggleUpload = (courseId) => {
   materialInput.value?.click();
 };
 
-const handleMaterialUpload = async (event) => {
+const handleMaterialUpload = (event) => {
   const file = event.target.files[0];
+  if (!file || !currentUploadingCourseId.value) return;
+
+  const isImage = file.type.startsWith('image/');
+  const url = isImage ? URL.createObjectURL(file) : '';
+  
+  previewModal.value = {
+    show: true,
+    title: file.name,
+    url: url,
+    isLocal: true,
+    file: file,
+    type: isImage ? 'image' : 'pdf'
+  };
+};
+
+const handlePreviewExisting = (mat) => {
+  previewModal.value = {
+    show: true,
+    title: mat.name,
+    url: mat.url,
+    isLocal: false,
+    file: null,
+    type: mat.type || (mat.url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? 'image' : 'pdf')
+  };
+};
+
+const closePreview = () => {
+  if (previewModal.value.isLocal && previewModal.value.url) {
+    URL.revokeObjectURL(previewModal.value.url);
+  }
+  previewModal.value.show = false;
+  if (materialInput.value) materialInput.value.value = '';
+};
+
+const confirmMaterialUpload = async () => {
+  const { file } = previewModal.value;
   if (!file || !currentUploadingCourseId.value) return;
 
   const formData = new FormData();
   formData.append('file', file);
 
   try {
-    successMsg.value = 'Uploading Material...';
+    emailLoading.value = true; // Reuse loading state
+    successMsg.value = 'Uploading file...';
     await api.post(`/courses/${currentUploadingCourseId.value}/materials`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     });
-    successMsg.value = 'Material Uplinked';
+    successMsg.value = 'Upload complete';
+    closePreview();
     fetchCoreData();
   } catch (err) {
     alert(err.response?.data?.message || 'Upload failed');
   } finally {
+    emailLoading.value = false;
     setTimeout(() => successMsg.value = '', 3000);
-    event.target.value = ''; // Reset input
   }
 };
 
@@ -371,8 +458,8 @@ const startQuizRename = async (quiz) => {
 
 const handleDeleteCourse = (id) => {
   openConfirm({
-    title: 'Decommission Course?',
-    message: 'Remove this curriculum asset? All materials will be purged from Cloudinary.',
+    title: 'Delete Course?',
+    message: 'Remove this course? All materials will be deleted.',
     onConfirm: async () => { await api.delete(`/courses/${id}`); fetchCoreData(); }
   });
 };
@@ -387,16 +474,16 @@ const handleDeleteMaterial = (courseId, materialId) => {
 
 const handleDeleteQuiz = (id) => {
   openConfirm({
-    title: 'Erase Assessment?',
-    message: 'This will purge all questions and submission history.',
+    title: 'Delete Test?',
+    message: 'This will delete all questions and history.',
     onConfirm: async () => { await api.delete(`/quizzes/${id}`); fetchCoreData(); }
   });
 };
 
 const handleDeleteStudent = (id) => {
   openConfirm({
-    title: 'Purge Profile?',
-    message: 'Liquidate this scholar account? Access will be revoked immediately.',
+    title: 'Delete Student?',
+    message: 'Permanently delete this student? Access will be removed immediately.',
     onConfirm: async () => { await api.delete(`/students/${id}`); fetchCoreData(); }
   });
 };

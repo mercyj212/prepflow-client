@@ -8,14 +8,14 @@
       <div class="flex-1 min-w-0">
         <h3 class="text-[19px] font-black text-slate-900 dark:text-zinc-100 uppercase tracking-tight leading-none mb-3 group-hover:text-brand transition-colors">{{ course.title }}</h3>
         <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-3">
-          <span class="text-slate-500 dark:text-zinc-500">{{ quizzesCount(course._id) }} Assessment Nodes</span>
+          <span class="text-slate-500 dark:text-zinc-500">{{ quizzesCount(course._id) }} Tests</span>
           <span class="w-1 h-1 bg-slate-200 dark:bg-zinc-700 rounded-full"></span>
-          <span>{{ course.materials?.length || 0 }} Cultural Artifacts</span>
+          <span>{{ course.materials?.length || 0 }} Course Materials</span>
         </p>
       </div>
       <div class="flex items-center gap-2.5">
         <button @click="emit('upload', course._id)" class="w-11 h-11 bg-slate-50 dark:bg-zinc-800/50 text-slate-400 hover:text-brand rounded-2xl shadow-neo-pill flex items-center justify-center transition-all" title="Upload Material">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
         </button>
         <button @click="emit('rename', course)" class="w-11 h-11 bg-slate-50 dark:bg-zinc-800/50 text-slate-400 hover:text-slate-900 dark:hover:text-white rounded-2xl shadow-neo-pill flex items-center justify-center transition-all" title="Rename Course">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/></svg>
@@ -29,15 +29,16 @@
     <!-- Materials List -->
     <div v-if="course.materials?.length" class="px-8 pb-8 space-y-3">
       <div v-for="mat in course.materials" :key="mat._id" 
-           class="flex items-center justify-between p-5 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl border border-slate-100 dark:border-zinc-800/50 group/mat shadow-neo-inner">
+           @click="emit('preview', mat)"
+           class="flex items-center justify-between p-5 bg-slate-50 dark:bg-zinc-800/30 rounded-2xl border border-slate-100 dark:border-zinc-800/50 group/mat shadow-neo-inner cursor-pointer hover:border-brand/30 transition-all">
         <div class="flex items-center gap-5 min-w-0">
           <span class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 flex items-center justify-center shadow-neo shrink-0 text-xl">{{ mat.type === 'pdf' ? '📄' : '🖼️' }}</span>
           <div class="min-w-0">
             <p class="text-[11px] font-black text-slate-700 dark:text-zinc-200 uppercase tracking-widest truncate">{{ mat.name }}</p>
-            <a :href="mat.url" target="_blank" class="text-[9px] font-black text-brand hover:underline uppercase tracking-[0.2em] mt-1 inline-block">Establish Uplink</a>
+            <a :href="mat.url" target="_blank" class="text-[9px] font-black text-brand hover:underline uppercase tracking-[0.2em] mt-1 inline-block">Open</a>
           </div>
         </div>
-        <button @click="emit('delete-material', course._id, mat._id)" 
+        <button @click.stop="emit('delete-material', course._id, mat._id)" 
                 class="w-8 h-8 flex items-center justify-center text-rose-400 hover:bg-rose-500 hover:text-white rounded-full transition-all opacity-100 lg:opacity-0 lg:group-hover/mat:opacity-100 shadow-xl">
           <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
@@ -52,7 +53,7 @@ const props = defineProps({
   quizzes: Array
 });
 
-const emit = defineEmits(['upload', 'rename', 'delete', 'delete-material']);
+const emit = defineEmits(['upload', 'rename', 'delete', 'delete-material', 'preview']);
 
 const quizzesCount = (courseId) => {
   return props.quizzes.filter(q => (q.course?._id || q.course) === courseId).length;

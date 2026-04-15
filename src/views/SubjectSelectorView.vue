@@ -5,10 +5,10 @@
       <header class="mb-16">
         <div class="flex items-center gap-3 mb-4">
           <div class="w-2 h-2 bg-brand rounded-full"></div>
-          <span class="text-[10px] font-black text-brand uppercase tracking-[0.4em]">Resource Directory</span>
+          <span class="text-[10px] font-black text-brand uppercase tracking-[0.4em]">Subject List</span>
         </div>
-        <h1 class="text-[42px] font-medium text-slate-900 dark:text-zinc-100 tracking-tighter leading-none mb-4 italic">Academic Anthology</h1>
-        <p class="text-[16px] font-normal text-slate-500 dark:text-zinc-500 max-w-xl leading-relaxed">Select a curriculum path to begin your sequence. Each module is synthesized to meet clinical performance standards.</p>
+        <h1 class="text-[42px] font-medium text-slate-900 dark:text-zinc-100 tracking-tighter leading-none mb-4 italic">Your Courses</h1>
+        <p class="text-[16px] font-normal text-slate-500 dark:text-zinc-500 max-w-xl leading-relaxed">Choose a subject to start practicing. Every test is designed to help you succeed.</p>
       </header>
 
       <!-- Premium Filter Architecture -->
@@ -28,7 +28,7 @@
 
       <!-- Subject Matrix -->
       <div v-if="filteredQuizzes.length === 0" class="py-32 text-center">
-        <p class="text-[12px] font-black text-slate-400 uppercase tracking-[0.4em]">Void detected. Select alternate node.</p>
+        <p class="text-[12px] font-black text-slate-400 uppercase tracking-[0.4em]">Nothing found. Try selecting another course.</p>
       </div>
       
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
@@ -58,13 +58,13 @@
                 {{ quiz.title }}
               </h3>
               <p class="text-[14px] font-normal text-slate-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
-                {{ quiz.description || 'Systematic assessment of core curriculum principles and strategic logic.' }}
+                {{ quiz.description || 'A complete test covering the most important topics and problem-solving skills.' }}
               </p>
             </div>
 
             <div class="pt-6 border-t border-slate-100 dark:border-zinc-800/50 flex items-center justify-between">
               <span class="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] group-hover:text-slate-900 dark:group-hover:text-white transition-colors">
-                Initiate Sequence
+                Start Practice
               </span>
               <div class="w-10 h-10 rounded-full border border-slate-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-brand group-hover:border-brand group-hover:text-white transition-all duration-300">
                 <svg class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>

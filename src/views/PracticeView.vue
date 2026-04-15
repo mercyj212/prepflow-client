@@ -62,7 +62,7 @@
             </div>
             <div class="flex-1">
               <h4 class="font-bold mb-1 text-[15px]">{{ isCorrect ? 'Correct!' : 'Incorrect' }}</h4>
-              <p class="text-[13px] opacity-90 leading-relaxed">{{ currentQuestion.explanation || 'Review the source material to explore why this answer is consistent with the curriculum.' }}</p>
+              <p class="text-[13px] opacity-90 leading-relaxed">{{ currentQuestion.explanation || 'Check your course materials to learn more about this topic.' }}</p>
             </div>
           </div>
           <button 

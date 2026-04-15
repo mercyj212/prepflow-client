@@ -4,6 +4,7 @@
     :class="[gapClass, customClass]"
     @click="$router.push('/')"
   >
+    <span class="mr-2 text-brand drop-shadow-[0_0_8px_rgba(20,184,166,0.3)]" :class="primarySizeClass">✳</span>
     <span 
       class="font-black tracking-tighter text-black dark:text-white leading-none capitalize"
       :class="primarySizeClass"

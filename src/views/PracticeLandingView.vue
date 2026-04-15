@@ -5,24 +5,24 @@
       <header class="mb-14">
           <div class="flex items-center gap-3 mb-4">
             <span class="w-1.5 h-1.5 rounded-full bg-brand"></span>
-            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Diagnostic Hub</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Practice Area</span>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-zinc-100 tracking-tight mb-4">Refine your knowledge.</h1>
+          <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-zinc-100 tracking-tight mb-4">Improve your scores.</h1>
           <p class="text-[16px] text-slate-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-            Select a specialized module to begin an precision diagnostic session. Your path to academic mastery starts with a single subject.
+            Choose a subject to start a quick practice session. Your path to success starts with a single topic.
           </p>
       </header>
 
       <!-- FEATURED GRID -->
       <div v-if="quizStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
         <NeoLoader color="#14b8a6" size="large" />
-        <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Synchronizing curriculum nodes...</p>
+        <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Loading your lessons...</p>
       </div>
 
       <div v-else class="space-y-16">
         <!-- RECENT ACTIVITY (IF ANY) -->
         <section v-if="recentSubmissions.length > 0">
-           <h2 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8 px-1">Continuous Progress</h2>
+           <h2 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8 px-1">Your Progress</h2>
            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               <NeoCard 
                 v-for="sub in recentSubmissions.slice(0, 3)" 
@@ -40,7 +40,7 @@
                   </div>
                 </div>
                 <h3 class="text-[17px] font-bold text-slate-800 dark:text-zinc-100 mb-1">{{ sub.quiz?.title }}</h3>
-                <p class="text-[12px] text-slate-500 dark:text-zinc-500 line-clamp-1 mb-4">Resume diagnostic for {{ sub.quiz?.title }}.</p>
+                <p class="text-[12px] text-slate-500 dark:text-zinc-500 line-clamp-1 mb-4">Resume practice for {{ sub.quiz?.title }}.</p>
                 <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-zinc-800/50">
                     <span class="text-[11px] font-black uppercase tracking-widest text-slate-400">Module active</span>
                     <span class="text-brand text-xs font-bold group-hover:translate-x-1 transition-transform">Resume -></span>
@@ -76,11 +76,11 @@
               </div>
 
               <h3 class="text-xl font-bold text-slate-800 dark:text-zinc-100 mb-2 relative z-10">{{ quiz.title }}</h3>
-              <p class="text-[14px] text-slate-500 dark:text-zinc-500 mb-8 leading-relaxed line-clamp-2">{{ quiz.description || 'Comprehensive practice set organized by core curriculum standards.' }}</p>
+              <p class="text-[14px] text-slate-500 dark:text-zinc-500 mb-8 leading-relaxed line-clamp-2">{{ quiz.description || 'A clear set of questions based on your course.' }}</p>
               
               <div class="pt-6 border-t border-white/5 flex items-center justify-between relative z-10">
                 <div class="text-[11px] font-black uppercase tracking-widest text-slate-400 group-hover:text-brand transition-colors">
-                  Diagnostic Ready
+                  Ready to Practice
                 </div>
                 <div class="w-10 h-10 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black flex items-center justify-center group-hover:translate-x-2 transition-all">
                   →

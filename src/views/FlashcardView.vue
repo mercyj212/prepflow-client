@@ -21,16 +21,16 @@
           <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
             <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
           </div>
-          <h2 class="text-2xl font-black text-slate-800 dark:text-zinc-100 mb-2">Session Complete!</h2>
-          <p class="text-slate-500 dark:text-zinc-500 text-[14px] mb-8">Great job! You've gone through the whole deck.</p>
+          <h2 class="text-2xl font-black text-slate-800 dark:text-zinc-100 mb-2">Done!</h2>
+          <p class="text-slate-500 dark:text-zinc-500 text-[14px] mb-8">Great job! You've finished all the cards in this set.</p>
           
           <div class="grid grid-cols-2 gap-4 mb-8">
             <div class="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500/60 mb-1">Known</p>
+              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500/60 mb-1">I know this</p>
               <p class="text-2xl font-bold text-emerald-500">{{ knownCount }}</p>
             </div>
             <div class="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10">
-              <p class="text-[10px] font-black uppercase tracking-widest text-rose-500/60 mb-1">Review</p>
+              <p class="text-[10px] font-black uppercase tracking-widest text-rose-500/60 mb-1">I'm still learning</p>
               <p class="text-2xl font-bold text-rose-500">{{ reviewCount }}</p>
             </div>
           </div>
@@ -40,7 +40,7 @@
               Restart Session
             </button>
             <button @click="$router.push(`/quiz/${quiz._id}`)" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-neo-pill hover:-translate-y-1 transition-all">
-              Take Final Quiz →
+              Ready for a test? →
             </button>
           </div>
         </div>
@@ -52,7 +52,7 @@
         <div class="flex items-center justify-between mb-6">
           <button @click="$router.push('/flashcards')" class="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Decks
+            Course sets
           </button>
           <button @click="$router.push(`/quiz/${quiz._id}`)" class="px-4 py-1.5 rounded-lg text-[12px] font-bold uppercase tracking-widest bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
             Take Quiz →
@@ -105,7 +105,7 @@
               <div class="card-face card-front bg-[var(--neo-surface)] rounded-[28px] shadow-neo border border-white/20 dark:border-white/5 flex flex-col p-8">
                 <div class="flex items-center justify-between mb-6">
                   <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">Question</span>
-                  <span class="text-[10px] font-bold text-slate-300 dark:text-zinc-600 uppercase tracking-widest">Tap to reveal</span>
+                  <span class="text-[10px] font-bold text-slate-300 dark:text-zinc-600 uppercase tracking-widest">Tap to see answer</span>
                 </div>
                 <div class="flex-1 flex items-center justify-center">
                   <p class="text-[20px] sm:text-[22px] font-semibold text-slate-800 dark:text-zinc-100 leading-snug text-center">{{ currentQuestion.text }}</p>
@@ -119,7 +119,7 @@
               <div class="card-face card-back bg-slate-900 dark:bg-zinc-900 rounded-[28px] shadow-neo border border-white/5 flex flex-col p-8">
                 <div class="flex items-center justify-between mb-6">
                   <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Answer</span>
-                  <span class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Tap to go back</span>
+                  <span class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Tap to see question</span>
                 </div>
                 <div class="flex-1 flex items-center justify-center">
                   <p class="text-[20px] sm:text-[22px] font-bold text-white leading-snug text-center">{{ correctAnswerText }}</p>

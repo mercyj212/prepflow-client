@@ -6,11 +6,11 @@
       <header class="mb-12 text-center md:text-left">
           <div class="flex items-center justify-center md:justify-start gap-3 mb-4">
             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Diagnostic Summary</span>
+            <span class="text-[11px] font-black uppercase tracking-[0.3em] text-slate-400">Your Results</span>
           </div>
-          <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-zinc-100 tracking-tight mb-2">Analysis Complete.</h1>
+          <h1 class="text-4xl md:text-5xl font-black text-slate-900 dark:text-zinc-100 tracking-tight mb-2">Finished!</h1>
           <p class="text-[16px] text-slate-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-            We've processed your submission against the global curriculum. Here is your current knowledge topology.
+            We've checked your answers against the course. Here is a summary of how you did.
           </p>
       </header>
 
@@ -46,13 +46,13 @@
           </div>
 
           <div class="text-center md:text-left flex-1">
-             <div class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Verdict rendered</div>
+             <div class="inline-block px-4 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-6">Final Score</div>
              <h2 class="text-3xl md:text-5xl font-black tracking-tight text-white mb-6 uppercase" :class="percentage < 40 ? 'text-rose-400' : ''">{{ scoreMessage }}</h2>
-             <p class="text-zinc-400 text-[15px] leading-relaxed mb-8 max-w-sm">
-                You correctly identified {{ score }} out of {{ total }} diagnostic items in this hub node. 
-                <span class="block mt-2 text-zinc-500" v-if="percentage >= 70">Excellent retention verified. Protocol clearance granted.</span>
-                <span class="block mt-2 text-zinc-500" v-else>Identity gap detected. Revision protocols suggested for mastery.</span>
-             </p>
+              <p class="text-zinc-400 text-[15px] leading-relaxed mb-8 max-w-sm">
+                 You got {{ score }} out of {{ total }} questions correct in this area. 
+                 <span class="block mt-2 text-zinc-500" v-if="percentage >= 70">Great job! You've successfully mastered this subject.</span>
+                 <span class="block mt-2 text-zinc-500" v-else>A few things to work on. We suggest practicing these topics again.</span>
+              </p>
 
              <div class="flex flex-wrap gap-4 justify-center md:justify-start">
                 <button @click="shareResult" class="px-8 h-12 bg-white text-black font-black uppercase tracking-widest text-[11px] rounded-xl hover:-translate-y-1 transition-all active:translate-y-0">Share credentials</button>
@@ -65,7 +65,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
          <!-- Breakdown -->
          <NeoCard variant="depressed" class="p-8">
-            <h3 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Performance breakdown</h3>
+            <h3 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">How you did</h3>
             <div class="space-y-8">
                <div v-for="(item, idx) in breakdownMock" :key="idx" class="space-y-3">
                   <div class="flex justify-between items-end">
@@ -81,11 +81,11 @@
 
          <!-- Recommendation -->
          <NeoCard variant="depressed" class="p-8 flex flex-col">
-            <h3 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Adaptive Strategy</h3>
+            <h3 class="text-[12px] font-black uppercase tracking-[0.2em] text-slate-400 mb-8">Our Tips</h3>
             
             <div v-if="weakTopics.length > 0" class="flex-1">
                 <p class="text-[14px] text-slate-500 dark:text-zinc-500 mb-6 leading-relaxed font-medium">
-                   Our adaptive heuristics suggest focusing on the following conceptual layers to increase your diagnostic resilience:
+                   Based on your answers, we suggest looking at these topics again to boost your confidence:
                 </p>
                 <div class="flex flex-wrap gap-2 mb-10">
                    <span v-for="topic in weakTopics" :key="topic" class="px-4 py-2 rounded-2xl bg-zinc-900 text-white dark:bg-zinc-100 dark:text-black text-[10px] font-black uppercase tracking-widest shadow-xl">
@@ -95,12 +95,12 @@
             </div>
             <div v-else class="flex-1 flex flex-col items-center justify-center text-center">
                 <div class="w-16 h-16 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center text-2xl mb-4">✨</div>
-                <p class="text-[14px] text-slate-500 dark:text-zinc-400 font-medium">Optimal node integrity achieved. Continue to explorer further subjects.</p>
+                <p class="text-[14px] text-slate-500 dark:text-zinc-400 font-medium">Perfect score! Feel free to explore other subjects.</p>
             </div>
 
             <button @click="retryWeak" class="w-full h-14 rounded-2xl bg-brand text-white font-black uppercase tracking-widest text-[11px] hover:-translate-y-1 transition-all shadow-neo-pill flex items-center justify-center gap-3 mt-auto">
-               <span v-if="weakTopics.length > 0">Initiate Targeted Review</span>
-               <span v-else>Continue Exploration</span>
+               <span v-if="weakTopics.length > 0">Practice these again</span>
+               <span v-else>Keep learning</span>
                →
             </button>
          </NeoCard>
@@ -109,10 +109,10 @@
       <!-- FOOTER ACTIONS -->
       <div class="flex flex-col sm:flex-row items-center justify-center gap-6">
          <button @click="goHome" class="w-full sm:w-auto px-10 h-14 rounded-2xl border-2 border-slate-200 dark:border-zinc-800 text-[11px] font-black uppercase tracking-widest text-slate-600 dark:text-zinc-400 hover:bg-slate-50 dark:hover:bg-zinc-800 transition-all">
-           Return to Hub Home
+            Go back to Dashboard
          </button>
          <button @click="retryWeak" class="w-full sm:w-auto px-10 h-14 rounded-2xl bg-zinc-900 dark:bg-white text-white dark:text-black text-[11px] font-black uppercase tracking-widest hover:-translate-y-1 transition-all shadow-2xl">
-           Restart Subject Node
+            Start Over
          </button>
       </div>
     </div>
@@ -136,9 +136,9 @@ const percentage = computed(() => total ? Math.round((score / total) * 100) : 0)
 const dashOffset = computed(() => CIRCUMFERENCE - (percentage.value / 100) * CIRCUMFERENCE);
 
 const scoreMessage = computed(() => {
-  if (percentage.value >= 70) return 'Optimal Integrity';
-  if (percentage.value >= 40) return 'Partial Resonance';
-  return 'System Failure';
+  if (percentage.value >= 70) return 'Excellent!';
+  if (percentage.value >= 40) return 'Good Progress';
+  return 'Keep Practicing';
 });
 
 const breakdownMock = [

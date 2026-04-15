@@ -14,19 +14,27 @@
         <div class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo p-6 flex flex-col gap-5 border border-white/20 dark:border-white/5">
 
           <!-- Avatar + Name -->
-          <div class="flex items-center gap-5">
-            <div class="relative w-16 h-16 rounded-full border-2 border-white/30 dark:border-white/10 shadow-md overflow-hidden bg-slate-200 cursor-pointer group flex-shrink-0" @click="triggerFileInput">
-              <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
-              <div class="absolute inset-0 flex items-center justify-center bg-black/40 transition-opacity" :class="isUploading ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'">
-                <span v-if="isUploading" class="animate-spin text-white text-lg">⚙</span>
-                <span v-else class="text-white text-lg">📷</span>
+          <div class="flex items-center gap-6">
+            <div class="relative group cursor-pointer flex-shrink-0" @click="triggerFileInput">
+              <!-- Avatar Circle -->
+              <div class="w-20 h-20 rounded-full border-4 border-white dark:border-white/10 shadow-lg overflow-hidden bg-slate-200 transition-all group-hover:border-brand/40">
+                <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
+                
+                <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <span class="animate-spin text-white">⚙</span>
+                </div>
               </div>
+
+              <!-- Plus Badge (Right) -->
+              <div class="absolute -right-1 bottom-2 w-7 h-7 bg-brand dark:bg-zinc-100 rounded-full border-4 border-[var(--neo-bg)] flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+                <svg class="w-3.5 h-3.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
+              </div>
+
               <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
             </div>
             <div>
               <p class="text-[17px] font-semibold text-slate-800 dark:text-zinc-100">{{ authStore.user?.fullName || 'Student' }}</p>
               <p class="text-[13px] text-slate-500 dark:text-zinc-500">{{ authStore.user?.email }}</p>
-              <button class="mt-1 text-[12px] text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 transition-colors" @click="triggerFileInput">Change photo</button>
             </div>
           </div>
 
@@ -85,6 +93,37 @@
         </div>
       </section>
     </div>
+
+    <!-- 🖼️ SETTINGS PROFILE PREVIEW MODAL -->
+    <div v-if="previewModal.show" class="fixed inset-0 z-[120] flex items-center justify-center p-6 bg-black/80 backdrop-blur-md animate-fade-in">
+      <div class="bg-white dark:bg-zinc-900 w-full max-w-sm rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col">
+        <div class="px-8 py-6 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between shrink-0">
+          <div>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Appearance Check</h2>
+            <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">New Profile Preview</p>
+          </div>
+          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+        </div>
+
+        <div class="p-10 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
+          <div class="w-48 h-48 rounded-full border-4 border-white dark:border-zinc-800 shadow-2xl overflow-hidden relative group">
+            <img :src="previewModal.url" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div class="absolute inset-0 shadow-inner pointer-events-none"></div>
+          </div>
+        </div>
+
+        <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex gap-4">
+          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
+            Cancel
+          </button>
+          <button @click="confirmAvatarUpload" 
+            :disabled="isUploading"
+            class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
+            {{ isUploading ? 'Uploading...' : 'Confirm New Look ✨' }}
+          </button>
+        </div>
+      </div>
+    </div>
   </NeoAppShell>
 </template>
 
@@ -100,6 +139,7 @@ const router = useRouter();
 
 const fileInput = ref(null);
 const isUploading = ref(false);
+const previewModal = ref({ show: false, url: '', file: null });
 
 const avatarUrl = computed(() => {
   return authStore.user?.profilePicture || `https://api.dicebear.com/7.x/notionists/svg?seed=${authStore.user?.fullName || 'student'}`;
@@ -110,19 +150,37 @@ const triggerFileInput = () => {
   fileInput.value.click();
 };
 
-const handleAvatarUpload = async (event) => {
+const handleAvatarUpload = (event) => {
   const file = event.target.files[0];
   if (!file) return;
+
+  previewModal.value = {
+    show: true,
+    url: URL.createObjectURL(file),
+    file: file
+  };
+};
+
+const closePreview = () => {
+  if (previewModal.value.url) URL.revokeObjectURL(previewModal.value.url);
+  previewModal.value.show = false;
+  if (fileInput.value) fileInput.value.value = '';
+};
+
+const confirmAvatarUpload = async () => {
+  const { file } = previewModal.value;
+  if (!file) return;
+
   isUploading.value = true;
   try {
     const formData = new FormData();
     formData.append('avatar', file);
     await authStore.uploadAvatar(formData);
+    closePreview();
   } catch (error) {
-    alert(error.message || 'Failed to upload image. File might be too large.');
+    alert(error.message || 'Failed to upload image.');
   } finally {
     isUploading.value = false;
-    if (fileInput.value) fileInput.value.value = '';
   }
 };
 
