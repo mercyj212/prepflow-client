@@ -8,6 +8,9 @@ export const useQuizStore = defineStore('quiz', {
     loading: false,
     error: null,
     mySubmissions: [],
+    educationPath: localStorage.getItem('educationPath') || null,
+    selectedDepartment: null,
+    selectedLevel: null,
   }),
   actions: {
     async fetchQuizzes() {
@@ -89,5 +92,15 @@ export const useQuizStore = defineStore('quiz', {
         this.loading = false;
       }
     },
+    setEducationPath(path) {
+      this.educationPath = path;
+      localStorage.setItem('educationPath', path);
+    },
+    setDepartment(dept) {
+      this.selectedDepartment = dept;
+    },
+    setLevel(level) {
+      this.selectedLevel = level;
+    }
   },
 });

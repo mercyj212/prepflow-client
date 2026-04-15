@@ -8,8 +8,8 @@
       <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
         
         <header class="mb-12">
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Dashboard</h1>
-          <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-500">A summary of your recent study history and progress.</p>
+          <h1 class="text-2xl sm:text-3xl font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Dashboard</h1>
+          <p class="text-[15px] font-medium text-zinc-500 dark:text-zinc-500">A summary of your recent study history and progress.</p>
         </header>
 
         <NeoLoader v-if="quizStore.loading" label="Loading dashboard..." />
@@ -22,7 +22,7 @@
                
                <!-- Massive Stat Card matching "Executions 340" -->
                <div>
-                 <h2 class="text-[18px] font-normal text-slate-800 dark:text-zinc-100 mb-4 px-1">My Progress</h2>
+                 <h2 class="text-[18px] font-normal text-zinc-800 dark:text-zinc-100 mb-4 px-1">My Progress</h2>
                  <NeoCard variant="extruded" :glass="true" class="!rounded-[28px] p-10 relative group">
                    
                    <!-- The "+204%" glowing pill -->
@@ -34,12 +34,12 @@
                      </div>
                    </div>
 
-                   <h3 class="text-[15px] font-medium text-slate-600 dark:text-zinc-300 mb-2">Questions Passed</h3>
+                   <h3 class="text-[15px] font-medium text-zinc-600 dark:text-zinc-300 mb-2">Questions Passed</h3>
                    <div class="flex items-end gap-6 mb-10">
                      <div class="text-[6rem] font-light leading-[1] tracking-tighter text-[#1f2937] dark:text-zinc-100 -ml-1">{{ totalQuestionsDone }}</div>
                    </div>
                    
-                   <router-link to="/progress" class="text-[14px] font-medium text-slate-700 dark:text-zinc-200 hover:text-slate-900 transition-colors flex items-center gap-2 group-hover:gap-3">
+                   <router-link to="/progress" class="text-[14px] font-medium text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 transition-colors flex items-center gap-2 group-hover:gap-3">
                      See Report <span class="text-xl">→</span>
                    </router-link>
                  </NeoCard>
@@ -47,37 +47,37 @@
 
                <!-- Lower Metric Area -->
                <div class="flex flex-col gap-6">
-                 <h2 class="text-[18px] font-normal text-slate-800 dark:text-zinc-100 mb-2 px-1">Metrics</h2>
+                 <h2 class="text-[18px] font-normal text-zinc-800 dark:text-zinc-100 mb-2 px-1">Metrics</h2>
                  
                  <!-- Underline Tabs -->
-                 <div class="flex items-center gap-8 border-b border-slate-300/60 dark:border-zinc-800 pb-[10px] mb-2 px-2">
-                    <button @click="currentTab = 'progress'" :class="[currentTab === 'progress' ? 'text-slate-800 dark:text-zinc-100' : 'text-slate-400 hover:text-slate-600']" class="text-[14px] font-medium relative transition-colors">
+                 <div class="flex items-center gap-8 border-b border-zinc-300/60 dark:border-zinc-800 pb-[10px] mb-2 px-2">
+                    <button @click="currentTab = 'progress'" :class="[currentTab === 'progress' ? 'text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 hover:text-zinc-600']" class="text-[14px] font-medium relative transition-colors">
                       Progress
-                      <span v-if="currentTab === 'progress'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-slate-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
+                      <span v-if="currentTab === 'progress'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-zinc-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
                     </button>
-                    <button @click="currentTab = 'details'" :class="[currentTab === 'details' ? 'text-slate-800 dark:text-zinc-100' : 'text-slate-400 hover:text-slate-600']" class="text-[14px] font-medium relative transition-colors">
+                    <button @click="currentTab = 'details'" :class="[currentTab === 'details' ? 'text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 hover:text-zinc-600']" class="text-[14px] font-medium relative transition-colors">
                       Details
-                      <span v-if="currentTab === 'details'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-slate-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
+                      <span v-if="currentTab === 'details'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-zinc-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
                     </button>
-                    <button @click="currentTab = 'history'" :class="[currentTab === 'history' ? 'text-slate-800 dark:text-zinc-100' : 'text-slate-400 hover:text-slate-600']" class="text-[14px] font-medium relative transition-colors">
+                    <button @click="currentTab = 'history'" :class="[currentTab === 'history' ? 'text-zinc-800 dark:text-zinc-100' : 'text-zinc-400 hover:text-zinc-600']" class="text-[14px] font-medium relative transition-colors">
                       History
-                      <span v-if="currentTab === 'history'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-slate-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
+                      <span v-if="currentTab === 'history'" class="absolute -bottom-[11px] left-0 w-full h-[3px] bg-zinc-800 dark:bg-zinc-300 rounded-t-full shadow-sm"></span>
                     </button>
                  </div>
 
                  <!-- Metric details using inner depressed cards to match Search bar depth -->
                  <div v-if="currentTab === 'progress'" class="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full animate-fade-in">
                    <div class="flex-1 flex flex-col gap-2 w-full">
-                     <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400 px-2">Average Score</span>
+                     <span class="text-[12px] font-bold uppercase tracking-widest text-zinc-400 px-2">Average Score</span>
                      <NeoCard variant="depressed" class="!rounded-[18px] flex flex-col p-5 border-[0.5px] border-black/5 dark:border-white/5">
-                        <span class="text-3xl font-medium text-slate-800 dark:text-zinc-200">{{ averageScore }}%</span>
+                        <span class="text-3xl font-medium text-zinc-800 dark:text-zinc-200">{{ averageScore }}%</span>
                      </NeoCard>
                    </div>
                    
                    <div class="flex-1 flex flex-col gap-2 w-full">
-                     <span class="text-[12px] font-bold uppercase tracking-widest text-slate-400 px-2">Learning Streak</span>
+                     <span class="text-[12px] font-bold uppercase tracking-widest text-zinc-400 px-2">Learning Streak</span>
                      <NeoCard variant="depressed" class="!rounded-[18px] flex flex-col p-5 border-[0.5px] border-black/5 dark:border-white/5">
-                        <span class="text-3xl font-medium text-slate-800 dark:text-zinc-200">{{ streakDays }} <span class="text-lg text-slate-400 font-normal">days</span></span>
+                        <span class="text-3xl font-medium text-zinc-800 dark:text-zinc-200">{{ streakDays }} <span class="text-lg text-zinc-400 font-normal">days</span></span>
                      </NeoCard>
                    </div>
                  </div>
@@ -87,16 +87,16 @@
                    <NeoCard variant="depressed" class="!rounded-[20px] p-6 border-[0.5px] border-black/5 dark:border-white/5">
                      <div class="space-y-4">
                        <div class="flex justify-between items-center text-[13px]">
-                         <span class="text-slate-500">Total Sessions</span>
-                         <span class="font-bold text-slate-800 dark:text-zinc-200">{{ quizStore.mySubmissions.length }}</span>
+                         <span class="text-zinc-500">Total Sessions</span>
+                         <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ quizStore.mySubmissions.length }}</span>
                        </div>
                        <div class="flex justify-between items-center text-[13px]">
-                         <span class="text-slate-500">Active Subjects</span>
-                         <span class="font-bold text-slate-800 dark:text-zinc-200">{{ subjects.length }}</span>
+                         <span class="text-zinc-500">Active Subjects</span>
+                         <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ subjects.length }}</span>
                        </div>
                        <div class="flex justify-between items-center text-[13px]">
-                         <span class="text-slate-500">Member Since</span>
-                         <span class="font-bold text-slate-800 dark:text-zinc-200">{{ formatDate(authStore.user?.createdAt) }}</span>
+                         <span class="text-zinc-500">Member Since</span>
+                         <span class="font-bold text-zinc-800 dark:text-zinc-200">{{ formatDate(authStore.user?.createdAt) }}</span>
                        </div>
                      </div>
                    </NeoCard>
@@ -107,13 +107,13 @@
                    <div v-if="quizStore.mySubmissions.length === 0" class="text-center py-10 opacity-40 text-xs uppercase tracking-widest">No history found</div>
                    <div v-else class="space-y-3">
                      <div v-for="(sub, i) in quizStore.mySubmissions" :key="i" 
-                          class="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-zinc-800/40 border border-slate-100 dark:border-white/5 cursor-pointer hover:bg-slate-100 transition-colors"
+                          class="flex items-center justify-between p-3 rounded-xl bg-zinc-50 dark:bg-zinc-800/30 border border-zinc-100 dark:border-white/5 cursor-pointer hover:bg-zinc-200/60 dark:hover:bg-zinc-800/80 transition-all group/item shadow-sm"
                           @click="openSubmission(sub)">
                        <div class="flex flex-col">
-                         <span class="text-[12px] font-bold text-slate-800 dark:text-zinc-200 truncate max-w-[140px]">{{ sub.quiz?.title || 'Practice' }}</span>
-                         <span class="text-[9px] text-slate-400 uppercase tracking-widest">{{ formatDate(sub.createdAt) }}</span>
+                         <span class="text-[12px] font-bold text-zinc-500 dark:text-zinc-400 group-hover/item:text-zinc-900 dark:group-hover/item:text-white transition-colors truncate max-w-[140px]">{{ sub.quiz?.title || 'Practice' }}</span>
+                         <span class="text-[9px] text-zinc-400 uppercase tracking-widest">{{ formatDate(sub.createdAt) }}</span>
                        </div>
-                       <span class="text-[11px] font-black text-brand">{{ sub.score }}/{{ sub.totalQuestions }}</span>
+                       <span class="text-[11px] font-black text-zinc-500 dark:text-zinc-400 bg-white/80 dark:bg-zinc-900 px-2.5 py-1 rounded shadow-sm border border-black/5 dark:border-white/5">{{ sub.score }}/{{ sub.totalQuestions }}</span>
                      </div>
                    </div>
                  </div>
@@ -125,41 +125,41 @@
                
                <NeoCard variant="depressed" class="!rounded-[18px] mb-2 p-[10px] border-[0.5px] border-black/5 dark:border-white/5">
                  <div class="flex items-center gap-2 w-full h-full">
-                   <span class="text-slate-400 ml-1 text-lg leading-none pt-0.5">⌕</span>
-                   <input type="text" placeholder="Search courses..." class="bg-transparent border-none outline-none text-[13px] text-slate-700 dark:text-zinc-300 w-full placeholder:text-slate-400 placeholder:font-normal focus:ring-0" />
+                   <span class="text-zinc-400 ml-1 text-lg leading-none pt-0.5">⌕</span>
+                   <input type="text" placeholder="Search courses..." class="bg-transparent border-none outline-none text-[13px] text-zinc-700 dark:text-zinc-300 w-full placeholder:text-zinc-400 placeholder:font-normal focus:ring-0" />
                  </div>
                </NeoCard>
                
                <!-- Main Inset Context Card mimicking the blank area at bottom right of image -->
-               <div class="flex-1 min-h-[400px] rounded-[32px] bg-slate-50 border border-slate-200 dark:bg-zinc-800/30 dark:border-white/5 shadow-inner p-6 flex flex-col overflow-hidden relative">
-                   <div class="absolute top-4 left-4 w-3 h-3 border-t border-l border-slate-300"></div>
-                   <div class="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-slate-300"></div>
-                   <div class="absolute top-4 right-4 w-3 h-3 border-t border-r border-slate-300"></div>
-                   <div class="absolute bottom-4 right-4 w-3 h-3 border-b border-r border-slate-300"></div>
+               <div class="flex-1 min-h-[400px] rounded-[32px] bg-zinc-50 border border-zinc-200 dark:bg-zinc-800/30 dark:border-white/5 shadow-inner p-6 flex flex-col overflow-hidden relative">
+                   <div class="absolute top-4 left-4 w-3 h-3 border-t border-l border-zinc-300"></div>
+                   <div class="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-zinc-300"></div>
+                   <div class="absolute top-4 right-4 w-3 h-3 border-t border-r border-zinc-300"></div>
+                   <div class="absolute bottom-4 right-4 w-3 h-3 border-b border-r border-zinc-300"></div>
 
-                   <h3 class="text-[13px] font-medium text-slate-500 mb-6 px-2 text-center uppercase tracking-widest">Recent Practice Sessions</h3>
+                   <h3 class="text-[13px] font-medium text-zinc-500 mb-6 px-2 text-center uppercase tracking-widest">Recent Practice Sessions</h3>
                  
                    <div v-if="quizStore.mySubmissions.length === 0" class="flex-1 flex flex-col items-center justify-center opacity-50 text-center px-8">
                      <span class="text-4xl mb-4">📭</span>
-                     <p class="text-[13px] font-medium text-slate-500">Where your hard work shows up.</p>
+                     <p class="text-[13px] font-medium text-zinc-500">Where your hard work shows up.</p>
                    </div>
                    
                    <div v-else class="flex flex-col gap-3 relative z-10 w-full max-w-[340px] mx-auto overflow-y-auto custom-scrollbar pr-2">
                        <NeoCard v-for="(sub, i) in quizStore.mySubmissions.slice(0, 5)" :key="i"
                           variant="extruded" 
-                          class="!rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800/80 transition-colors border border-white/40 dark:border-white/5 group"
+                          class="!rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors border border-white/40 dark:border-white/5 group"
                           @click="openSubmission(sub)"
                         >
                            <div class="flex items-center gap-3">
-                              <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-zinc-900 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
+                              <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
                                 📋
                               </div>
                               <div class="flex flex-col">
-                                <span class="text-[13px] font-medium text-slate-800 dark:text-zinc-200">{{ sub.quiz?.title || 'Unknown Test' }}</span>
-                                <span class="text-[10px] font-medium text-slate-400 mt-0.5">{{ formatDate(sub.createdAt) }}</span>
+                                <span class="text-[13px] font-medium text-zinc-800 dark:text-zinc-200">{{ sub.quiz?.title || 'Unknown Test' }}</span>
+                                <span class="text-[10px] font-medium text-zinc-400 mt-0.5">{{ formatDate(sub.createdAt) }}</span>
                               </div>
                            </div>
-                           <div class="px-2.5 py-1 rounded border border-black/5 dark:border-white/10 text-[10px] font-bold text-slate-600 bg-black/5 dark:bg-white/5 shadow-inner">
+                           <div class="px-2.5 py-1 rounded border border-black/5 dark:border-white/10 text-[10px] font-bold text-zinc-600 bg-black/5 dark:bg-white/5 shadow-inner">
                              {{ sub.score }}/{{ sub.totalQuestions }}
                            </div>
                        </NeoCard>
@@ -175,7 +175,11 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue';
+import { 
+  ref, 
+  computed, 
+  onMounted 
+} from 'vue';
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
@@ -204,10 +208,35 @@ const averageScore = computed(() => {
 });
 
 const streakDays = computed(() => {
-  const uniqueDays = new Set(
-    quizStore.mySubmissions.map((sub) => new Date(sub.createdAt).toDateString())
-  );
-  return uniqueDays.size;
+  if (!quizStore.mySubmissions.length) return 0;
+  
+  // Get unique days in YYYY-MM-DD format for stable comparison
+  const uniqueDays = [...new Set(
+    quizStore.mySubmissions.map(sub => new Date(sub.createdAt).toISOString().split('T')[0])
+  )].sort((a, b) => b.localeCompare(a)); // Sort descending
+
+  const today = new Date().toISOString().split('T')[0];
+  const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
+
+  // If latest activity wasn't today or yesterday, streak is broken
+  if (uniqueDays[0] !== today && uniqueDays[0] !== yesterday) return 0;
+
+  let streak = 0;
+  let currentCheck = new Date(uniqueDays[0]);
+
+  for (const dayStr of uniqueDays) {
+    const day = new Date(dayStr);
+    const diff = Math.floor((currentCheck - day) / (1000 * 60 * 60 * 24));
+    
+    if (diff <= 1) {
+      streak++;
+      currentCheck = day;
+    } else {
+      break;
+    }
+  }
+
+  return streak;
 });
 
 const subjects = computed(() => {

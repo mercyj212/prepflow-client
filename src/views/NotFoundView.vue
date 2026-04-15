@@ -6,7 +6,7 @@
       <h1 class="mt-2 text-4xl font-medium">Page not found</h1>
       <p class="mt-3 text-white/75">This page does not exist. Please return home.</p>
       <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
-        <router-link to="/" class="px-5 py-2.5 rounded-lg bg-white text-slate-900 text-sm font-medium">
+        <router-link to="/" class="px-5 py-2.5 rounded-lg bg-white text-zinc-900 text-sm font-medium">
           Go home
         </router-link>
         <router-link to="/dashboard" class="px-5 py-2.5 rounded-lg border border-white/25 text-sm font-medium">

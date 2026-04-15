@@ -10,7 +10,7 @@
     
     <!-- 🛡️ SOVEREIGN VERIFICATION CONTAINER -->
     <div v-if="loading" class="flex flex-col items-center gap-6 animate-pulse">
-      <div class="w-16 h-16 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-16 h-16 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
       <div class="text-center">
         <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Account Verification</h2>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Validating your registration link...</p>

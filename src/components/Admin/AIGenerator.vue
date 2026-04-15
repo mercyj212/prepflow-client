@@ -12,7 +12,7 @@
           </div>
           Generative AI Lab
         </h2>
-        <p class="text-[11px] font-black italic text-slate-400 uppercase tracking-widest ml-12">Universal synthesis protocol</p>
+        <p class="text-[11px] font-black italic text-zinc-400 uppercase tracking-widest ml-12">Universal synthesis protocol</p>
       </div>
       
       <div v-if="loading" class="flex items-center gap-3 px-5 py-2.5 bg-brand/5 border border-brand/20 rounded-2xl animate-pulse">
@@ -24,30 +24,30 @@
     <form @submit.prevent="handleSubmit" class="space-y-10 relative z-10">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <div class="md:col-span-2 space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Destination Node</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Destination Node</label>
           <div class="relative">
-            <select v-model="form.quizId" required class="w-full bg-[var(--neo-bg)] border border-slate-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
+            <select v-model="form.quizId" required class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
               <option value="" disabled>Select target gateway...</option>
               <option v-for="q in quizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.questions?.length || 0 }} Items)</option>
             </select>
-            <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+            <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
             </div>
           </div>
         </div>
         
         <div class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 ml-1">Synthesis Depth</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Synthesis Depth</label>
           <div class="relative">
-            <input v-model="form.count" required type="number" min="1" max="200" class="w-full bg-[var(--neo-bg)] border border-slate-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner">
-            <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[9px] font-black text-slate-300 uppercase tracking-widest">Units</span>
+            <input v-model="form.count" required type="number" min="1" max="200" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner">
+            <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[9px] font-black text-zinc-300 uppercase tracking-widest">Units</span>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
         <div class="flex items-center justify-between ml-1">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Source Feed (Raw text)</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Source Feed (Raw text)</label>
           <button 
             v-if="form.material" 
             type="button" 
@@ -60,9 +60,9 @@
         </div>
         <div class="group/textarea relative">
           <textarea v-model="form.material" 
-            class="w-full bg-[var(--neo-bg)] border border-slate-200 dark:border-zinc-800 rounded-[32px] px-8 py-8 text-[15px] text-slate-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner h-56 font-mono resize-none leading-relaxed" 
+            class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-[32px] px-8 py-8 text-[15px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner h-56 font-mono resize-none leading-relaxed" 
             placeholder="Introduce curriculum context or lecture data..."></textarea>
-          <div class="absolute bottom-8 right-10 text-[9px] font-black uppercase tracking-widest text-slate-300 pointer-events-none group-focus-within/textarea:text-brand transition-colors">
+          <div class="absolute bottom-8 right-10 text-[9px] font-black uppercase tracking-widest text-zinc-300 pointer-events-none group-focus-within/textarea:text-brand transition-colors">
             Universal Input Node
           </div>
         </div>
@@ -70,28 +70,28 @@
 
       <div class="space-y-5">
         <div class="flex items-center justify-between px-1">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Document Artifacts</label>
-          <span class="text-[9px] font-black text-slate-300 uppercase tracking-widest">{{ files.length }}/10 Slices</span>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Document Artifacts</label>
+          <span class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">{{ files.length }}/10 Slices</span>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           <label v-if="files.length < 10" 
-            class="flex flex-col items-center justify-center p-10 border-2 border-dashed border-slate-200 dark:border-zinc-800 rounded-[32px] cursor-pointer hover:bg-brand/5 hover:border-brand/40 transition-all group/upload shrink-0 bg-transparent">
+            class="flex flex-col items-center justify-center p-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[32px] cursor-pointer hover:bg-brand/5 hover:border-brand/40 transition-all group/upload shrink-0 bg-transparent">
             <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center mb-4 group-hover/upload:scale-110 group-hover/upload:bg-brand group-hover/upload:text-white shadow-neo transition-all">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
             </div>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 group-hover/upload:text-brand">Uplink Context</span>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover/upload:text-brand">Uplink Context</span>
             <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onFileChange" />
           </label>
 
           <div v-for="(f, i) in files" :key="i" 
-            class="relative flex items-center gap-4 p-5 bg-[var(--neo-bg)] border border-slate-200 dark:border-zinc-800 rounded-[24px] group/file shadow-neo-inner hover:border-brand/40 transition-all h-[92px]">
+            class="relative flex items-center gap-4 p-5 bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-[24px] group/file shadow-neo-inner hover:border-brand/40 transition-all h-[92px]">
             <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 shadow-neo text-xl">
               {{ f.type.includes('pdf') ? '📄' : '🖼️' }}
             </div>
             <div class="flex-1 min-w-0 pr-4">
-              <p class="text-[10px] font-black text-slate-800 dark:text-zinc-200 truncate uppercase tracking-widest">{{ f.name }}</p>
-              <p class="text-[8px] font-bold text-slate-400 uppercase">{{ (f.size / 1024 / 1024).toFixed(2) }} MB</p>
+              <p class="text-[10px] font-black text-zinc-800 dark:text-zinc-200 truncate uppercase tracking-widest">{{ f.name }}</p>
+              <p class="text-[8px] font-bold text-zinc-400 uppercase">{{ (f.size / 1024 / 1024).toFixed(2) }} MB</p>
             </div>
             <button @click="removeFile(i)" type="button" 
               class="absolute -top-2 -right-2 w-7 h-7 bg-rose-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/file:opacity-100 transition-all hover:scale-110 shadow-xl z-20">

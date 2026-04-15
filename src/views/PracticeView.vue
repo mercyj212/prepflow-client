@@ -9,13 +9,13 @@
         <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
         </div>
-        <h2 class="text-3xl font-bold mb-2 text-slate-800 dark:text-zinc-100">Practice Complete!</h2>
-        <p class="text-slate-500 dark:text-zinc-400 mb-8">You scored {{ score }} out of {{ quiz.questions.length }}</p>
+        <h2 class="text-3xl font-bold mb-2 text-zinc-800 dark:text-zinc-100">Practice Complete!</h2>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-8">You scored {{ score }} out of {{ quiz.questions.length }}</p>
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-           <button @click="resetPractice" class="px-8 py-3 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 font-semibold rounded-xl hover:opacity-90 transition">
+           <button @click="resetPractice" class="px-8 py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-semibold rounded-xl hover:opacity-90 transition">
              Practice Again
            </button>
-           <router-link to="/subjects" class="px-8 py-3 border border-black/10 dark:border-white/10 text-slate-600 dark:text-zinc-400 font-semibold rounded-xl hover:bg-slate-50 dark:hover:bg-zinc-800 transition">
+           <router-link to="/subjects" class="px-8 py-3 border border-black/10 dark:border-white/10 text-zinc-600 dark:text-zinc-400 font-semibold rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
              Browse Courses
            </router-link>
         </div>
@@ -24,12 +24,12 @@
       <!-- Quiz State -->
       <div v-else-if="quiz" class="animate-fade-in">
         <header class="mb-8">
-          <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-1">Practice</h1>
-          <p class="text-[15px] font-medium text-slate-500">{{ quiz.title }} · Question {{ currentIndex + 1 }} of {{ quiz.questions.length }}</p>
+          <h1 class="text-2xl sm:text-3xl font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-1">Practice</h1>
+          <p class="text-[15px] font-medium text-zinc-500">{{ quiz.title }} · Question {{ currentIndex + 1 }} of {{ quiz.questions.length }}</p>
         </header>
 
         <div class="mb-8">
-          <h3 class="text-xl font-semibold leading-relaxed text-slate-800 dark:text-zinc-100">{{ currentQuestion.text }}</h3>
+          <h3 class="text-xl font-semibold leading-relaxed text-zinc-800 dark:text-zinc-100">{{ currentQuestion.text }}</h3>
         </div>
 
         <div class="space-y-3">
@@ -67,7 +67,7 @@
           </div>
           <button 
             @click="nextQuestion" 
-            class="mt-5 w-full py-3 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 font-bold rounded-xl transition hover:opacity-90 text-[13px] uppercase tracking-widest"
+            class="mt-5 w-full py-3 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 font-bold rounded-xl transition hover:opacity-90 text-[13px] uppercase tracking-widest"
           >
             {{ currentIndex === quiz.questions.length - 1 ? 'Finish Practice' : 'Continue' }}
           </button>

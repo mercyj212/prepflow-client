@@ -3,10 +3,10 @@
     <template #header>
       <div class="flex items-center justify-between w-full">
         <div>
-          <h1 class="text-[26px] font-medium text-slate-800 dark:text-zinc-100 tracking-tight leading-none mb-1">Admin Dashboard</h1>
+          <h1 class="text-[26px] font-medium text-zinc-800 dark:text-zinc-100 tracking-tight leading-none mb-1">Admin Dashboard</h1>
           <div class="flex items-center gap-3">
             <span class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.4)]"></span>
-            <span class="text-[11px] font-black italic text-slate-400 uppercase tracking-widest">System Online</span>
+            <span class="text-[11px] font-black italic text-zinc-400 uppercase tracking-widest">System Online</span>
           </div>
         </div>
 
@@ -14,7 +14,7 @@
           <div v-if="successMsg" class="px-5 py-2.5 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20 rounded-2xl text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest animate-fade-inShadow">
             {{ successMsg }}
           </div>
-          <button @click="fetchCoreData" class="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700 rounded-2xl shadow-neo text-slate-400 hover:text-brand transition-all">
+          <button @click="fetchCoreData" class="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-neo text-zinc-400 hover:text-brand transition-all">
             <svg class="w-5 h-5" :class="loadingStats ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
           </button>
         </div>
@@ -51,8 +51,8 @@
           <section>
             <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-brand">
               <div>
-                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Courses</h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Manage your courses and learning materials</p>
+                <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">Courses</h2>
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Manage your courses and learning materials</p>
               </div>
             </div>
             <CourseInventory 
@@ -70,8 +70,8 @@
           <section>
             <div class="flex items-center justify-between mb-10 pl-2 border-l-4 border-purple-500">
               <div>
-                <h2 class="text-[12px] font-black text-slate-900 dark:text-white tracking-[0.4em] uppercase mb-1">Practice Tests</h2>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Manage practice tests and links</p>
+                <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">Practice Tests</h2>
+                <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Manage practice tests and links</p>
               </div>
             </div>
             <QuizInventory 
@@ -104,7 +104,7 @@
         <div class="px-10 py-8 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between">
           <div>
             <h2 class="text-[10px] font-black uppercase tracking-[0.2em] mb-1" 
-                :class="isBlastMode ? 'text-red-500' : 'text-indigo-500'">
+                :class="isBlastMode ? 'text-red-500' : 'text-brand'">
               {{ isBlastMode ? 'Send Email blast' : 'Direct Message' }}
             </h2>
             <p class="text-xl font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
@@ -115,8 +115,8 @@
         </div>
 
         <div class="p-10 space-y-6">
-          <input v-model="emailSubject" type="text" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20" placeholder="Transmission Subject">
-          <textarea v-model="emailMessage" rows="6" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-6 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 resize-none" placeholder="Draft your briefing here..."></textarea>
+          <input v-model="emailSubject" type="text" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20" placeholder="Transmission Subject">
+          <textarea v-model="emailMessage" rows="6" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none" placeholder="Draft your briefing here..."></textarea>
           
           <button @click="handleSendEmail" 
             :disabled="emailLoading"
@@ -169,14 +169,14 @@
           </div>
           <div v-else class="text-center py-20 px-10 bg-white dark:bg-zinc-900 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800 shadow-neo-inner">
             <div class="text-6xl mb-6">📄</div>
-            <p class="text-sm font-black text-slate-500 uppercase tracking-widest">Document Preview Not Available</p>
-            <p class="text-[10px] text-slate-400 mt-2">Reference file metadata for verification</p>
+            <p class="text-sm font-black text-zinc-500 uppercase tracking-widest">Document Preview Not Available</p>
+            <p class="text-[10px] text-zinc-400 mt-2">Reference file metadata for verification</p>
           </div>
         </div>
 
         <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
           <div v-if="previewModal.isLocal" class="flex gap-4">
-            <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all">
+            <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] hover:bg-zinc-200 transition-all">
               Cancel
             </button>
             <button @click="confirmMaterialUpload" 

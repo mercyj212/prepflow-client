@@ -6,7 +6,7 @@
       <span class="neo-dot" style="animation-delay: 150ms"></span>
       <span class="neo-dot" style="animation-delay: 300ms"></span>
     </div>
-    <p v-if="label" class="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500">{{ label }}</p>
+    <p v-if="label" class="text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500">{{ label }}</p>
   </div>
 </template>
 

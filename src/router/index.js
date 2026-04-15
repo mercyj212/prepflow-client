@@ -22,6 +22,10 @@ import NotificationsView from '../views/NotificationsView.vue';
 import FlashcardLandingView from '../views/FlashcardLandingView.vue';
 import PracticeLandingView from '../views/PracticeLandingView.vue';
 import SettingsView from '../views/SettingsView.vue';
+import ChatView from '../views/ChatView.vue';
+import GamesView from '../views/GamesView.vue';
+import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
+import DepartmentHubView from '../views/DepartmentHubView.vue';
 
 const routes = [
   {
@@ -132,6 +136,18 @@ const routes = [
   },
   {
     path: '/subjects',
+    name: 'education-path',
+    component: EducationPathSelectorView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/subjects/:path',
+    name: 'department-hub',
+    component: DepartmentHubView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/subjects/:path/:category',
     name: 'subjects',
     component: SubjectSelectorView,
     meta: { requiresAuth: true }
@@ -140,6 +156,18 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: SettingsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/chat',
+    name: 'chat',
+    component: ChatView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/games',
+    name: 'games',
+    component: GamesView,
     meta: { requiresAuth: true }
   },
   {

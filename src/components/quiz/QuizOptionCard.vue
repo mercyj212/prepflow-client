@@ -2,7 +2,7 @@
   <button
     type="button"
     class="w-full text-left p-5 rounded-[12px] border-[0.5px] flex items-center gap-4 transition-all duration-200 group relative"
-    :class="[cardClass, !disabled ? 'active:scale-[0.99] active:bg-slate-50' : '']"
+    :class="[cardClass, !disabled ? 'active:scale-[0.99] active:bg-zinc-50' : '']"
     :disabled="disabled"
     :aria-label="`Option ${label}`"
   >
@@ -13,7 +13,7 @@
       {{ label }}
     </div>
     <div class="flex-1">
-      <span class="text-[16px] font-normal leading-relaxed text-slate-900 dark:text-zinc-100">{{ text }}</span>
+      <span class="text-[16px] font-normal leading-relaxed text-zinc-900 dark:text-zinc-100">{{ text }}</span>
     </div>
     
     <!-- Visual feedback icon for answered states -->

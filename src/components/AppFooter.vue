@@ -1,7 +1,7 @@
 <template>
   <footer class="bg-black border-t border-white/5 py-24 mt-32 transition-colors overflow-hidden relative">
     <!-- Subtle Accent Decoration -->
-    <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none"></div>
+    <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-brand-500/10 rounded-full blur-[100px] pointer-events-none"></div>
     <div class="absolute -left-24 -top-24 w-80 h-80 bg-zinc-100/5 rounded-full blur-[80px] pointer-events-none"></div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">

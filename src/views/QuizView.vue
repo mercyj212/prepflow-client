@@ -2,15 +2,15 @@
   <NeoAppShell :showSidebar="false">
     <template #header>
       <div class="flex items-center w-full gap-4 md:gap-8 px-2">
-        <button @click="goBack" class="w-10 h-10 rounded-xl border border-border-light dark:border-border-dark flex items-center justify-center text-slate-600 dark:text-zinc-300 hover:bg-slate-50 transition-colors">
+        <button @click="goBack" class="w-10 h-10 rounded-xl border border-border-light dark:border-border-dark flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 transition-colors">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         </button>
         
         <div class="flex-1">
           <div v-if="quiz" class="flex items-center gap-3">
             <span class="text-[12px] font-black uppercase tracking-widest text-brand bg-brand/10 px-3 py-1 rounded-lg">Practice</span>
-            <p class="text-[15px] font-bold text-slate-900 dark:text-zinc-100 hidden sm:block">
-              Question {{ currentIndex + 1 }} <span class="text-slate-400 font-medium">/ {{ quiz.questions.length }}</span>
+            <p class="text-[15px] font-bold text-zinc-900 dark:text-zinc-100 hidden sm:block">
+              Question {{ currentIndex + 1 }} <span class="text-zinc-400 font-medium">/ {{ quiz.questions.length }}</span>
             </p>
           </div>
         </div>
@@ -29,17 +29,17 @@
       <!-- Progress Indicator -->
       <div v-if="quiz" class="mb-12">
         <div class="flex justify-between items-end mb-3">
-          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">Your progress</span>
-          <span class="text-[13px] font-bold text-slate-900 dark:text-white">{{ Math.round(progress) }}%</span>
+          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">Your progress</span>
+          <span class="text-[13px] font-bold text-zinc-900 dark:text-white">{{ Math.round(progress) }}%</span>
         </div>
-        <div class="h-1.5 w-full bg-slate-100 dark:bg-zinc-800 rounded-full overflow-hidden border border-white/10">
+        <div class="h-1.5 w-full bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden border border-white/10">
           <div class="h-full bg-brand transition-all duration-700 ease-in-out shadow-[0_0_12px_rgba(20,184,166,0.3)]" :style="{ width: `${progress}%` }"></div>
         </div>
       </div>
 
       <div v-if="quizStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
         <NeoLoader color="#14b8a6" size="large" />
-        <p class="text-[11px] font-black uppercase tracking-widest text-slate-400">Preparing your questions...</p>
+        <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Preparing your questions...</p>
       </div>
 
       <div v-else-if="quizStore.error" class="py-20">
@@ -47,16 +47,16 @@
             <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
             </div>
-            <h3 class="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white mb-4">Something went wrong</h3>
-            <p class="text-slate-500 mb-8">{{ quizStore.error }}</p>
-            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-slate-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Go back to Dashboard</button>
+            <h3 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Something went wrong</h3>
+            <p class="text-zinc-500 mb-8">{{ quizStore.error }}</p>
+            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Go back to Dashboard</button>
         </NeoCard>
       </div>
 
       <div v-else-if="quiz && currentQuestion" class="animate-in fade-in slide-in-from-bottom-6 duration-700">
         <!-- Question Core -->
         <div class="mb-12">
-            <h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-zinc-100 leading-[1.3] text-balance">
+            <h1 class="text-2xl md:text-3xl font-bold text-zinc-800 dark:text-zinc-100 leading-[1.3] text-balance">
                 {{ currentQuestion.text }}
             </h1>
         </div>
@@ -105,7 +105,7 @@
                 <div class="flex items-center gap-3 mb-4">
                   <span class="text-[10px] font-black uppercase tracking-[0.2em]" :class="isCurrentCorrect ? 'text-emerald-500' : 'text-red-500'">Explanation</span>
                 </div>
-                <p class="text-[16px] leading-relaxed text-slate-700 dark:text-zinc-300">
+                <p class="text-[16px] leading-relaxed text-zinc-700 dark:text-zinc-300">
                   {{ currentQuestion.explanation || 'An explanation is not available for this question. Check your course materials for more details.' }}
                 </p>
             </NeoCard>
@@ -144,14 +144,14 @@
             <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
             </div>
-            <h3 class="text-2xl font-black uppercase tracking-tight text-slate-800 dark:text-white mb-2">Test Finished</h3>
-            <p class="text-[14px] text-slate-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
+            <h3 class="text-2xl font-black uppercase tracking-tight text-zinc-800 dark:text-white mb-2">Test Finished</h3>
+            <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
                 You got <span class="text-emerald-500 font-black text-2xl mx-1">{{ resultModal.score }}/{{ resultModal.total }}</span> questions right.
             </p>
             
             <div class="flex flex-col gap-3">
-              <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Try Again</button>
-              <button @click="goToResults" class="w-full py-4 rounded-xl bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-slate-200 transition-all">See Detailed Results</button>
+              <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Try Again</button>
+              <button @click="goToResults" class="w-full py-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-200 transition-all">See Detailed Results</button>
             </div>
         </NeoCard>
     </div>
@@ -219,14 +219,14 @@ onBeforeUnmount(() => {
 });
 
 const getOptionStyles = (option) => {
-  if (!answered.value) return { border: 'border-slate-200 dark:border-zinc-800 bg-transparent', text: 'text-slate-600 dark:text-zinc-400' };
+  if (!answered.value) return { border: 'border-zinc-200 dark:border-zinc-800 bg-transparent', text: 'text-zinc-600 dark:text-zinc-400' };
   if (option.isCorrect) return { border: 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-emerald-500/5', text: 'text-emerald-600 dark:text-emerald-400 font-bold' };
   if (isSelected(option)) return { border: 'border-red-500 bg-red-500/5', text: 'text-red-600 dark:text-red-400' };
-  return { border: 'border-slate-100 dark:border-zinc-900 opacity-40', text: 'text-slate-400' };
+  return { border: 'border-zinc-100 dark:border-zinc-900 opacity-40', text: 'text-zinc-400' };
 };
 
 const getBadgeStyles = (option) => {
-  if (!answered.value) return 'border-slate-200 dark:border-zinc-800 text-slate-400 group-hover:border-brand group-hover:text-brand';
+  if (!answered.value) return 'border-zinc-200 dark:border-zinc-800 text-zinc-400 group-hover:border-brand group-hover:text-brand';
   if (option.isCorrect) return 'bg-emerald-500 text-white border-emerald-500 scale-110';
   if (isSelected(option)) return 'bg-red-500 text-white border-red-500';
   return 'border-zinc-100 dark:border-zinc-800 text-zinc-300 opacity-30';

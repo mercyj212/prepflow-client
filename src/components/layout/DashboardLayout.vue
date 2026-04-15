@@ -2,18 +2,18 @@
   <div class="min-h-screen bg-[#f6f6f4] dark:bg-zinc-950 flex font-['Inter'] transition-colors">
     <Sidebar />
     <main class="flex-1 ml-20 md:ml-64 transition-all duration-300 min-h-screen flex flex-col">
-      <header class="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-slate-200 dark:border-white/5 flex items-center justify-between px-8 sticky top-0 z-40">
+      <header class="h-20 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-md border-b border-zinc-200 dark:border-white/5 flex items-center justify-between px-8 sticky top-0 z-40">
         <div>
-          <h1 class="text-xl font-bold tracking-tight text-slate-900 dark:text-white capitalize">{{ title }}</h1>
+          <h1 class="text-xl font-bold tracking-tight text-zinc-900 dark:text-white capitalize">{{ title }}</h1>
         </div>
         <div class="flex items-center gap-6">
           <ThemeToggle />
-          <div class="flex items-center gap-3 border-l pl-6 border-slate-200 dark:border-white/10">
+          <div class="flex items-center gap-3 border-l pl-6 border-zinc-200 dark:border-white/10">
              <div class="flex flex-col items-end">
-               <span class="text-[13px] font-bold text-slate-900 dark:text-white">{{ authStore.user?.fullName || 'Student' }}</span>
-               <span class="text-[11px] font-medium text-slate-500 uppercase tracking-widest">Premium</span>
+               <span class="text-[13px] font-bold text-zinc-900 dark:text-white">{{ authStore.user?.fullName || 'Student' }}</span>
+               <span class="text-[11px] font-medium text-zinc-500 uppercase tracking-widest">Premium</span>
              </div>
-             <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-indigo-500/20 ring-2 ring-white dark:ring-zinc-900">
+             <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand-500/20 ring-2 ring-white dark:ring-zinc-900">
                {{ authStore.user?.fullName?.charAt(0).toUpperCase() || 'U' }}
              </div>
           </div>

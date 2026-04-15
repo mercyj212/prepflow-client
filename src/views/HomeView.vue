@@ -5,7 +5,7 @@
       style="background-image: url('/prepup%20mockup.jpg'); background-size: cover; background-position: center;"
     >
       <div class="absolute inset-0 bg-[linear-gradient(180deg,rgba(4,8,20,0.58),rgba(4,8,20,0.84))]"></div>
-      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(63,124,255,0.22),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(147,51,234,0.16),transparent_30%)]"></div>
+      <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.12),transparent_35%),radial-gradient(circle_at_85%_15%,rgba(20,184,166,0.08),transparent_30%)]"></div>
 
       <nav class="relative z-20 bg-transparent">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
@@ -13,7 +13,7 @@
           <BrandLogo />
         </div>
         <div class="hidden md:flex items-center gap-7 text-[14px] font-bold text-white/85">
-          <a href="#" class="text-white border-b border-[#1a3c8f] pb-1">Home</a>
+          <a href="#" class="text-white border-b border-brand pb-1">Home</a>
           <a href="#features" class="hover:text-white">Features</a>
           <a href="#stats" class="hover:text-white">Results</a>
           <a href="#contact" class="hover:text-white">Contact</a>
@@ -22,7 +22,7 @@
           <router-link to="/login" class="hidden sm:block text-[14px] font-semibold text-white/90 hover:text-white transition px-4 py-2">
             Log in
           </router-link>
-          <router-link to="/register" class="text-[14px] font-semibold text-slate-900 bg-white border border-white px-4 py-2 rounded-lg hover:bg-slate-100 transition shadow-lg shadow-white/5">
+          <router-link to="/register" class="text-[14px] font-semibold text-zinc-900 bg-white border border-white px-4 py-2 rounded-lg hover:bg-zinc-100 transition shadow-lg shadow-white/5">
             Get started
           </router-link>
         </div>
@@ -38,7 +38,7 @@
             Practice real CBT questions, track your progress, and boost your confidence
           </p>
           <div class="mt-7 flex flex-col sm:flex-row justify-center gap-3">
-            <router-link to="/register" class="px-5 py-3 rounded-xl bg-white border border-white text-slate-900 text-[15px] font-semibold shadow-[0_8px_24px_rgba(255,255,255,0.14)] hover:bg-slate-100 hover:-translate-y-0.5 transition">
+            <router-link to="/register" class="px-5 py-3 rounded-xl bg-white border border-white text-zinc-900 text-[15px] font-semibold shadow-[0_8px_24px_rgba(255,255,255,0.14)] hover:bg-zinc-100 hover:-translate-y-0.5 transition">
               Start Practicing
             </router-link>
             <router-link to="/practice/sample" class="px-5 py-3 rounded-xl bg-zinc-800/85 backdrop-blur border border-zinc-500/40 text-zinc-100 text-[15px] font-semibold hover:bg-zinc-700/85 transition">
@@ -99,7 +99,7 @@
             <p class="text-[12px] text-white/70 mt-1">Support</p>
           </div>
         </div>
-        <router-link to="/register" class="text-[14px] font-semibold rounded-lg px-5 py-2.5 bg-white border border-white text-slate-900 shadow-[0_8px_24px_rgba(255,255,255,0.14)] hover:bg-slate-100 hover:-translate-y-0.5 transition">
+        <router-link to="/register" class="text-[14px] font-semibold rounded-lg px-5 py-2.5 bg-white border border-white text-zinc-900 shadow-[0_8px_24px_rgba(255,255,255,0.14)] hover:bg-zinc-100 hover:-translate-y-0.5 transition">
           Get started free
         </router-link>
       </section>
@@ -110,7 +110,7 @@
           <router-link to="/login" class="px-4 py-2 rounded-lg border border-white/20 text-[14px] font-semibold text-white/90 hover:border-white/35 transition">
             Log in
           </router-link>
-          <router-link to="/register" class="px-4 py-2 rounded-lg border border-white bg-white text-[14px] font-semibold text-slate-900 hover:bg-slate-100 transition">
+          <router-link to="/register" class="px-4 py-2 rounded-lg border border-white bg-white text-[14px] font-semibold text-zinc-900 hover:bg-zinc-100 transition">
             Create account
           </router-link>
         </div>
@@ -160,9 +160,9 @@ import BrandLogo from '../components/BrandLogo.vue';
   place-items: center;
   font-size: 12px;
   font-weight: 500;
-  border: 1px solid rgba(133, 171, 255, 0.55);
-  background: rgba(63, 124, 255, 0.2);
-  color: #d8e5ff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .animate-float-slow {

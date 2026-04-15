@@ -4,20 +4,20 @@
 
       <!-- Header -->
       <header class="mb-10">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Settings</h1>
-        <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-500">Manage your account, appearance, and preferences.</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Settings</h1>
+        <p class="text-[15px] font-medium text-zinc-500 dark:text-zinc-500">Manage your account, appearance, and preferences.</p>
       </header>
 
       <!-- Profile Section -->
       <section class="mb-8">
-        <h2 class="text-[11px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Profile</h2>
+        <h2 class="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Profile</h2>
         <div class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo p-6 flex flex-col gap-5 border border-white/20 dark:border-white/5">
 
           <!-- Avatar + Name -->
           <div class="flex items-center gap-6">
             <div class="relative group cursor-pointer flex-shrink-0" @click="triggerFileInput">
               <!-- Avatar Circle -->
-              <div class="w-20 h-20 rounded-full border-4 border-white dark:border-white/10 shadow-lg overflow-hidden bg-slate-200 transition-all group-hover:border-brand/40">
+              <div class="w-20 h-20 rounded-full border-4 border-white dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all group-hover:border-brand/40">
                 <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
                 
                 <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
@@ -33,28 +33,28 @@
               <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
             </div>
             <div>
-              <p class="text-[17px] font-semibold text-slate-800 dark:text-zinc-100">{{ authStore.user?.fullName || 'Student' }}</p>
-              <p class="text-[13px] text-slate-500 dark:text-zinc-500">{{ authStore.user?.email }}</p>
+              <p class="text-[17px] font-semibold text-zinc-800 dark:text-zinc-100">{{ authStore.user?.fullName || 'Student' }}</p>
+              <p class="text-[13px] text-zinc-500 dark:text-zinc-500">{{ authStore.user?.email }}</p>
             </div>
           </div>
 
           <!-- Info -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500 mb-1">Full Name</label>
-              <div class="rounded-xl px-4 py-2.5 bg-slate-100 dark:bg-zinc-800 text-[14px] text-slate-700 dark:text-zinc-300">{{ authStore.user?.fullName || '—' }}</div>
+              <label class="block text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Full Name</label>
+              <div class="rounded-xl px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 text-[14px] text-zinc-700 dark:text-zinc-300">{{ authStore.user?.fullName || '—' }}</div>
             </div>
             <div>
-              <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500 mb-1">Email</label>
-              <div class="rounded-xl px-4 py-2.5 bg-slate-100 dark:bg-zinc-800 text-[14px] text-slate-700 dark:text-zinc-300 truncate">{{ authStore.user?.email || '—' }}</div>
+              <label class="block text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Email</label>
+              <div class="rounded-xl px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 text-[14px] text-zinc-700 dark:text-zinc-300 truncate">{{ authStore.user?.email || '—' }}</div>
             </div>
             <div>
-              <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500 mb-1">Role</label>
-              <div class="rounded-xl px-4 py-2.5 bg-slate-100 dark:bg-zinc-800 text-[14px] text-slate-700 dark:text-zinc-300 capitalize">{{ authStore.user?.role || 'student' }}</div>
+              <label class="block text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Role</label>
+              <div class="rounded-xl px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 text-[14px] text-zinc-700 dark:text-zinc-300 capitalize">{{ authStore.user?.role || 'student' }}</div>
             </div>
             <div>
-              <label class="block text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-zinc-500 mb-1">Status</label>
-              <div class="rounded-xl px-4 py-2.5 bg-slate-100 dark:bg-zinc-800 text-[14px] flex items-center gap-2">
+              <label class="block text-[11px] font-bold uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-1">Status</label>
+              <div class="rounded-xl px-4 py-2.5 bg-zinc-100 dark:bg-zinc-800 text-[14px] flex items-center gap-2">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 inline-block"></span>
                 <span class="text-emerald-500 dark:text-emerald-400 font-medium">Verified & Active</span>
               </div>
@@ -65,12 +65,12 @@
 
       <!-- Appearance Section -->
       <section class="mb-8">
-        <h2 class="text-[11px] font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Appearance</h2>
+        <h2 class="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-widest mb-4">Appearance</h2>
         <div class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo p-6 border border-white/20 dark:border-white/5">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-[15px] font-semibold text-slate-800 dark:text-zinc-100 mb-0.5">Theme</p>
-              <p class="text-[13px] text-slate-500 dark:text-zinc-500">Toggle between light and dark mode.</p>
+              <p class="text-[15px] font-semibold text-zinc-800 dark:text-zinc-100 mb-0.5">Theme</p>
+              <p class="text-[13px] text-zinc-500 dark:text-zinc-500">Toggle between light and dark mode.</p>
             </div>
             <ThemeToggle />
           </div>
@@ -83,8 +83,8 @@
         <div class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo p-6 border border-rose-500/20">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-[15px] font-semibold text-slate-800 dark:text-zinc-100 mb-0.5">Sign Out</p>
-              <p class="text-[13px] text-slate-500 dark:text-zinc-500">You will be redirected to the login page.</p>
+              <p class="text-[15px] font-semibold text-zinc-800 dark:text-zinc-100 mb-0.5">Sign Out</p>
+              <p class="text-[13px] text-zinc-500 dark:text-zinc-500">You will be redirected to the login page.</p>
             </div>
             <button @click="logout" class="px-5 py-2 rounded-xl text-[13px] font-semibold bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-all duration-200">
               Log Out
@@ -113,7 +113,7 @@
         </div>
 
         <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex gap-4">
-          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
+          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
             Cancel
           </button>
           <button @click="confirmAvatarUpload" 

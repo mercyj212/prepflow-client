@@ -15,21 +15,63 @@
             <BrandLogo />
           </div>
 
-          <div class="ml-auto flex items-center gap-4 md:gap-6">
-             <div class="relative group cursor-pointer" @click="triggerFileInput">
-               <!-- Avatar Circle -->
-               <div class="w-9 h-9 rounded-full border-[1.5px] border-white/40 dark:border-white/10 shadow-lg overflow-hidden bg-slate-200 transition-all group-hover:border-brand/50">
-                 <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
-                 
-                 <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
-                   <span class="animate-spin text-white">⚙</span>
+          <div class="ml-auto flex items-center gap-4 md:gap-8">
+             <!-- Profile Section -->
+             <div class="relative flex items-center gap-3">
+               <!-- Name Label (Clickable) -->
+               <div @click="showProfileMenu = !showProfileMenu" class="hidden sm:flex flex-col items-end cursor-pointer group/name">
+                 <span class="text-[13px] font-black text-zinc-800 dark:text-zinc-100 tracking-tight group-hover/name:text-zinc-500 dark:group-hover/name:text-zinc-400 transition-colors text-right">
+                   {{ authStore.user?.fullName || 'PrepUp User' }}
+                 </span>
+                 <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Student</span>
+               </div>
+
+               <!-- Avatar Circle with Menu Toggle -->
+               <div class="relative group">
+                 <div @click="showProfileMenu = !showProfileMenu" class="w-10 h-10 rounded-full border-2 border-white/40 dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all cursor-pointer group-hover:border-brand/50 active:scale-95">
+                   <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
+                   <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
+                     <span class="animate-spin text-white">⚙</span>
+                   </div>
+                 </div>
+
+                 <!-- Plus Badge (Triggers File Upload) -->
+                 <div @click="triggerFileInput" class="absolute -right-1 -bottom-1 w-[18px] h-[18px] bg-brand dark:bg-zinc-100 rounded-full border-2 border-[var(--neo-surface)] flex items-center justify-center shadow-sm transition-transform cursor-pointer hover:scale-110 active:scale-90 z-10">
+                   <svg class="w-2.5 h-2.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
                  </div>
                </div>
 
-               <!-- Plus Badge (Bottom-right) -->
-               <div class="absolute -right-1 -bottom-1 w-[18px] h-[18px] bg-brand dark:bg-zinc-100 rounded-full border-2 border-[var(--neo-surface)] flex items-center justify-center shadow-sm transition-transform group-hover:scale-110">
-                 <svg class="w-2.5 h-2.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
-               </div>
+               <!-- 🔽 PROFILE DROPDOWN MENU -->
+               <Transition
+                 enter-active-class="transition duration-200 ease-out"
+                 enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                 enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                 leave-active-class="transition duration-150 ease-in"
+                 leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                 leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+               >
+                 <div v-if="showProfileMenu" class="absolute top-14 right-0 w-64 bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-100 dark:border-white/5 py-3 px-3 z-50 overflow-hidden">
+                    <!-- Invisible Backdrop to catch clicks outside (only when menu is open) -->
+                    <div class="fixed inset-0 z-[-1] bg-transparent" @click.stop="showProfileMenu = false"></div>
+
+                    <div class="px-5 py-4 mb-2 border-b border-zinc-50 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5 rounded-[20px]">
+                      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-1">Active Session</p>
+                      <p class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 truncate">{{ authStore.user?.email }}</p>
+                    </div>
+
+                    <div class="space-y-1">
+                      <router-link to="/settings" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
+                        <svg class="w-4 h-4 opacity-50 group-hover/item:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        Settings
+                      </router-link>
+
+                      <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-[18px] transition-all group/item">
+                        <svg class="w-4 h-4 opacity-70 group-hover/item:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
+                        Switch Profile
+                      </button>
+                    </div>
+                 </div>
+               </Transition>
 
                <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
              </div>
@@ -62,7 +104,7 @@
         </div>
 
         <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex gap-4">
-          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
+          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
             Cancel
           </button>
           <button @click="confirmAvatarUpload" 
@@ -95,6 +137,7 @@ const authStore = useAuthStore();
 
 const fileInput = ref(null);
 const isUploading = ref(false);
+const showProfileMenu = ref(false);
 const previewModal = ref({ show: false, url: '', file: null });
 
 const avatarUrl = computed(() => {
@@ -138,6 +181,11 @@ const confirmAvatarUpload = async () => {
   } finally {
     isUploading.value = false;
   }
+};
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push('/');
 };
 
 const appTitle = computed(() => {

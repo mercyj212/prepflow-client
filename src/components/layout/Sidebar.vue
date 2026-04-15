@@ -1,5 +1,5 @@
 <template>
-  <aside class="fixed top-0 left-0 h-screen w-20 md:w-64 bg-slate-900 text-slate-300 flex flex-col shadow-2xl z-50 transition-all duration-300 group hover:w-64">
+  <aside class="fixed top-0 left-0 h-screen w-20 md:w-64 bg-zinc-900 text-zinc-300 flex flex-col shadow-2xl z-50 transition-all duration-300 group hover:w-64">
     <!-- Logo -->
     <div class="h-20 flex items-center justify-center border-b border-white/10 relative overflow-hidden shrink-0">
         <span class="text-white font-black tracking-widest text-xl opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity">PREPFLOW</span>
@@ -10,21 +10,29 @@
     
     <!-- Navigation -->
     <nav class="flex-1 py-8 flex flex-col gap-3 relative overflow-y-auto overflow-x-hidden">
-      <router-link to="/dashboard" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium transition-all group/item" active-class="bg-indigo-600 text-white shadow-lg shadow-indigo-500/20" :class="{'bg-white/5': $route.path !== '/dashboard'}">
+      <router-link to="/dashboard" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium transition-all group/item" active-class="bg-brand-600 text-white shadow-lg shadow-brand-500/20" :class="{'bg-white/5': $route.path !== '/dashboard'}">
         <span class="text-xl shrink-0 group-[.router-link-active]/item:scale-110 transition-transform">📊</span>
         <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Dashboard</span>
       </router-link>
-      <router-link to="/practice" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
-        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">📝</span>
-        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Practice</span>
+      <router-link to="/subjects" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-zinc-800 text-white shadow-lg">
+        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">📚</span>
+        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Courses</span>
       </router-link>
-      <router-link to="/study" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
-        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">🗂️</span>
+      <router-link to="/flashcards" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-brand-600 text-white shadow-lg shadow-brand-500/20">
+        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">🃏</span>
         <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Flashcards</span>
       </router-link>
-      <router-link to="/help" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-indigo-600 text-white shadow-lg shadow-indigo-500/20">
-        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">💡</span>
-        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Help Center</span>
+      <router-link to="/chat" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-brand-600 text-white shadow-lg shadow-brand-500/20">
+        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">💬</span>
+        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Chat</span>
+      </router-link>
+      <router-link to="/games" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-brand-600 text-white shadow-lg shadow-brand-500/20">
+        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">🎮</span>
+        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Games</span>
+      </router-link>
+      <router-link to="/settings" class="flex items-center px-6 py-4 mx-4 rounded-xl text-sm font-medium hover:bg-white/10 transition-all group/item" active-class="bg-brand-600 text-white shadow-lg shadow-brand-500/20">
+        <span class="text-xl shrink-0 group-hover/item:scale-110 transition-transform">⚙️</span>
+        <span class="ml-4 opacity-0 md:opacity-100 group-hover:opacity-100 transition-opacity whitespace-nowrap">Settings</span>
       </router-link>
     </nav>
     

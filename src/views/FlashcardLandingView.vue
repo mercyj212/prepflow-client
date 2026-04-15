@@ -4,8 +4,8 @@
 
       <!-- Header -->
       <header class="mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-slate-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Flashcards</h1>
-        <p class="text-[15px] font-medium text-slate-500 dark:text-zinc-500">Select a course to start your flashcard session.</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-400 dark:text-zinc-400 uppercase tracking-widest mb-2">Flashcards</h1>
+        <p class="text-[15px] font-medium text-zinc-500 dark:text-zinc-500">Select a course to start your flashcard session.</p>
       </header>
 
       <!-- Loading -->
@@ -13,9 +13,9 @@
 
       <!-- Empty State -->
       <div v-else-if="quizStore.quizzes.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="w-20 h-20 rounded-[20px] bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-3xl mb-5">✧</div>
-        <h2 class="text-xl font-semibold text-slate-700 dark:text-zinc-300 mb-2">No decks available</h2>
-        <p class="text-[13px] text-slate-400 dark:text-zinc-500">Courses added by your admin will appear here.</p>
+        <div class="w-20 h-20 rounded-[20px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-3xl mb-5">✧</div>
+        <h2 class="text-xl font-semibold text-zinc-700 dark:text-zinc-300 mb-2">No decks available</h2>
+        <p class="text-[13px] text-zinc-400 dark:text-zinc-500">Courses added by your admin will appear here.</p>
       </div>
 
       <!-- Course Card Grid -->
@@ -28,17 +28,17 @@
         >
           <!-- Icon + card count -->
           <div class="flex items-start justify-between mb-5">
-            <div class="w-12 h-12 rounded-[16px] bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-[22px]">
+            <div class="w-12 h-12 rounded-[16px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-[22px]">
               {{ getIcon(quiz.title) }}
             </div>
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-zinc-800">
-              <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 dark:text-zinc-400">{{ quiz.questions?.length || 0 }} cards</span>
+            <div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 dark:text-zinc-400">{{ quiz.questions?.length || 0 }} cards</span>
             </div>
           </div>
 
           <!-- Title + description -->
-          <h3 class="text-[17px] font-semibold text-slate-800 dark:text-zinc-100 mb-1">{{ quiz.title }}</h3>
-          <p class="text-[13px] text-slate-500 dark:text-zinc-500 mb-5">{{ quiz.description || 'Tap to review the full flashcard deck.' }}</p>
+          <h3 class="text-[17px] font-semibold text-zinc-800 dark:text-zinc-100 mb-1">{{ quiz.title }}</h3>
+          <p class="text-[13px] text-zinc-500 dark:text-zinc-500 mb-5">{{ quiz.description || 'Tap to review the full flashcard deck.' }}</p>
 
           <!-- Footer row -->
           <div class="pt-4 border-t border-dashed border-black/10 dark:border-white/10 flex items-center justify-between">
@@ -47,12 +47,12 @@
               <div class="flex -space-x-1">
                 <div v-for="n in Math.min(3, quiz.questions?.length || 0)" :key="n"
                   class="w-5 h-7 rounded-md border border-white/30 dark:border-white/10 shadow-sm"
-                  :class="n === 1 ? 'bg-slate-300 dark:bg-zinc-600' : n === 2 ? 'bg-slate-200 dark:bg-zinc-700' : 'bg-slate-100 dark:bg-zinc-800'">
+                  :class="n === 1 ? 'bg-zinc-300 dark:bg-zinc-600' : n === 2 ? 'bg-zinc-200 dark:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800'">
                 </div>
               </div>
-              <span class="text-[12px] text-slate-400 dark:text-zinc-500">Flashcard deck</span>
+              <span class="text-[12px] text-zinc-400 dark:text-zinc-500">Flashcard deck</span>
             </div>
-            <span class="text-[13px] font-medium text-slate-500 group-hover:translate-x-1 transition-transform">Study →</span>
+            <span class="text-[13px] font-medium text-zinc-500 group-hover:translate-x-1 transition-transform">Study →</span>
           </div>
         </div>
       </div>

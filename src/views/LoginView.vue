@@ -23,8 +23,8 @@
       </div>
 
       <!-- Simple geometric decoration -->
-      <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-zinc-800/50 rounded-full blur-3xl mix-blend-overlay"></div>
-      <div class="absolute bottom-[-10%] left-[10%] w-[30rem] h-[30rem] bg-indigo-500/10 rounded-full blur-3xl mix-blend-overlay"></div>
+      <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-brand/5 rounded-full blur-[100px] pointer-events-none"></div>
+      <div class="absolute bottom-[-10%] left-[10%] w-[30rem] h-[30rem] bg-brand/5 rounded-full blur-3xl mix-blend-overlay"></div>
     </div>
 
     <!-- Right panel - Form -->
@@ -40,8 +40,8 @@
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
 
-            <div class="w-16 h-16 bg-indigo-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg class="w-8 h-8 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
               </svg>
             </div>
@@ -62,7 +62,7 @@
                 ref="digitRefs"
                 type="text"
                 maxlength="1"
-                class="w-full h-12 text-center text-xl font-black bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:border-indigo-500 dark:focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all text-zinc-900 dark:text-white"
+                class="w-full h-12 text-center text-xl font-black bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl focus:border-brand dark:focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 transition-all text-zinc-900 dark:text-white"
               />
             </div>
 
@@ -77,7 +77,7 @@
             >
               <span v-if="!authStore.loading">Verify & Log in -></span>
               <span v-else class="flex items-center justify-center gap-2">
-                <div class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                <div class="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
                 Verifying...
               </span>
             </button>
@@ -98,8 +98,8 @@
         <!-- Success Fancy Display -->
         <div v-if="showSuccess" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-all duration-700 animate-in fade-in">
           <div class="flex flex-col items-center gap-6 scale-up-center">
-            <div class="w-16 h-16 rounded-full bg-black dark:bg-white flex items-center justify-center shadow-2xl">
-              <svg class="w-8 h-8 text-white dark:text-black" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand/10 ring-2 ring-white dark:ring-zinc-900">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path class="draw-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
@@ -124,7 +124,7 @@
               required
               v-model="email"
               placeholder="m@example.com"
-              class="block w-full rounded-md border border-zinc-300 dark:border-zinc-700 bg-transparent px-3 py-2 text-zinc-900 dark:text-white placeholder-zinc-400 dark:placeholder-zinc-600 focus:border-black dark:focus:border-white focus:outline-none focus:ring-1 focus:ring-black dark:focus:ring-white transition-colors"
+              class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-brand/10 focus:border-brand transition-all outline-none"
             />
           </div>
           

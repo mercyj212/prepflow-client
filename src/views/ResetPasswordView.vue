@@ -5,8 +5,8 @@
     <div class="w-full max-w-sm relative">
       <!-- 🍱 SUCCESS MODAL -->
       <div v-if="success" class="text-center animate-in fade-in zoom-in duration-500">
-        <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-500/20">
-          <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-brand/20">
+          <svg class="w-10 h-10 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -43,7 +43,7 @@
                 v-model="password"
                 required
                 placeholder="••••••••"
-                class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all outline-none"
+                class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-brand/10 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all outline-none"
               />
               <button 
                 type="button" 
@@ -61,7 +61,7 @@
                 <div v-for="i in 4" :key="i" class="flex-1 rounded-full transition-all duration-500" :class="[ i <= passwordStrength ? strengthColor : 'bg-zinc-100 dark:bg-zinc-800' ]"></div>
               </div>
               <div class="grid grid-cols-2 gap-2 mt-2">
-                <div v-for="(check, index) in passwordChecks" :key="index" class="flex items-center gap-1.5 transition-all duration-300" :class="check.valid ? 'text-emerald-600 dark:text-emerald-400' : 'text-zinc-400 dark:text-zinc-600'">
+                <div v-for="(check, index) in passwordChecks" :key="index" class="flex items-center gap-1.5 transition-all duration-300" :class="check.valid ? 'text-brand dark:text-brand' : 'text-zinc-400 dark:text-zinc-600'">
                   <svg class="w-3.5 h-3.5" :class="check.valid ? 'opacity-100' : 'opacity-30'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
                   <span class="text-[10px] font-black uppercase tracking-wider">{{ check.label }}</span>
                 </div>
@@ -69,7 +69,7 @@
             </div>
           </div>
 
-          <div v-if="error" class="text-red-500 text-[10px] font-black uppercase tracking-wider text-center p-3 bg-red-500/10 rounded-xl border border-red-500/20">
+          <div v-if="error" class="text-red-500 text-[10px] font-black uppercase tracking-wider text-center p-3 bg-red-500/10 rounded-xl border border-brand/20">
             {{ error }}
           </div>
 
