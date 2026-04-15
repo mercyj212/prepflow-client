@@ -31,13 +31,13 @@
                  <div @click="showProfileMenu = !showProfileMenu" class="w-10 h-10 rounded-full border-2 border-white/40 dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all cursor-pointer group-hover:border-brand/50 active:scale-95">
                    <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
                    <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
-                     <span class="animate-spin text-white">⚙</span>
+                     <Loader2 class="animate-spin text-white w-4 h-4" />
                    </div>
                  </div>
 
                  <!-- Plus Badge (Triggers File Upload) -->
                  <div @click="triggerFileInput" class="absolute -right-1 -bottom-1 w-[18px] h-[18px] bg-brand dark:bg-zinc-100 rounded-full border-2 border-[var(--neo-surface)] flex items-center justify-center shadow-sm transition-transform cursor-pointer hover:scale-110 active:scale-90 z-10">
-                   <svg class="w-2.5 h-2.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
+                   <Plus :size="10" :stroke-width="4" class="text-white dark:text-zinc-900" />
                  </div>
                </div>
 
@@ -61,13 +61,13 @@
 
                     <div class="space-y-1">
                       <router-link to="/settings" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
-                        <svg class="w-4 h-4 opacity-50 group-hover/item:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                        <Settings :size="16" :stroke-width="2" class="opacity-50 group-hover/item:opacity-100 transition-opacity" />
                         Settings
                       </router-link>
 
                       <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-[18px] transition-all group/item">
-                        <svg class="w-4 h-4 opacity-70 group-hover/item:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path></svg>
-                        Switch Profile
+                        <LogOut :size="16" :stroke-width="2" class="opacity-70 group-hover/item:opacity-100 transition-opacity" />
+                        Sign Out
                       </button>
                     </div>
                  </div>
@@ -93,7 +93,9 @@
             <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Update Profile Image</h2>
             <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">New Look Preview</p>
           </div>
-          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
+            <X :size="20" />
+          </button>
         </div>
 
         <div class="p-10 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
@@ -109,8 +111,8 @@
           </button>
           <button @click="confirmAvatarUpload" 
             :disabled="isUploading"
-            class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
-            {{ isUploading ? 'Uploading...' : 'Save Image ✨' }}
+            class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
+            {{ isUploading ? 'Uploading...' : 'Save Changes' }}
           </button>
         </div>
       </div>
@@ -119,8 +121,15 @@
 </template>
 
 <script setup>
-import { computed, ref, defineProps } from 'vue';
-import { useRoute } from 'vue-router';
+import { computed, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { 
+  Plus, 
+  Settings, 
+  LogOut, 
+  Loader2, 
+  X 
+} from 'lucide-vue-next';
 import { useAuthStore } from '../../store/auth';
 import NeoSidebarRail from './NeoSidebarRail.vue';
 import BrandLogo from '../BrandLogo.vue';
@@ -133,6 +142,7 @@ const props = defineProps({
 });
 
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 
 const fileInput = ref(null);
@@ -183,15 +193,32 @@ const confirmAvatarUpload = async () => {
   }
 };
 
-const handleLogout = () => {
-  authStore.logout();
-  router.push('/');
+const handleLogout = async () => {
+  await authStore.logout();
+  router.push('/login');
 };
 
 const appTitle = computed(() => {
   return route.meta.title || route.name || 'PrepUp CBT';
 });
 </script>
+
+<style>
+/* Subtle scrollbar for the inner canvas */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(150, 150, 150, 0.3);
+  border-radius: 20px;
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+</style>
 
 <style>
 /* Subtle scrollbar for the inner canvas */

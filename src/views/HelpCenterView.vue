@@ -13,39 +13,39 @@
         <!-- Direct Support -->
         <div class="bg-zinc-900 dark:bg-zinc-800 p-7 rounded-[24px] text-white shadow-neo group cursor-pointer transition-all hover:-translate-y-1 duration-200">
           <div class="w-12 h-12 bg-white/10 rounded-[14px] flex items-center justify-center mb-5 group-hover:bg-white/20 transition-colors">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <Mail :size="24" />
           </div>
           <h3 class="text-lg font-bold mb-2 uppercase tracking-tight">Direct Support</h3>
           <p class="text-white/60 mb-5 text-[13px]">Have a specific issue? Contact our help desk immediately.</p>
           <a href="mailto:mercyjay510@gmail.com" class="inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-widest hover:underline">
             mercyjay510@gmail.com
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+            <ArrowRight :size="12" />
           </a>
         </div>
 
         <!-- Account Security -->
         <div class="bg-[var(--neo-surface)] p-7 rounded-[24px] border border-white/20 dark:border-white/5 shadow-neo transition-all hover:-translate-y-1 duration-200">
           <div class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-[14px] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-zinc-700 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+            <Lock :size="24" class="text-zinc-700 dark:text-zinc-300" />
           </div>
           <h3 class="text-lg font-bold mb-2 uppercase tracking-tight text-zinc-800 dark:text-zinc-100">Account Access</h3>
           <p class="text-zinc-500 dark:text-zinc-500 mb-5 text-[13px]">Challenges with login, verification, or credentials?</p>
           <router-link to="/forgot-password" class="text-[12px] font-black uppercase tracking-widest text-zinc-700 dark:text-zinc-300 hover:underline flex items-center gap-2">
             Reset Password
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <ArrowRight :size="12" />
           </router-link>
         </div>
 
         <!-- Exam Guide -->
         <div class="bg-[var(--neo-surface)] p-7 rounded-[24px] border border-white/20 dark:border-white/5 shadow-neo transition-all hover:-translate-y-1 duration-200">
           <div class="w-12 h-12 bg-zinc-100 dark:bg-zinc-800 rounded-[14px] flex items-center justify-center mb-5">
-            <svg class="w-6 h-6 text-zinc-700 dark:text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+            <ClipboardList :size="24" class="text-zinc-700 dark:text-zinc-300" />
           </div>
           <h3 class="text-lg font-bold mb-2 uppercase tracking-tight text-zinc-800 dark:text-zinc-100">Exam Protocol</h3>
           <p class="text-zinc-500 dark:text-zinc-500 mb-5 text-[13px]">How PrepUp simulates real-world CBT environments.</p>
           <router-link to="/subjects" class="text-[12px] font-black uppercase tracking-widest text-zinc-700 dark:text-zinc-300 hover:underline flex items-center gap-2">
             Start Practice
-            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+            <ArrowRight :size="12" />
           </router-link>
         </div>
       </div>
@@ -57,7 +57,7 @@
           <details v-for="(faq, i) in faqs" :key="i" class="group bg-[var(--neo-surface)] border border-white/20 dark:border-white/5 rounded-[18px] shadow-neo overflow-hidden">
             <summary class="p-5 cursor-pointer flex items-center justify-between text-[14px] font-semibold text-zinc-800 dark:text-zinc-100 list-none group-open:bg-black/5 dark:group-open:bg-white/5 transition-colors">
               {{ faq.q }}
-              <svg class="w-4 h-4 shrink-0 ml-4 group-open:rotate-180 transition-transform text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              <ChevronDown :size="16" class="shrink-0 ml-4 group-open:rotate-180 transition-transform text-zinc-400 dark:text-zinc-500" />
             </summary>
             <div class="px-5 pb-5 pt-3 text-[14px] text-zinc-500 dark:text-zinc-400 leading-relaxed border-t border-black/5 dark:border-white/5">
               {{ faq.a }}
@@ -70,6 +70,7 @@
 </template>
 
 <script setup>
+import { Mail, ArrowRight, Lock, ClipboardList, ChevronDown } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 
 const faqs = [

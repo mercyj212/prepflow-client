@@ -1,7 +1,6 @@
 <template>
   <NeoAppShell>
-    <!-- Simplified 2-column paradigm:
-         Outer floating rail (NeoSidebarRail) -> Main Content -->
+    <!-- Simplified 2-column paradigm -->
     <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
       
       <!-- Main Content Column -->
@@ -20,7 +19,7 @@
             <!-- Left Side / Stats -->
             <div class="flex-[1.2] min-w-0 flex flex-col gap-14">
                
-               <!-- Massive Stat Card matching "Executions 340" -->
+               <!-- Massive Stat Card -->
                <div>
                  <h2 class="text-[18px] font-normal text-zinc-800 dark:text-zinc-100 mb-4 px-1">My Progress</h2>
                  <NeoCard variant="extruded" :glass="true" class="!rounded-[28px] p-10 relative group">
@@ -40,7 +39,7 @@
                    </div>
                    
                    <router-link to="/progress" class="text-[14px] font-medium text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 transition-colors flex items-center gap-2 group-hover:gap-3">
-                     See Report <span class="text-xl">→</span>
+                     See Report <ArrowRight :size="18" :stroke-width="2" class="transition-transform group-hover:translate-x-1" />
                    </router-link>
                  </NeoCard>
                </div>
@@ -65,7 +64,7 @@
                     </button>
                  </div>
 
-                 <!-- Metric details using inner depressed cards to match Search bar depth -->
+                 <!-- Metric details -->
                  <div v-if="currentTab === 'progress'" class="flex flex-col sm:flex-row items-center gap-6 mt-4 w-full animate-fade-in">
                    <div class="flex-1 flex flex-col gap-2 w-full">
                      <span class="text-[12px] font-bold uppercase tracking-widest text-zinc-400 px-2">Average Score</span>
@@ -102,7 +101,7 @@
                    </NeoCard>
                  </div>
 
-                 <!-- History View (Expanded) -->
+                 <!-- History View -->
                  <div v-else-if="currentTab === 'history'" class="mt-4 w-full animate-fade-in h-[140px] overflow-y-auto custom-scrollbar pr-2">
                    <div v-if="quizStore.mySubmissions.length === 0" class="text-center py-10 opacity-40 text-xs uppercase tracking-widest">No history found</div>
                    <div v-else class="space-y-3">
@@ -125,12 +124,12 @@
                
                <NeoCard variant="depressed" class="!rounded-[18px] mb-2 p-[10px] border-[0.5px] border-black/5 dark:border-white/5">
                  <div class="flex items-center gap-2 w-full h-full">
-                   <span class="text-zinc-400 ml-1 text-lg leading-none pt-0.5">⌕</span>
+                   <Search :size="18" :stroke-width="1.5" class="text-zinc-400 ml-1 shrink-0" />
                    <input type="text" placeholder="Search courses..." class="bg-transparent border-none outline-none text-[13px] text-zinc-700 dark:text-zinc-300 w-full placeholder:text-zinc-400 placeholder:font-normal focus:ring-0" />
                  </div>
                </NeoCard>
                
-               <!-- Main Inset Context Card mimicking the blank area at bottom right of image -->
+               <!-- Main Inset Context Card -->
                <div class="flex-1 min-h-[400px] rounded-[32px] bg-zinc-50 border border-zinc-200 dark:bg-zinc-800/30 dark:border-white/5 shadow-inner p-6 flex flex-col overflow-hidden relative">
                    <div class="absolute top-4 left-4 w-3 h-3 border-t border-l border-zinc-300"></div>
                    <div class="absolute bottom-4 left-4 w-3 h-3 border-b border-l border-zinc-300"></div>
@@ -140,7 +139,7 @@
                    <h3 class="text-[13px] font-medium text-zinc-500 mb-6 px-2 text-center uppercase tracking-widest">Recent Practice Sessions</h3>
                  
                    <div v-if="quizStore.mySubmissions.length === 0" class="flex-1 flex flex-col items-center justify-center opacity-50 text-center px-8">
-                     <span class="text-4xl mb-4">📭</span>
+                     <Inbox :size="48" :stroke-width="1" class="text-zinc-300 mb-4" />
                      <p class="text-[13px] font-medium text-zinc-500">Where your hard work shows up.</p>
                    </div>
                    
@@ -151,8 +150,8 @@
                           @click="openSubmission(sub)"
                         >
                            <div class="flex items-center gap-3">
-                              <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center text-sm shadow-inner group-hover:scale-110 transition-transform">
-                                📋
+                              <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
+                                <FileText :size="16" :stroke-width="1.5" class="text-zinc-500 dark:text-zinc-400" />
                               </div>
                               <div class="flex flex-col">
                                 <span class="text-[13px] font-medium text-zinc-800 dark:text-zinc-200">{{ sub.quiz?.title || 'Unknown Test' }}</span>
@@ -180,6 +179,12 @@ import {
   computed, 
   onMounted 
 } from 'vue';
+import { 
+  ArrowRight, 
+  Search, 
+  Inbox, 
+  FileText 
+} from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
@@ -210,15 +215,13 @@ const averageScore = computed(() => {
 const streakDays = computed(() => {
   if (!quizStore.mySubmissions.length) return 0;
   
-  // Get unique days in YYYY-MM-DD format for stable comparison
   const uniqueDays = [...new Set(
     quizStore.mySubmissions.map(sub => new Date(sub.createdAt).toISOString().split('T')[0])
-  )].sort((a, b) => b.localeCompare(a)); // Sort descending
+  )].sort((a, b) => b.localeCompare(a));
 
   const today = new Date().toISOString().split('T')[0];
   const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
 
-  // If latest activity wasn't today or yesterday, streak is broken
   if (uniqueDays[0] !== today && uniqueDays[0] !== yesterday) return 0;
 
   let streak = 0;

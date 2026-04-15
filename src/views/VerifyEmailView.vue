@@ -8,40 +8,37 @@
     </nav>
     <div class="flex-grow flex items-center justify-center p-6">
     
-    <!-- 🛡️ SOVEREIGN VERIFICATION CONTAINER -->
+    <!-- Verification Status Container -->
     <div v-if="loading" class="flex flex-col items-center gap-6 animate-pulse">
-      <div class="w-16 h-16 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div>
+      <div class="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
       <div class="text-center">
         <h2 class="text-2xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Account Verification</h2>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm mt-1">Validating your registration link...</p>
       </div>
     </div>
 
-    <!-- 🍱 SUCCESS MODAL -->
+    <!-- Success Container -->
     <div v-else-if="success" 
          class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-[40px] p-12 border border-zinc-100 dark:border-zinc-800 shadow-2xl shadow-emerald-500/10 text-center animate-fade-in">
-      <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
-        <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
-        </svg>
+      <div class="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 shadow-neo-inner">
+        <CheckCircle2 :size="40" :stroke-width="1.5" class="text-emerald-500" />
       </div>
       <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Email Verified</h2>
       <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
         Your PrepUp CBT account is now officially activated. You have full access to our global academic network.
       </p>
       <router-link to="/login" 
-                   class="inline-block w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-zinc-950/20 dark:shadow-none">
-        Go to Dashboard ->
+                   class="inline-flex items-center justify-center gap-3 w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-zinc-950/20 dark:shadow-none">
+        Go to Dashboard
+        <ArrowRight :size="18" />
       </router-link>
     </div>
 
-    <!-- 🚫 ERROR MODAL -->
+    <!-- Error Container -->
     <div v-else 
          class="bg-white dark:bg-zinc-900 w-full max-w-md rounded-[40px] p-12 border border-zinc-100 dark:border-zinc-800 shadow-2xl shadow-red-500/10 text-center animate-fade-in">
-      <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-8">
-        <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+      <div class="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-8 shadow-neo-inner">
+        <XCircle :size="40" :stroke-width="1.5" class="text-red-500" />
       </div>
       <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Link Invalid</h2>
       <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-10">
@@ -60,6 +57,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { CheckCircle2, XCircle, ArrowRight } from 'lucide-vue-next';
 import axios from 'axios';
 import BrandLogo from '../components/BrandLogo.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';
@@ -100,5 +98,12 @@ onMounted(async () => {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); filter: blur(10px); }
   to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+.shadow-neo-inner {
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05), inset -2px -2px 5px rgba(255,255,255,0.7);
+}
+.dark .shadow-neo-inner {
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3), inset -1px -1px 3px rgba(255,255,255,0.05);
 }
 </style>

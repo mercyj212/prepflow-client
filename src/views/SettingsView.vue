@@ -21,7 +21,7 @@
                 <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
                 
                 <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
-                  <span class="animate-spin text-white">⚙</span>
+                  <Loader2 :size="24" class="animate-spin text-white" />
                 </div>
               </div>
 
@@ -102,7 +102,9 @@
             <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Appearance Check</h2>
             <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">New Profile Preview</p>
           </div>
-          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
+            <X :size="20" />
+          </button>
         </div>
 
         <div class="p-10 flex items-center justify-center bg-zinc-50 dark:bg-zinc-950">
@@ -119,7 +121,7 @@
           <button @click="confirmAvatarUpload" 
             :disabled="isUploading"
             class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
-            {{ isUploading ? 'Uploading...' : 'Confirm New Look ✨' }}
+            {{ isUploading ? 'Uploading...' : 'Confirm New Look' }}
           </button>
         </div>
       </div>
@@ -130,6 +132,7 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { Loader2, X } from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import ThemeToggle from '../components/ThemeToggle.vue';

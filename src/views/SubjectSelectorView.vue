@@ -20,7 +20,7 @@
         </p>
       </header>
 
-      <!-- Adaptive Level Filter (Only for tertiary paths) -->
+      <!-- Adaptive Level Filter -->
       <div v-if="path !== 'entrance'" class="flex items-center gap-4 mb-16 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
         <button
           v-for="level in availableLevels"
@@ -50,8 +50,13 @@
         >
           <NeoCard variant="hoverable" class="p-8 h-full flex flex-col">
             <div class="flex items-start justify-between mb-8">
-              <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-[24px] shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
-                {{ getIcon(quiz.title) }}
+              <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
+                <component 
+                  :is="getIconComponent(quiz.title)" 
+                  :size="24" 
+                  :stroke-width="1.5"
+                  class="text-zinc-600 dark:text-zinc-400 transition-colors"
+                />
               </div>
               <div class="flex flex-col items-end">
                 <span class="px-3 py-1.5 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em] mb-2">
@@ -77,7 +82,7 @@
                 Start Practice
               </span>
               <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
-                <svg class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
           </NeoCard>
@@ -91,6 +96,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { 
+  ArrowRight,
+  Calculator,
+  Languages,
+  Atom,
+  Dna,
+  FlaskRound,
+  TrendingUp,
+  Landmark,
+  Book,
+  FileText
+} from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
@@ -124,7 +141,6 @@ const selectedLevel = ref('All');
 const filteredQuizzes = computed(() => {
   let list = quizStore.quizzes;
 
-  // 1. Filter by Path/Entrance Body
   if (path.value === 'entrance') {
     list = list.filter(q => 
       q.examBody?.toLowerCase() === category.value || 
@@ -132,9 +148,6 @@ const filteredQuizzes = computed(() => {
       q.title?.toLowerCase().includes(category.value)
     );
   } else {
-    // Tertiary check: mock filter by department
-    // In real app, quiz object would have .department property
-    // We'll mock it by matching keywords for the demo/refactor phase
     const deptKeywords = {
       'engineering': ['math', 'physics', 'tech', 'calc', 'eng'],
       'sciences': ['bio', 'chem', 'math', 'comp', 'phys', 'sci'],
@@ -153,9 +166,7 @@ const filteredQuizzes = computed(() => {
     }
   }
 
-  // 2. Filter by Level
   if (selectedLevel.value !== 'All') {
-    // Mock: If quiz doesn't have a level, put it in 100L/ND1 for demo purposes
     list = list.filter(q => {
       const qLevel = q.level || (path.value === 'university' ? '100L' : 'ND1');
       return qLevel === selectedLevel.value;
@@ -170,12 +181,18 @@ onMounted(() => {
   quizStore.fetchMySubmissions();
 });
 
-const getIcon = (title) => {
-  const icons = {
-    'Mathematics': '🧮', 'English': '📘', 'Physics': '🧪',
-    'Biology': '🌿', 'Chemistry': '⚗️', 'Economics': '📈', 'Government': '🏛️'
-  };
-  return icons[title] || '📚';
+const getIconComponent = (title) => {
+  const lowerTitle = title.toLowerCase();
+  
+  if (lowerTitle.includes('math')) return Calculator;
+  if (lowerTitle.includes('english') || lowerTitle.includes('lit')) return Languages;
+  if (lowerTitle.includes('phys')) return Atom;
+  if (lowerTitle.includes('bio')) return Dna;
+  if (lowerTitle.includes('chem')) return FlaskRound;
+  if (lowerTitle.includes('econ') || lowerTitle.includes('acc') || lowerTitle.includes('fin')) return TrendingUp;
+  if (lowerTitle.includes('govt') || lowerTitle.includes('pol') || lowerTitle.includes('phil')) return Landmark;
+  
+  return Book;
 };
 
 const getLastScore = (id) => {

@@ -9,8 +9,8 @@
 
         <div class="flex flex-col gap-4 max-w-3xl">
            <NeoCard variant="extruded" class="!rounded-2xl p-6 flex items-start gap-4 opacity-50">
-             <div class="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center text-lg shrink-0">
-               👋
+             <div class="w-10 h-10 rounded-full bg-brand/10 text-brand flex items-center justify-center shrink-0">
+               <Bell :size="18" :stroke-width="2" />
              </div>
              <div>
                <h3 class="text-[15px] font-medium text-zinc-800 dark:text-zinc-200">Welcome to PrepFlow!</h3>
@@ -19,9 +19,12 @@
              </div>
            </NeoCard>
            
-           <div class="py-12 flex flex-col items-center justify-center opacity-40 text-center">
-                <span class="text-4xl mb-4 text-zinc-300 dark:text-zinc-700">⚂</span>
-                <p class="text-[13px] font-normal text-zinc-500">No other notifications right now.</p>
+           <div class="py-24 flex flex-col items-center justify-center opacity-40 text-center">
+                <div class="w-16 h-16 rounded-[20px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-6 shadow-neo-inner">
+                  <Inbox :size="32" :stroke-width="1.2" class="text-zinc-300" />
+                </div>
+                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">All caught up</p>
+                <p class="text-[13px] font-normal text-zinc-500 mt-1">No other notifications right now.</p>
            </div>
         </div>
       </section>
@@ -30,6 +33,7 @@
 </template>
 
 <script setup>
+import { Bell, Inbox } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
 </script>

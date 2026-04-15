@@ -14,8 +14,8 @@
           class="group cursor-pointer relative"
         >
           <NeoCard variant="hoverable" class="p-10 h-full flex flex-col items-center text-center group-hover:bg-zinc-900 dark:group-hover:bg-white transition-all duration-500">
-            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-[36px] shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
-              🏫
+            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
+              <School :size="36" :stroke-width="1.2" class="text-zinc-600 dark:text-zinc-400 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors" />
             </div>
             <h3 class="text-[24px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-4 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
               University
@@ -33,8 +33,8 @@
           class="group cursor-pointer relative"
         >
           <NeoCard variant="hoverable" class="p-10 h-full flex flex-col items-center text-center group-hover:bg-zinc-900 dark:group-hover:bg-white transition-all duration-500">
-            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-[36px] shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
-              🏗️
+            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
+              <Building2 :size="36" :stroke-width="1.2" class="text-zinc-600 dark:text-zinc-400 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors" />
             </div>
             <h3 class="text-[24px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-4 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
               Polytechnic
@@ -52,8 +52,8 @@
           class="group cursor-pointer relative"
         >
           <NeoCard variant="hoverable" class="p-10 h-full flex flex-col items-center text-center group-hover:bg-zinc-900 dark:group-hover:bg-white transition-all duration-500">
-            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-[36px] shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
-              📝
+            <div class="w-20 h-20 rounded-[32px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-800 dark:group-hover:bg-zinc-100 transition-all duration-500 mb-8">
+              <FileEdit :size="36" :stroke-width="1.2" class="text-zinc-600 dark:text-zinc-400 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors" />
             </div>
             <h3 class="text-[24px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-4 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors">
               Entrance Exams
@@ -71,6 +71,11 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { 
+  School, 
+  Building2, 
+  FileEdit 
+} from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';

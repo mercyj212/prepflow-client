@@ -6,7 +6,7 @@
         <header class="p-6 border-b border-zinc-100 dark:border-white/5">
           <h2 class="text-xs font-black uppercase tracking-[0.2em] text-zinc-400 mb-4">Messages</h2>
           <NeoCard variant="depressed" class="!rounded-2xl p-3 flex items-center gap-3 border-[0.5px] border-black/5 dark:border-white/5">
-            <span class="text-zinc-400">⌕</span>
+            <Search :size="14" class="text-zinc-400" />
             <input type="text" placeholder="Search chats..." class="bg-transparent border-none outline-none text-xs w-full text-zinc-700 dark:text-zinc-300">
           </NeoCard>
         </header>
@@ -50,8 +50,10 @@
         <div class="flex-1 overflow-y-auto p-8 flex flex-col gap-6 custom-scrollbar relative z-10">
           <!-- Welcome Message -->
           <div class="flex flex-col items-center justify-center my-12 opacity-50">
-            <div class="w-16 h-16 rounded-[24px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-3xl mb-4">✳</div>
-            <p class="text-xs font-black uppercase tracking-[0.3em] text-center">Encrypted Learning Session</p>
+            <div class="w-16 h-16 rounded-[24px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center mb-4 shadow-neo-inner">
+              <Sparkles :size="28" :stroke-width="1.2" class="text-zinc-400" />
+            </div>
+            <p class="text-[11px] font-black uppercase tracking-[0.3em] text-center text-zinc-400">Encrypted Learning Session</p>
           </div>
 
           <!-- Chat Bubbles -->
@@ -64,7 +66,7 @@
           <NeoCard variant="depressed" class="!rounded-[28px] p-2 flex items-center gap-2 border-[0.5px] border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-950/40">
             <input type="text" placeholder="Type a message..." class="flex-1 bg-transparent border-none outline-none px-4 text-[13px] text-zinc-700 dark:text-zinc-200">
             <button class="w-10 h-10 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center transition-transform active:scale-90 hover:scale-105">
-              <span class="text-lg">→</span>
+              <Send :size="16" />
             </button>
           </NeoCard>
         </footer>
@@ -74,6 +76,7 @@
 </template>
 
 <script setup>
+import { Search, Sparkles, Send } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
 </script>

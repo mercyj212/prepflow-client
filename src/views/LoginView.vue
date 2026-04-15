@@ -37,19 +37,18 @@
             
             <!-- Close Button -->
             <button @click="showOTPModal = false" class="absolute top-6 right-6 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <X :size="24" />
             </button>
 
             <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
-              </svg>
+              <Fingerprint :size="32" :stroke-width="2.5" class="text-brand" />
             </div>
             <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Check your email</h3>
             <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
               We've sent a 6-digit verification code to **{{ unverifiedEmail }}**. Enter it below to verify your identity and complete sign-in.<br/>
-              <span class="inline-block mt-3 font-semibold text-amber-600 dark:text-amber-400 text-xs bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-200/50 dark:border-amber-500/20">
-                ⚠️ Please check your Spam or Junk folder if you do not see it in your inbox!
+              <span class="inline-flex items-center gap-2 mt-3 font-semibold text-amber-600 dark:text-amber-400 text-xs bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-200/50 dark:border-amber-500/20">
+                <AlertCircle :size="14" />
+                Please check your Spam or Junk folder!
               </span>
             </p>
             
@@ -75,7 +74,10 @@
               :disabled="otpInputs.join('').length < 6 || authStore.loading"
               class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
             >
-              <span v-if="!authStore.loading">Verify & Log in -></span>
+              <span v-if="!authStore.loading" class="flex items-center justify-center gap-2">
+                Verify & Log in
+                <ArrowRight :size="16" />
+              </span>
               <span v-else class="flex items-center justify-center gap-2">
                 <div class="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
                 Verifying...
@@ -99,9 +101,7 @@
         <div v-if="showSuccess" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-all duration-700 animate-in fade-in">
           <div class="flex flex-col items-center gap-6 scale-up-center">
             <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand/10 ring-2 ring-white dark:ring-zinc-900">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path class="draw-path" stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-              </svg>
+              <Check :size="24" :stroke-width="3" />
             </div>
             <div class="text-center">
               <h3 class="text-2xl font-bold text-black dark:text-white mb-1">Welcome Back!</h3>
@@ -148,21 +148,14 @@
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
               >
                 <!-- ️ EYE ICON (Visible) -->
-                <svg v-if="!showPassword" class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                </svg>
-                <!-- ️ EYE ICON (Struck) -->
-                <svg v-else class="w-4.5 h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
-                </svg>
+                <Eye v-if="!showPassword" :size="18" :stroke-width="1.5" />
+                <EyeOff v-else :size="18" :stroke-width="1.5" />
               </button>
             </div>
           </div>
-
-          <div v-if="authStore.error" class="bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 text-sm p-3 rounded-md border border-red-100 dark:border-red-500/20 flex items-start gap-2">
-            <svg class="w-5 h-5 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
-            <span class="pt-0.5">{{ authStore.error }}</span>
+          <div v-if="authStore.error" class="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 text-red-500 rounded-xl text-xs font-medium animate-shake">
+            <AlertCircle :size="16" class="mt-0.5 shrink-0" />
+            <span>{{ authStore.error }}</span>
           </div>
 
           <button
@@ -204,8 +197,9 @@
 
         <div class="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-800 pt-6">
           Don't have an account?
-          <router-link to="/register" class="font-medium text-black dark:text-white hover:underline transition-all">
-            Create an account ->
+          <router-link to="/register" class="font-medium text-black dark:text-white hover:underline transition-all flex items-center justify-center gap-1">
+            Create an account
+            <ArrowRight :size="14" />
           </router-link>
         </div>
       </div>
@@ -215,7 +209,20 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onMounted } from 'vue';
+import { 
+  ref, 
+  nextTick, 
+  onMounted 
+} from 'vue';
+import { 
+  Eye, 
+  EyeOff, 
+  ArrowRight, 
+  AlertCircle,
+  X,
+  Fingerprint,
+  Check
+} from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';

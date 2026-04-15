@@ -8,7 +8,7 @@
       <div>
         <h2 class="text-[12px] font-black text-brand uppercase tracking-[0.4em] flex items-center gap-3 mb-2">
           <div class="p-2 bg-brand/10 rounded-xl">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <Zap :size="20" />
           </div>
           Generative AI Lab
         </h2>
@@ -31,7 +31,7 @@
               <option v-for="q in quizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.questions?.length || 0 }} Items)</option>
             </select>
             <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+              <ChevronDown :size="16" />
             </div>
           </div>
         </div>
@@ -54,7 +54,7 @@
             @click="form.material = ''" 
             class="text-[9px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest transition-colors flex items-center gap-2"
           >
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+            <Trash2 :size="14" />
             Purge Feed
           </button>
         </div>
@@ -78,7 +78,7 @@
           <label v-if="files.length < 10" 
             class="flex flex-col items-center justify-center p-10 border-2 border-dashed border-zinc-200 dark:border-zinc-800 rounded-[32px] cursor-pointer hover:bg-brand/5 hover:border-brand/40 transition-all group/upload shrink-0 bg-transparent">
             <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center mb-4 group-hover/upload:scale-110 group-hover/upload:bg-brand group-hover/upload:text-white shadow-neo transition-all">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <Plus :size="24" />
             </div>
             <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover/upload:text-brand">Uplink Context</span>
             <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onFileChange" />
@@ -86,8 +86,9 @@
 
           <div v-for="(f, i) in files" :key="i" 
             class="relative flex items-center gap-4 p-5 bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-[24px] group/file shadow-neo-inner hover:border-brand/40 transition-all h-[92px]">
-            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 shadow-neo text-xl">
-              {{ f.type.includes('pdf') ? '📄' : '🖼️' }}
+            <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-900 flex items-center justify-center shrink-0 shadow-neo">
+              <FileText v-if="f.type.includes('pdf')" :size="20" class="text-zinc-500" />
+              <Image v-else :size="20" class="text-zinc-500" />
             </div>
             <div class="flex-1 min-w-0 pr-4">
               <p class="text-[10px] font-black text-zinc-800 dark:text-zinc-200 truncate uppercase tracking-widest">{{ f.name }}</p>
@@ -95,7 +96,7 @@
             </div>
             <button @click="removeFile(i)" type="button" 
               class="absolute -top-2 -right-2 w-7 h-7 bg-rose-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover/file:opacity-100 transition-all hover:scale-110 shadow-xl z-20">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+              <X :size="12" :stroke-width="2.5" />
             </button>
           </div>
         </div>
@@ -107,7 +108,7 @@
           <div class="absolute inset-0 bg-brand/10 opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
           
           <div class="relative flex justify-center items-center gap-4 text-[12px] font-black uppercase tracking-[0.4em]">
-            <svg v-if="!loading" class="w-5 h-5 group-hover/btn:rotate-12 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <Zap v-if="!loading" :size="20" class="group-hover/btn:rotate-12 transition-transform" />
             <div v-else class="w-5 h-5 border-3 border-zinc-500/30 border-t-brand rounded-full animate-spin"></div>
             <span>{{ loading ? 'Synchronizing Intelligence...' : 'Initiate AI Synthesis' }}</span>
           </div>
@@ -120,6 +121,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { Zap, ChevronDown, Trash2, Plus, FileText, Image, X } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 
 const props = defineProps({
@@ -168,4 +170,3 @@ const handleSubmit = () => {
 .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
 .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
 </style>
-

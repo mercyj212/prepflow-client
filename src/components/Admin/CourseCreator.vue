@@ -2,7 +2,7 @@
   <NeoCard variant="depressed" class="p-8">
     <h2 class="text-xl font-semibold mb-8 flex items-center gap-3 text-zinc-900 dark:text-zinc-100 uppercase tracking-widest text-[11px] font-black">
       <div class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-        <svg class="w-4 h-4 text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+        <BookPlus :size="16" class="text-zinc-500" />
       </div>
       Initialize Course
     </h2>
@@ -24,13 +24,14 @@
             class="w-5 h-5 rounded-md border-zinc-300 dark:border-zinc-700 text-brand focus:ring-brand/20 bg-white dark:bg-zinc-900"
           >
         </div>
-        <label for="notify-students" class="text-[10px] font-black text-zinc-500 cursor-pointer select-none uppercase tracking-[0.2em]">
-          Broadcast to Registry 📧
+        <label for="notify-students" class="text-[10px] font-black text-zinc-500 cursor-pointer select-none uppercase tracking-[0.2em] flex items-center gap-2">
+          <span>Broadcast to Registry</span>
+          <Bell :size="12" class="text-zinc-400" />
         </label>
       </div>
       <button type="submit" :disabled="loading" class="w-full h-14 bg-zinc-900 dark:bg-white hover:-translate-y-1 text-white dark:text-zinc-900 font-black rounded-2xl transition-all shadow-neo-pill disabled:opacity-50 text-[11px] uppercase tracking-[0.2em] flex items-center justify-center gap-3">
         <span>{{ loading ? 'Establishing Protocol...' : 'Launch Curriculim' }}</span>
-        <span v-if="!loading">→</span>
+        <ArrowRight v-if="!loading" :size="16" />
       </button>
     </form>
   </NeoCard>
@@ -38,6 +39,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { BookPlus, Bell, ArrowRight } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 
 const props = defineProps({

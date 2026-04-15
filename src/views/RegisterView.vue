@@ -6,19 +6,18 @@
       <div class="relative bg-white dark:bg-zinc-900 w-full max-w-md rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
         <!-- Close Button -->
         <button @click="showOTPModal = false" class="absolute top-6 right-6 text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          <X :size="24" />
         </button>
 
         <div class="w-16 h-16 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg class="w-8 h-8 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A10.003 10.003 0 0012 3c1.268 0 2.47.234 3.576.659m-4.746 2.392A2.998 2.998 0 1117 8c0 .385-.073.753-.206 1.091" />
-          </svg>
+          <Fingerprint :size="32" :stroke-width="2.5" class="text-brand" />
         </div>
         <h3 class="text-2xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Verify your email</h3>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
           We've sent a 6-digit verification code to **{{ email }}**. Enter it below to activate your account.<br/>
-          <span class="inline-block mt-3 font-semibold text-amber-600 dark:text-amber-400 text-xs bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-200/50 dark:border-amber-500/20">
-            ⚠️ Please check your Spam or Junk folder!
+          <span class="inline-flex items-center gap-2 mt-3 font-semibold text-amber-600 dark:text-amber-400 text-xs bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-lg border border-amber-200/50 dark:border-amber-500/20">
+            <AlertCircle :size="14" />
+            Please check your Spam or Junk folder!
           </span>
         </p>
         
@@ -44,7 +43,10 @@
           :disabled="otpInputs.join('').length < 6 || authStore.loading"
           class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
         >
-          <span v-if="!authStore.loading">Verify & Finish -></span>
+          <span v-if="!authStore.loading" class="flex items-center justify-center gap-2">
+            Verify & Finish
+            <ArrowRight :size="16" />
+          </span>
           <span v-else class="flex items-center justify-center gap-2">
             <div class="w-16 h-16 border-4 border-brand border-t-transparent rounded-full animate-spin"></div>
             Verifying...
@@ -62,9 +64,7 @@
     <div v-if="showErrorModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/40 backdrop-blur-md animate-in fade-in zoom-in duration-300">
       <div class="relative bg-white dark:bg-zinc-900 w-full max-w-sm rounded-[32px] p-10 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
         <div class="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-brand/20">
-          <svg class="w-10 h-10 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+          <AlertCircle :size="32" class="text-brand" />
         </div>
         <h3 class="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Registry Alert</h3>
         <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-8 leading-relaxed">
@@ -128,8 +128,8 @@
               <div class="relative group">
                 <input id="password" :type="showPassword ? 'text' : 'password'" required v-model="password" placeholder="••••••••" class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all outline-none" />
                 <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
-                  <svg v-if="!showPassword" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                  <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7zm5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29M3 3l18 18"/></svg>
+                  <Eye v-if="!showPassword" :size="20" :stroke-width="1.5" />
+                  <EyeOff v-else :size="20" :stroke-width="1.5" />
                 </button>
               </div>
               
@@ -169,7 +169,10 @@
               class="w-full flex justify-center items-center py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] shadow-xl mt-6 transition-all disabled:opacity-30"
             >
               <div v-if="authStore.loading" class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin mr-3"></div>
-              Continue to Verification ->
+              <span class="flex items-center gap-2">
+                Continue to Verification
+                <ArrowRight :size="16" />
+              </span>
             </button>
           </form>
 
@@ -194,8 +197,9 @@
           
           <div class="mt-8 text-center text-xs sm:text-sm font-medium">
             <span class="text-zinc-500">Already part of PrepUp? </span>
-            <router-link to="/login" class="font-medium text-black dark:text-white hover:underline transition-all">
-              Login ->
+            <router-link to="/login" class="font-medium text-black dark:text-white hover:underline transition-all inline-flex items-center gap-1">
+              Login
+              <ArrowRight :size="14" />
             </router-link>
           </div>
         </div>
@@ -205,7 +209,20 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick, onMounted } from 'vue';
+import { 
+  ref, 
+  computed, 
+  nextTick, 
+  onMounted 
+} from 'vue';
+import { 
+  Eye, 
+  EyeOff, 
+  ArrowRight, 
+  AlertCircle,
+  X,
+  Fingerprint
+} from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
 import BrandLogo from '../components/BrandLogo.vue';

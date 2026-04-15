@@ -6,41 +6,53 @@
 
       <div v-else-if="quizStore.error" class="flex flex-col items-center justify-center py-20 text-center">
         <p class="text-rose-500 font-semibold mb-4">{{ quizStore.error }}</p>
-        <button @click="$router.push('/flashcards')" class="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-[13px] font-bold uppercase tracking-widest">← Back</button>
+        <button @click="$router.push('/flashcards')" class="px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+          <ChevronLeft :size="16" />
+          Back
+        </button>
       </div>
 
-      <div v-else-if="!quiz || quiz.questions.length === 0" class="flex flex-col items-center justify-center py-20 text-center">
-        <div class="text-4xl mb-4">✧</div>
-        <p class="text-slate-500 dark:text-zinc-500 text-[15px]">This deck has no cards yet.</p>
-        <button @click="$router.push('/flashcards')" class="mt-6 px-6 py-2.5 rounded-xl bg-slate-100 dark:bg-zinc-800 text-[13px] font-bold uppercase tracking-widest">← Back to Decks</button>
+      <div v-else-if="!quiz || quiz.questions.length === 0" class="flex flex-col items-center justify-center py-32 text-center">
+        <div class="w-16 h-16 rounded-[20px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-6 shadow-neo-inner">
+          <Sparkles :size="32" :stroke-width="1.2" class="text-zinc-300" />
+        </div>
+        <p class="text-slate-500 dark:text-zinc-500 text-[15px] mb-8 font-medium">This deck has no cards yet.</p>
+        <button @click="$router.push('/flashcards')" class="px-8 h-12 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-[11px] font-black uppercase tracking-widest flex items-center gap-2">
+          <ChevronLeft :size="16" />
+          Back to Decks
+        </button>
       </div>
 
       <!-- Completion Summary -->
-      <div v-else-if="currentIndex >= quiz.questions.length" class="py-10 max-w-md mx-auto">
-        <div class="bg-[var(--neo-surface)] rounded-[32px] p-8 shadow-neo border border-white/20 dark:border-white/5 text-center">
-          <div class="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-6">
-            <svg class="w-10 h-10 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          </div>
-          <h2 class="text-2xl font-black text-slate-800 dark:text-zinc-100 mb-2">Done!</h2>
-          <p class="text-slate-500 dark:text-zinc-500 text-[14px] mb-8">Great job! You've finished all the cards in this set.</p>
+      <div v-else-if="currentIndex >= quiz.questions.length" class="py-10 max-w-md mx-auto animate-in">
+        <div class="bg-white dark:bg-zinc-900 rounded-[40px] p-10 shadow-neo border border-zinc-100 dark:border-white/5 text-center relative overflow-hidden">
+          <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-500/5 blur-3xl rounded-full"></div>
           
-          <div class="grid grid-cols-2 gap-4 mb-8">
-            <div class="p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500/60 mb-1">I know this</p>
-              <p class="text-2xl font-bold text-emerald-500">{{ knownCount }}</p>
+          <div class="w-20 h-20 rounded-[28px] bg-emerald-50 dark:bg-emerald-900/10 flex items-center justify-center mx-auto mb-8 shadow-neo-inner">
+             <Trophy :size="36" :stroke-width="1.5" class="text-emerald-500" />
+          </div>
+          <h2 class="text-3xl font-black text-slate-800 dark:text-zinc-100 mb-2 uppercase tracking-tight">Session Complete</h2>
+          <p class="text-slate-500 dark:text-zinc-500 text-[15px] mb-10 font-medium">Domain knowledge updated successfully.</p>
+          
+          <div class="grid grid-cols-2 gap-6 mb-10">
+            <div class="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-500/10 dark:border-emerald-500/20">
+              <p class="text-[10px] font-black uppercase tracking-widest text-emerald-500 mb-2">Mastered</p>
+              <p class="text-3xl font-bold text-emerald-600 dark:text-emerald-400">{{ knownCount }}</p>
             </div>
-            <div class="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/10">
-              <p class="text-[10px] font-black uppercase tracking-widest text-rose-500/60 mb-1">I'm still learning</p>
-              <p class="text-2xl font-bold text-rose-500">{{ reviewCount }}</p>
+            <div class="p-5 rounded-2xl bg-rose-50 dark:bg-rose-900/10 border border-rose-500/10 dark:border-rose-500/20">
+              <p class="text-[10px] font-black uppercase tracking-widest text-rose-500 mb-2">Review</p>
+              <p class="text-3xl font-bold text-rose-600 dark:text-rose-400">{{ reviewCount }}</p>
             </div>
           </div>
 
-          <div class="space-y-3">
-            <button @click="restartSession" class="w-full py-4 bg-slate-900 dark:bg-zinc-100 text-white dark:text-slate-900 rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-neo-pill hover:-translate-y-1 transition-all">
+          <div class="space-y-4">
+            <button @click="restartSession" class="w-full h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-neo-pill hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+              <RefreshCw :size="16" />
               Restart Session
             </button>
-            <button @click="$router.push(`/quiz/${quiz._id}`)" class="w-full py-4 bg-emerald-500 text-white rounded-2xl font-black uppercase tracking-widest text-[12px] shadow-neo-pill hover:-translate-y-1 transition-all">
-              Ready for a test? →
+            <button @click="$router.push(`/quiz/${quiz._id}`)" class="w-full h-14 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-neo-pill hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
+              Ready for a test?
+              <ArrowRight :size="16" :stroke-width="2" />
             </button>
           </div>
         </div>
@@ -49,31 +61,32 @@
       <template v-else>
 
         <!-- Header -->
-        <div class="flex items-center justify-between mb-6">
-          <button @click="$router.push('/flashcards')" class="flex items-center gap-2 text-[13px] font-semibold text-slate-500 dark:text-zinc-500 hover:text-slate-800 dark:hover:text-zinc-200 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
-            Course sets
+        <div class="flex items-center justify-between mb-10">
+          <button @click="$router.push('/flashcards')" class="flex items-center gap-2 shadow-neo-inner px-4 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest text-slate-500 dark:text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors">
+            <ChevronLeft :size="14" :stroke-width="3" />
+            Back to sets
           </button>
-          <button @click="$router.push(`/quiz/${quiz._id}`)" class="px-4 py-1.5 rounded-lg text-[12px] font-bold uppercase tracking-widest bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 hover:bg-slate-200 dark:hover:bg-zinc-700 transition-colors">
-            Take Quiz →
+          <button @click="$router.push(`/quiz/${quiz._id}`)" class="px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:-translate-y-0.5 transition-all shadow-neo-pill flex items-center gap-2">
+            Start Exam
+            <ArrowRight :size="14" :stroke-width="3" />
           </button>
         </div>
 
         <!-- Progress -->
-        <div class="mb-8">
-          <h1 class="text-2xl font-bold text-slate-800 dark:text-zinc-100 mb-3">{{ quiz.title }}</h1>
-          <div class="flex items-center gap-3">
-            <div class="flex-1 h-1.5 rounded-full bg-slate-100 dark:bg-zinc-800 overflow-hidden">
-              <div class="h-full rounded-full bg-slate-800 dark:bg-zinc-200 transition-all duration-500"
+        <div class="mb-10">
+          <h1 class="text-3xl font-bold text-slate-800 dark:text-zinc-100 mb-4 tracking-tight">{{ quiz.title }}</h1>
+          <div class="flex items-center gap-4">
+            <div class="flex-1 h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden shadow-neo-inner">
+              <div class="h-full rounded-full bg-zinc-900 dark:bg-white transition-all duration-700 ease-out"
                 :style="{ width: `${((currentIndex + 1) / quiz.questions.length) * 100}%` }"></div>
             </div>
-            <span class="text-[12px] font-bold text-slate-400 dark:text-zinc-500 shrink-0">{{ currentIndex + 1 }} / {{ quiz.questions.length }}</span>
+            <span class="text-[12px] font-black text-zinc-400 dark:text-zinc-500 shrink-0 uppercase tracking-widest">{{ currentIndex + 1 }} / {{ quiz.questions.length }}</span>
           </div>
         </div>
 
         <!-- Card wrapper -->
         <div
-          class="card-wrapper mb-4 group/wrapper"
+          class="card-wrapper mb-8 group/wrapper"
           @pointerdown.prevent="onPointerDown"
           @dragstart.prevent
         >
@@ -82,7 +95,7 @@
             class="absolute top-12 left-10 z-50 pointer-events-none transform -rotate-12 transition-opacity duration-100"
             :style="{ opacity: stampKnownOpacity }"
           >
-            <div class="px-6 py-2 border-4 border-emerald-500 rounded-xl">
+            <div class="px-6 py-2 border-4 border-emerald-500 rounded-xl bg-emerald-50/10 backdrop-blur-sm">
               <span class="text-3xl font-black text-emerald-500 uppercase tracking-tighter">KNOWN</span>
             </div>
           </div>
@@ -91,42 +104,50 @@
             class="absolute top-12 right-10 z-50 pointer-events-none transform rotate-12 transition-opacity duration-100"
             :style="{ opacity: stampReviewOpacity }"
           >
-            <div class="px-6 py-2 border-4 border-rose-500 rounded-xl">
+            <div class="px-6 py-2 border-4 border-rose-500 rounded-xl bg-rose-50/10 backdrop-blur-sm">
               <span class="text-3xl font-black text-rose-500 uppercase tracking-tighter">REVIEW</span>
             </div>
           </div>
 
           <!-- Visual drag layer -->
-          <div ref="cardTrackEl" class="card-track" style="height: 340px;">
+          <div ref="cardTrackEl" class="card-track" style="height: 380px;">
             <div class="card-inner" :class="{ 'is-flipped': isFlipped }">
 
-
               <!-- Front -->
-              <div class="card-face card-front bg-[var(--neo-surface)] rounded-[28px] shadow-neo border border-white/20 dark:border-white/5 flex flex-col p-8">
-                <div class="flex items-center justify-between mb-6">
-                  <span class="text-[10px] font-black uppercase tracking-widest text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800 px-3 py-1 rounded-full">Question</span>
-                  <span class="text-[10px] font-bold text-slate-300 dark:text-zinc-600 uppercase tracking-widest">Tap to see answer</span>
+              <div class="card-face card-front bg-white dark:bg-zinc-900 rounded-[36px] shadow-neo border border-zinc-100 dark:border-white/5 flex flex-col p-10">
+                <div class="flex items-center justify-between mb-8">
+                  <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-white/5">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Question</span>
+                  </div>
+                  <HelpCircle :size="18" :stroke-width="1.5" class="text-zinc-300 dark:text-zinc-600" />
                 </div>
                 <div class="flex-1 flex items-center justify-center">
-                  <p class="text-[20px] sm:text-[22px] font-semibold text-slate-800 dark:text-zinc-100 leading-snug text-center">{{ currentQuestion.text }}</p>
+                  <p class="text-[22px] sm:text-[24px] font-medium text-slate-800 dark:text-zinc-100 leading-snug text-center tracking-tight">{{ currentQuestion.text }}</p>
                 </div>
-                <div class="flex justify-center mt-6">
-                  <span class="text-[12px] text-slate-300 dark:text-zinc-600 animate-pulse">↔ drag · tap to flip</span>
+                <div class="flex flex-col items-center gap-2 mt-8 opacity-40">
+                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Tap to flip · drag to score</span>
+                  <div class="flex gap-1">
+                    <div class="w-1.5 h-1.5 rounded-full bg-zinc-300 animate-pulse"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-zinc-300"></div>
+                    <div class="w-1.5 h-1.5 rounded-full bg-zinc-300 animate-pulse" style="animation-delay: 0.5s"></div>
+                  </div>
                 </div>
               </div>
 
               <!-- Back -->
-              <div class="card-face card-back bg-slate-900 dark:bg-zinc-900 rounded-[28px] shadow-neo border border-white/5 flex flex-col p-8">
-                <div class="flex items-center justify-between mb-6">
-                  <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">Answer</span>
-                  <span class="text-[10px] font-bold text-zinc-600 uppercase tracking-widest">Tap to see question</span>
+              <div class="card-face card-back bg-zinc-900 dark:bg-white rounded-[36px] shadow-neo border border-white/5 flex flex-col p-10">
+                <div class="flex items-center justify-between mb-8">
+                  <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+                    <span class="text-[10px] font-black uppercase tracking-widest text-emerald-500">Correct Answer</span>
+                  </div>
+                  <CheckCircle2 :size="18" :stroke-width="1.5" class="text-emerald-500" />
                 </div>
                 <div class="flex-1 flex items-center justify-center">
-                  <p class="text-[20px] sm:text-[22px] font-bold text-white leading-snug text-center">{{ correctAnswerText }}</p>
+                  <p class="text-[22px] sm:text-[24px] font-bold text-white dark:text-zinc-900 leading-snug text-center tracking-tight">{{ correctAnswerText }}</p>
                 </div>
-                <div v-if="currentQuestion.explanation" class="mt-5 p-4 rounded-[16px] bg-white/5 border border-white/5">
-                  <p class="text-[11px] font-bold uppercase tracking-widest text-zinc-500 mb-1.5">Explanation</p>
-                  <p class="text-[13px] text-zinc-400 leading-relaxed">{{ currentQuestion.explanation }}</p>
+                <div v-if="currentQuestion.explanation" class="mt-8 p-5 rounded-[24px] bg-white/5 dark:bg-zinc-50 border border-white/5 dark:border-black/5">
+                  <p class="text-[11px] font-black uppercase tracking-widest text-zinc-500 mb-2">Diagnostic Explanation</p>
+                  <p class="text-[13px] text-zinc-400 dark:text-zinc-600 leading-relaxed">{{ currentQuestion.explanation }}</p>
                 </div>
               </div>
 
@@ -143,6 +164,15 @@
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { 
+  ChevronLeft, 
+  ArrowRight, 
+  Sparkles, 
+  Trophy, 
+  RefreshCw, 
+  HelpCircle,
+  CheckCircle2
+} from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoLoader from '../components/common/NeoLoader.vue';
@@ -179,34 +209,28 @@ const correctAnswerText = computed(() => {
 
 onMounted(async () => {
   isFlipped.value = false;
-  
-  // Strict: Disable browser navigation gestures while in flashcard mode
   document.body.style.overscrollBehaviorX = 'none';
-  
   await quizStore.fetchStudyQuizById(route.params.id);
 });
 
 onBeforeUnmount(() => {
-  // Restore browser behavior
   document.body.style.overscrollBehaviorX = '';
-  
   window.removeEventListener('pointermove', onPointerMove);
   window.removeEventListener('pointerup', onPointerUp);
   window.removeEventListener('pointercancel', onPointerUp);
 });
 
 // ── Drag config ──────────────────────────────────────────────────────────────
-const THRESHOLD = 100; // Increased for better "intentional" swipe
+const THRESHOLD = 100;
 let startX = 0;
 let currentX = 0;
 let dragging = false;
 
 const setTranslate = (x, instant = false) => {
   if (!cardTrackEl.value) return;
-  const rotation = x / 20; // Subtle rotation during drag
+  const rotation = x / 20;
   const opacity = 1 - Math.min(Math.abs(x) / 600, 0.4);
   
-  // Update stamps visibility
   stampKnownOpacity.value = x > 20 ? Math.min((x - 20) / 60, 1) : 0;
   stampReviewOpacity.value = x < -20 ? Math.min((Math.abs(x) - 20) / 60, 1) : 0;
 
@@ -215,23 +239,16 @@ const setTranslate = (x, instant = false) => {
   cardTrackEl.value.style.opacity = x === 0 ? '' : String(opacity);
 };
 
-// ── Pointer Interaction (Unified Mouse/Touch) ──────────────────────────────────
 const onPointerDown = (e) => {
   if (e.button !== undefined && e.button !== 0) return;
-
-  // Visual feedback: grab to grabbing
   isDragging.value = true;
-  
   startX = e.clientX;
   currentX = 0;
   dragging = true;
-  
-  // High-fidelity capture ensures events stay locked to this node
   const el = e.currentTarget || e.target;
   try {
     el.setPointerCapture(e.pointerId);
   } catch (err) { /* silent */ }
-  
   window.addEventListener('pointermove', onPointerMove);
   window.addEventListener('pointerup', onPointerUp, { once: true });
   window.addEventListener('pointercancel', onPointerUp, { once: true });
@@ -239,7 +256,6 @@ const onPointerDown = (e) => {
 
 const onPointerMove = (e) => {
   if (!dragging) return;
-  // Prevent browser navigation gestures (back/forward)
   e.preventDefault();
   currentX = e.clientX - startX;
   setTranslate(currentX, true);
@@ -249,44 +265,29 @@ const onPointerUp = (e) => {
   if (!dragging) return;
   dragging = false;
   isDragging.value = false;
-  
   try {
     e.target.releasePointerCapture(e.pointerId);
   } catch (err) { /* silent */ }
-  
   window.removeEventListener('pointermove', onPointerMove);
   window.removeEventListener('pointerup', onPointerUp);
   window.removeEventListener('pointercancel', onPointerUp);
-  
-  // Execute final displacement check
   settle(currentX);
 };
 
-// ── Shared: decide flip or navigate ─────────────────────────────────────────
 const settle = (delta) => {
   const absDelta = Math.abs(delta);
-  
-  if (delta < -THRESHOLD) {
-    // Label as REVIEW (Swipe Left)
-    markAsReview();
-  } else if (delta > THRESHOLD) {
-    // Label as KNOWN (Swipe Right)
-    markAsKnown();
-  } else if (absDelta < 6) {
-    // Intentional minimalist tap for rotation
+  if (delta < -THRESHOLD) markAsReview();
+  else if (delta > THRESHOLD) markAsKnown();
+  else if (absDelta < 6) {
     setTranslate(0);
     flipCard();
   } else {
-    // Snap back
     stampKnownOpacity.value = 0;
     stampReviewOpacity.value = 0;
     setTranslate(0);
   }
 };
 
-// Cleanup handled in onBeforeUnmount hook above
-
-// ── Card actions ─────────────────────────────────────────────────────────────
 const flipCard = () => { isFlipped.value = !isFlipped.value; };
 
 const markAsKnown = () => {
@@ -330,7 +331,6 @@ const restartSession = () => {
   cursor: grab;
   user-select: none;
   -webkit-user-select: none;
-  /* Prevent horizontal browser gestures (back/forward) */
   touch-action: pan-y !important;
   overscroll-behavior-x: none !important;
   position: relative;
@@ -360,4 +360,7 @@ const restartSession = () => {
   -webkit-backface-visibility: hidden;
 }
 .card-back { transform: rotateY(180deg); }
+
+.animate-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 </style>

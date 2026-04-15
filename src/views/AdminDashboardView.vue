@@ -15,7 +15,7 @@
             {{ successMsg }}
           </div>
           <button @click="fetchCoreData" class="w-12 h-12 flex items-center justify-center bg-white dark:bg-zinc-800/80 border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-neo text-zinc-400 hover:text-brand transition-all">
-            <svg class="w-5 h-5" :class="loadingStats ? 'animate-spin' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            <RotateCw :size="20" :class="loadingStats ? 'animate-spin' : ''" />
           </button>
         </div>
       </div>
@@ -111,17 +111,24 @@
                {{ isBlastMode ? `Send to ${incomingScholars.length} Students` : `Target: ${emailTargetName}` }}
             </p>
           </div>
-          <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+          <button @click="emailModalVisible = false" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
+            <X :size="20" />
+          </button>
         </div>
 
         <div class="p-10 space-y-6">
           <input v-model="emailSubject" type="text" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl p-4 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20" placeholder="Transmission Subject">
           <textarea v-model="emailMessage" rows="6" class="w-full bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-3xl p-6 text-sm focus:outline-none focus:ring-2 focus:ring-brand/20 resize-none" placeholder="Draft your briefing here..."></textarea>
-          
-          <button @click="handleSendEmail" 
+          <button 
+            @click="handleSendEmail" 
             :disabled="emailLoading"
-            class="w-full py-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[22px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg shadow-zinc-900/10 hover:translate-y-[-2px] transition-all disabled:opacity-50">
-            {{ emailLoading ? 'Sending...' : 'Send Email 🚀' }}
+            class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl font-black text-[11px] uppercase tracking-[0.2em] shadow-lg hover:shadow-brand/20 transition-all disabled:opacity-50"
+          >
+            <div class="flex items-center justify-center gap-2">
+              <Loader2 v-if="emailLoading" class="animate-spin" :size="14" />
+              <span>{{ emailLoading ? 'Sending Transmission...' : 'Execute Dispatch' }}</span>
+              <Send v-if="!emailLoading" :size="14" />
+            </div>
           </button>
         </div>
       </div>
@@ -159,7 +166,9 @@
               {{ previewModal.title }}
             </p>
           </div>
-          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">&times;</button>
+          <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
+            <X :size="20" />
+          </button>
         </div>
 
         <div class="flex-1 overflow-auto p-8 flex items-center justify-center min-h-0 bg-zinc-50 dark:bg-zinc-950">
@@ -168,7 +177,9 @@
             <div class="absolute inset-0 rounded-2xl shadow-inner pointer-events-none"></div>
           </div>
           <div v-else class="text-center py-20 px-10 bg-white dark:bg-zinc-900 rounded-[32px] border border-dashed border-zinc-200 dark:border-zinc-800 shadow-neo-inner">
-            <div class="text-6xl mb-6">📄</div>
+            <div class="w-16 h-16 rounded-[24px] bg-zinc-50 dark:bg-zinc-950 flex items-center justify-center mx-auto mb-6 shadow-neo-inner">
+              <FileText :size="32" :stroke-width="1.2" class="text-zinc-400" />
+            </div>
             <p class="text-sm font-black text-zinc-500 uppercase tracking-widest">Document Preview Not Available</p>
             <p class="text-[10px] text-zinc-400 mt-2">Reference file metadata for verification</p>
           </div>
@@ -182,7 +193,10 @@
             <button @click="confirmMaterialUpload" 
               :disabled="emailLoading"
               class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg hover:shadow-brand/20 transition-all">
-              Confirm & Upload 🚀
+              <div class="flex items-center justify-center gap-2">
+                <span>Confirm & Upload</span>
+                <UploadCloud :size="14" />
+              </div>
             </button>
           </div>
           <button v-else @click="closePreview" class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all">
@@ -196,6 +210,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue';
+import { RotateCw, X, Send, FileText, UploadCloud, Loader2 } from 'lucide-vue-next';
 import api from '../api/axios'; // Centralized axios instance
 import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';

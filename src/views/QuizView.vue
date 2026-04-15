@@ -3,7 +3,7 @@
     <template #header>
       <div class="flex items-center w-full gap-4 md:gap-8 px-2">
         <button @click="goBack" class="w-10 h-10 rounded-xl border border-border-light dark:border-border-dark flex items-center justify-center text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 transition-colors">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          <ChevronLeft :size="20" />
         </button>
         
         <div class="flex-1">
@@ -17,7 +17,7 @@
 
         <div class="flex items-center gap-4">
           <div class="px-4 py-2 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[13px] font-black text-amber-600 dark:text-amber-500 flex items-center gap-2 shadow-sm font-mono">
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <Clock :size="14" :stroke-width="3" />
             {{ formattedTime }}
           </div>
           <ThemeToggle />
@@ -45,7 +45,7 @@
       <div v-else-if="quizStore.error" class="py-20">
         <NeoCard variant="depressed" class="p-10 text-center">
             <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-6">
-                <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" /></svg>
+                <AlertTriangle :size="32" class="text-red-500" />
             </div>
             <h3 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Something went wrong</h3>
             <p class="text-zinc-500 mb-8">{{ quizStore.error }}</p>
@@ -92,8 +92,8 @@
 
                 <!-- Feedback Icon -->
                 <div v-if="answered && (option.isCorrect || isSelected(option))" class="ml-auto">
-                    <svg v-if="option.isCorrect" class="w-6 h-6 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                    <svg v-else class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+                    <CheckCircle2 v-if="option.isCorrect" :size="24" class="text-emerald-500" />
+                    <XCircle v-else :size="24" class="text-red-500" />
                 </div>
              </div>
         </div>
@@ -118,7 +118,7 @@
     <div v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-[60] bg-[rgba(10,10,10,0.8)] backdrop-blur-xl border-t border-white/10 px-8 py-6">
        <div class="max-w-4xl mx-auto flex items-center justify-between gap-6">
           <button @click="toggleFlag" class="flex items-center gap-3 px-6 h-12 rounded-2xl border transition-all text-[12px] font-black uppercase tracking-widest" :class="isFlagged ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-white/10 text-white/40 hover:text-white hover:border-white/30'">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" :class="{ 'fill-amber-500': isFlagged }"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            <Flag :size="16" :class="{ 'fill-amber-500': isFlagged }" />
             {{ isFlagged ? 'Review Flagged' : 'Flag Question' }}
           </button>
 
@@ -128,7 +128,7 @@
             class="flex-1 md:flex-none md:min-w-[200px] h-12 rounded-2xl bg-brand text-white text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(20,184,166,0.2)] hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-30 flex items-center justify-center gap-3"
           >
             {{ currentIndex === quiz.questions.length - 1 ? 'Finish and see results' : 'Next Question' }}
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+            <ArrowRight :size="16" :stroke-width="3" />
           </button>
        </div>
     </div>
@@ -142,7 +142,7 @@
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
         <NeoCard variant="extruded" class="relative w-full max-w-sm p-10 text-center animate-in zoom-in duration-500 shadow-2xl">
             <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                <CheckCircle2 :size="32" :stroke-width="3" />
             </div>
             <h3 class="text-2xl font-black uppercase tracking-tight text-zinc-800 dark:text-white mb-2">Test Finished</h3>
             <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
@@ -161,6 +161,7 @@
 <script setup>
 import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { ChevronLeft, Clock, AlertTriangle, CheckCircle2, XCircle, Flag, ArrowRight } from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';

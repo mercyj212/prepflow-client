@@ -9,7 +9,9 @@
 
         <div class="flex-1 flex items-center justify-center">
             <div class="flex flex-col items-center justify-center opacity-60 text-center px-8 max-w-md">
-                <span class="text-6xl mb-6">⚑</span>
+                <div class="w-20 h-20 rounded-[28px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mb-8 shadow-neo-inner">
+                  <Flag :size="40" :stroke-width="1.2" class="text-zinc-300" />
+                </div>
                 <h2 class="text-xl font-medium text-zinc-800 dark:text-zinc-200 mb-2">No Mock Exams Scheduled</h2>
                 <p class="text-[14px] font-normal text-zinc-500">Your upcoming official mock exams will appear here. Keep practicing topics to prepare.</p>
             </div>
@@ -20,5 +22,6 @@
 </template>
 
 <script setup>
+import { Flag } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 </script>

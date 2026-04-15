@@ -3,31 +3,27 @@
     <div class="flex-grow flex items-center justify-center p-6">
     
     <div class="w-full max-w-sm relative">
-      <!-- 🍱 SUCCESS MODAL -->
+      <!-- Success Modal -->
       <div v-if="submitted" class="text-center animate-in fade-in zoom-in duration-500">
-        <div class="absolute -right-24 -bottom-24 w-96 h-96 bg-brand/5 rounded-full blur-[100px] pointer-events-none"></div>
-        <div class="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-brand/20">
-          <svg class="w-10 h-10 text-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-          </svg>
+        <div class="w-20 h-20 bg-brand/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-brand/20 shadow-neo-inner">
+          <Mail :size="40" :stroke-width="1.5" class="text-brand" />
         </div>
         <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter uppercase mb-4">Recovery Link Sent</h2>
         <p class="text-zinc-500 dark:text-zinc-400 leading-relaxed mb-8">
           If an account exists for <span class="font-black text-black dark:text-white">{{ email }}</span>, a secure reset link will arrive shortly. Please check your inbox.
         </p>
-        <router-link to="/login" class="inline-block w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">
-          Back to Login ->
+        <router-link to="/login" class="inline-flex items-center justify-center gap-3 w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest rounded-2xl hover:scale-105 transition-all shadow-xl">
+          Back to Login
+          <ArrowRight :size="18" />
         </router-link>
       </div>
 
-      <!-- 🏹 REQUEST FORM -->
+      <!-- Request Form -->
       <div v-else class="animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div class="text-center mb-10">
           <div class="flex items-center justify-center gap-3 mb-8">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand/20 ring-2 ring-white dark:ring-zinc-900">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+            <div class="w-12 h-12 rounded-2xl bg-black dark:bg-white flex items-center justify-center shadow-xl">
+              <ShieldCheck :size="28" class="text-white dark:text-black" />
             </div>
           </div>
           <h2 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tight uppercase">Account Recovery</h2>
@@ -43,21 +39,23 @@
               v-model="email"
               required
               placeholder="jane@scholar.com"
-              class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-brand-500/20 focus:border-brand-500 transition-all outline-none"
+              class="block w-full rounded-2xl border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 px-5 py-4 text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-2 focus:ring-brand/20 focus:border-brand transition-all outline-none"
             />
           </div>
 
-          <div v-if="error" class="text-red-500 text-[10px] font-black uppercase tracking-wider text-center p-3 bg-red-500/10 rounded-xl border border-red-500/20">
-            {{ error }}
+          <div v-if="error" class="flex items-center gap-2 text-red-500 text-[10px] font-black uppercase tracking-wider text-center p-3 bg-red-500/10 rounded-xl border border-red-500/20">
+            <AlertCircle :size="14" />
+            <span>{{ error }}</span>
           </div>
 
           <button
             type="submit"
             :disabled="loading"
-            class="w-full flex justify-center items-center py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
+            class="w-full flex justify-center items-center gap-3 py-4 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl disabled:opacity-30"
           >
-            <div v-if="loading" class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-3"></div>
-            {{ loading ? 'Processing...' : 'Send Recovery Link ->' }}
+            <div v-if="loading" class="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+            {{ loading ? 'Processing...' : 'Send Recovery Link' }}
+            <ArrowRight v-if="!loading" :size="16" />
           </button>
           
           <div class="text-center pt-4">
@@ -75,6 +73,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { Mail, ShieldCheck, ArrowRight, AlertCircle } from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import AppFooter from '../components/AppFooter.vue';
 
@@ -97,3 +96,12 @@ const handleSubmit = async () => {
   }
 };
 </script>
+
+<style scoped>
+.shadow-neo-inner {
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05), inset -2px -2px 5px rgba(255,255,255,0.7);
+}
+.dark .shadow-neo-inner {
+  box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3), inset -1px -1px 3px rgba(255,255,255,0.05);
+}
+</style>

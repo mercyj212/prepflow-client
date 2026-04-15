@@ -28,11 +28,16 @@
         >
           <NeoCard variant="hoverable" class="p-8 h-full flex flex-col border-[0.5px] border-zinc-100 dark:border-white/5">
             <div class="flex items-start justify-between mb-8">
-              <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center text-[24px] shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-500">
-                {{ item.icon }}
+              <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-500">
+                <component 
+                  :is="getIconComponent(item.slug)" 
+                  :size="24" 
+                  :stroke-width="1.5"
+                  class="text-zinc-600 dark:text-zinc-400 group-hover:text-white dark:group-hover:text-zinc-900 transition-colors"
+                />
               </div>
               <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <svg class="w-5 h-5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
               </div>
             </div>
             
@@ -53,6 +58,19 @@
 <script setup>
 import { computed } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { 
+  ArrowRight,
+  Settings,
+  FlaskConical,
+  Stethoscope,
+  Palette,
+  Scale,
+  BarChart3,
+  FileText,
+  GraduationCap,
+  ScrollText,
+  School
+} from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
@@ -81,22 +99,38 @@ const hubDescription = computed(() => {
 const items = computed(() => {
   if (path.value === 'entrance') {
     return [
-      { title: 'JAMB', slug: 'jamb', icon: '📝', description: 'Unified Tertiary Matriculation Examination (UTME) prep.' },
-      { title: 'WAEC', slug: 'waec', icon: '🎓', description: 'West African Examinations Council senior school cert.' },
-      { title: 'NECO', slug: 'neco', icon: '📜', description: 'National Examinations Council senior school cert.' },
-      { title: 'Post-UTME', slug: 'post-utme', icon: '🏫', description: 'University-specific entrance assessment materials.' }
+      { title: 'JAMB', slug: 'jamb', description: 'Unified Tertiary Matriculation Examination (UTME) prep.' },
+      { title: 'WAEC', slug: 'waec', description: 'West African Examinations Council senior school cert.' },
+      { title: 'NECO', slug: 'neco', description: 'National Examinations Council senior school cert.' },
+      { title: 'Post-UTME', slug: 'post-utme', description: 'University-specific entrance assessment materials.' }
     ];
   } else {
     return [
-      { title: 'Engineering', slug: 'engineering', icon: '⚙️', description: 'Civil, Mechanical, Electrical, and Systems Engineering.' },
-      { title: 'Sciences', slug: 'sciences', icon: '🧪', description: 'Computer Science, Physics, Chemistry, and Biology.' },
-      { title: 'Health Sciences', slug: 'health', icon: '🩺', description: 'Medicine, Pharmacy, Nursing, and Anatomy.' },
-      { title: 'Arts & Humanities', slug: 'arts', icon: '🎭', description: 'English, History, Philosophy, and Fine Arts.' },
-      { title: 'Social Sciences', slug: 'social', icon: '⚖️', description: 'Economics, Psychology, Political Science, and Sociology.' },
-      { title: 'Management', slug: 'management', icon: '📊', description: 'Accounting, Business Admin, Finance, and Marketing.' }
+      { title: 'Engineering', slug: 'engineering', description: 'Civil, Mechanical, Electrical, and Systems Engineering.' },
+      { title: 'Sciences', slug: 'sciences', description: 'Computer Science, Physics, Chemistry, and Biology.' },
+      { title: 'Health Sciences', slug: 'health', description: 'Medicine, Pharmacy, Nursing, and Anatomy.' },
+      { title: 'Arts & Humanities', slug: 'arts', description: 'English, History, Philosophy, and Fine Arts.' },
+      { title: 'Social Sciences', slug: 'social', description: 'Economics, Psychology, Political Science, and Sociology.' },
+      { title: 'Management', slug: 'management', description: 'Accounting, Business Admin, Finance, and Marketing.' }
     ];
   }
 });
+
+const getIconComponent = (slug) => {
+  const iconMap = {
+    'engineering': Settings,
+    'sciences': FlaskConical,
+    'health': Stethoscope,
+    'arts': Palette,
+    'social': Scale,
+    'management': BarChart3,
+    'jamb': FileText,
+    'waec': GraduationCap,
+    'neco': ScrollText,
+    'post-utme': School
+  };
+  return iconMap[slug] || FileText;
+};
 
 const selectItem = (slug) => {
   quizStore.setDepartment(slug);

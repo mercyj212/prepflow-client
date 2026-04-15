@@ -7,7 +7,7 @@
       <!-- Result State -->
       <div v-else-if="finished" class="text-center py-20 animate-fade-in">
         <div class="w-20 h-20 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-6">
-          <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <CheckCircle2 :size="40" />
         </div>
         <h2 class="text-3xl font-bold mb-2 text-zinc-800 dark:text-zinc-100">Practice Complete!</h2>
         <p class="text-zinc-500 dark:text-zinc-400 mb-8">You scored {{ score }} out of {{ quiz.questions.length }}</p>
@@ -57,8 +57,8 @@
         <div v-if="answered" class="mt-8 p-6 rounded-[18px] border transition-all animate-bounce-in" :class="feedbackClass">
           <div class="flex items-start gap-4">
             <div class="mt-1">
-               <svg v-if="isCorrect" class="w-5 h-5 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-               <svg v-else class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path></svg>
+               <CheckCircle2 v-if="isCorrect" :size="20" class="text-emerald-500" />
+               <XCircle v-else :size="20" class="text-red-500" />
             </div>
             <div class="flex-1">
               <h4 class="font-bold mb-1 text-[15px]">{{ isCorrect ? 'Correct!' : 'Incorrect' }}</h4>
@@ -80,6 +80,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
+import { CheckCircle2, XCircle } from 'lucide-vue-next';
 import api from '../api/axios';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoLoader from '../components/common/NeoLoader.vue';

@@ -12,10 +12,10 @@
       </div>
       <div class="flex items-center gap-2.5">
         <button @click="emit('rename', quiz)" class="w-11 h-11 bg-zinc-50 dark:bg-zinc-800/50 text-zinc-400 hover:text-zinc-900 dark:hover:text-white rounded-2xl shadow-neo-pill flex items-center justify-center transition-all" title="Rename Test">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+          <Pencil :size="18" :stroke-width="2" />
         </button>
         <button @click="emit('delete', quiz._id)" class="w-11 h-11 bg-rose-50 dark:bg-rose-500/5 text-rose-400 hover:bg-rose-500 hover:text-white rounded-2xl shadow-neo-pill flex items-center justify-center transition-all" title="Delete Test">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          <Trash2 :size="18" :stroke-width="2" />
         </button>
       </div>
     </div>
@@ -25,14 +25,17 @@
         <span class="text-[9px] font-black text-brand uppercase tracking-[0.2em] ml-1">Practice Link</span>
         <input type="text" readonly :value="getPracticeLink(quiz._id)" class="bg-transparent text-[11px] font-mono text-zinc-400 focus:outline-none truncate px-1">
       </div>
-      <button @click="emit('copy', quiz._id)" class="px-6 h-11 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-neo">
-        Copy Link
+      <button @click="emit('copy', quiz._id)" class="px-6 h-11 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[10px] font-black uppercase tracking-[0.2em] rounded-xl hover:scale-105 active:scale-95 transition-all shadow-neo flex items-center gap-2">
+        <Copy :size="12" />
+        <span>Copy Link</span>
       </button>
     </div>
   </div>
 </template>
 
 <script setup>
+import { Pencil, Trash2, Copy } from 'lucide-vue-next';
+
 const props = defineProps({
   quizzes: Array
 });
