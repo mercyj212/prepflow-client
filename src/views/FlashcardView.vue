@@ -85,36 +85,23 @@
         </div>
 
         <!-- Card wrapper -->
-        <div
-          class="card-wrapper mb-8 group/wrapper"
-          @pointerdown.prevent="onPointerDown"
-          @dragstart.prevent
-        >
-          <!-- Swipe Indicators (Stamps) -->
-          <div 
-            class="absolute top-12 left-10 z-50 pointer-events-none transform -rotate-12 transition-opacity duration-100"
-            :style="{ opacity: stampKnownOpacity }"
+        <div class="mb-8 relative max-w-2xl mx-auto flex items-center justify-center gap-4 sm:gap-8 group/wrapper">
+          
+          <!-- Previous Arrow -->
+          <button 
+            @click="prevCard" 
+            :disabled="currentIndex === 0"
+            class="shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-neo flex items-center justify-center text-zinc-400 hover:text-brand hover:-translate-x-1 transition-all disabled:opacity-30 disabled:hover:translate-x-0"
           >
-            <div class="px-6 py-2 border-4 border-emerald-500 rounded-xl bg-emerald-50/10 backdrop-blur-sm">
-              <span class="text-3xl font-black text-emerald-500 uppercase tracking-tighter">KNOWN</span>
-            </div>
-          </div>
+            <ChevronLeft :size="24" :stroke-width="2.5" />
+          </button>
 
-          <div 
-            class="absolute top-12 right-10 z-50 pointer-events-none transform rotate-12 transition-opacity duration-100"
-            :style="{ opacity: stampReviewOpacity }"
-          >
-            <div class="px-6 py-2 border-4 border-rose-500 rounded-xl bg-rose-50/10 backdrop-blur-sm">
-              <span class="text-3xl font-black text-rose-500 uppercase tracking-tighter">REVIEW</span>
-            </div>
-          </div>
-
-          <!-- Visual drag layer -->
-          <div ref="cardTrackEl" class="card-track" style="height: 380px;">
-            <div class="card-inner" :class="{ 'is-flipped': isFlipped }">
+          <!-- Visual layer -->
+          <div ref="cardTrackEl" class="w-full max-w-sm sm:max-w-md md:max-w-lg relative shrink-0" style="height: 380px;">
+            <div class="card-inner cursor-pointer" :class="{ 'is-flipped': isFlipped }" @click="flipCard">
 
               <!-- Front -->
-              <div class="card-face card-front bg-white dark:bg-zinc-900 rounded-[36px] shadow-neo border border-zinc-100 dark:border-white/5 flex flex-col p-10">
+              <div class="card-face card-front bg-white dark:bg-zinc-900 rounded-[36px] shadow-neo border border-zinc-100 dark:border-white/5 flex flex-col p-8 sm:p-10">
                 <div class="flex items-center justify-between mb-8">
                   <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-100 dark:border-white/5">
                     <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Question</span>
@@ -122,10 +109,10 @@
                   <HelpCircle :size="18" :stroke-width="1.5" class="text-zinc-300 dark:text-zinc-600" />
                 </div>
                 <div class="flex-1 flex items-center justify-center">
-                  <p class="text-[22px] sm:text-[24px] font-medium text-slate-800 dark:text-zinc-100 leading-snug text-center tracking-tight">{{ currentQuestion.text }}</p>
+                  <p class="text-[20px] sm:text-[24px] font-medium text-slate-800 dark:text-zinc-100 leading-snug text-center tracking-tight">{{ currentQuestion.text }}</p>
                 </div>
                 <div class="flex flex-col items-center gap-2 mt-8 opacity-40">
-                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Tap to flip · drag to score</span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Tap to flip card</span>
                   <div class="flex gap-1">
                     <div class="w-1.5 h-1.5 rounded-full bg-zinc-300 animate-pulse"></div>
                     <div class="w-1.5 h-1.5 rounded-full bg-zinc-300"></div>
@@ -135,7 +122,7 @@
               </div>
 
               <!-- Back -->
-              <div class="card-face card-back bg-zinc-900 dark:bg-white rounded-[36px] shadow-neo border border-white/5 flex flex-col p-10">
+              <div class="card-face card-back bg-white dark:bg-zinc-900 rounded-[36px] shadow-neo border border-zinc-100 dark:border-white/5 flex flex-col p-8 sm:p-10">
                 <div class="flex items-center justify-between mb-8">
                   <div class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
                     <span class="text-[10px] font-black uppercase tracking-widest text-emerald-500">Correct Answer</span>
@@ -143,9 +130,9 @@
                   <CheckCircle2 :size="18" :stroke-width="1.5" class="text-emerald-500" />
                 </div>
                 <div class="flex-1 flex items-center justify-center">
-                  <p class="text-[22px] sm:text-[24px] font-bold text-white dark:text-zinc-900 leading-snug text-center tracking-tight">{{ correctAnswerText }}</p>
+                  <p class="text-[20px] sm:text-[24px] font-bold text-slate-800 dark:text-zinc-100 leading-snug text-center tracking-tight">{{ correctAnswerText }}</p>
                 </div>
-                <div v-if="currentQuestion.explanation" class="mt-8 p-5 rounded-[24px] bg-white/5 dark:bg-zinc-50 border border-white/5 dark:border-black/5">
+                <div v-if="currentQuestion.explanation" class="mt-8 p-4 sm:p-5 rounded-[24px] bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-white/5">
                   <p class="text-[11px] font-black uppercase tracking-widest text-zinc-500 mb-2">Diagnostic Explanation</p>
                   <p class="text-[13px] text-zinc-400 dark:text-zinc-600 leading-relaxed">{{ currentQuestion.explanation }}</p>
                 </div>
@@ -153,6 +140,14 @@
 
             </div>
           </div>
+          
+          <!-- Next Arrow -->
+          <button 
+            @click="nextCard"
+            class="shrink-0 w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-neo flex items-center justify-center text-zinc-400 hover:text-brand hover:translate-x-1 transition-all"
+          >
+            <ArrowRight :size="24" :stroke-width="2.5" />
+          </button>
         </div>
 
 
@@ -215,105 +210,24 @@ onMounted(async () => {
 
 onBeforeUnmount(() => {
   document.body.style.overscrollBehaviorX = '';
-  window.removeEventListener('pointermove', onPointerMove);
-  window.removeEventListener('pointerup', onPointerUp);
-  window.removeEventListener('pointercancel', onPointerUp);
 });
-
-// ── Drag config ──────────────────────────────────────────────────────────────
-const THRESHOLD = 100;
-let startX = 0;
-let currentX = 0;
-let dragging = false;
-
-const setTranslate = (x, instant = false) => {
-  if (!cardTrackEl.value) return;
-  const rotation = x / 20;
-  const opacity = 1 - Math.min(Math.abs(x) / 600, 0.4);
-  
-  stampKnownOpacity.value = x > 20 ? Math.min((x - 20) / 60, 1) : 0;
-  stampReviewOpacity.value = x < -20 ? Math.min((Math.abs(x) - 20) / 60, 1) : 0;
-
-  cardTrackEl.value.style.transition = instant ? 'none' : 'transform 0.45s cubic-bezier(0.18, 0.89, 0.32, 1.28), opacity 0.35s ease';
-  cardTrackEl.value.style.transform = x === 0 ? '' : `translateX(${x}px) rotate(${rotation}deg)`;
-  cardTrackEl.value.style.opacity = x === 0 ? '' : String(opacity);
-};
-
-const onPointerDown = (e) => {
-  if (e.button !== undefined && e.button !== 0) return;
-  isDragging.value = true;
-  startX = e.clientX;
-  currentX = 0;
-  dragging = true;
-  const el = e.currentTarget || e.target;
-  try {
-    el.setPointerCapture(e.pointerId);
-  } catch (err) { /* silent */ }
-  window.addEventListener('pointermove', onPointerMove);
-  window.addEventListener('pointerup', onPointerUp, { once: true });
-  window.addEventListener('pointercancel', onPointerUp, { once: true });
-};
-
-const onPointerMove = (e) => {
-  if (!dragging) return;
-  e.preventDefault();
-  currentX = e.clientX - startX;
-  setTranslate(currentX, true);
-};
-
-const onPointerUp = (e) => {
-  if (!dragging) return;
-  dragging = false;
-  isDragging.value = false;
-  try {
-    e.target.releasePointerCapture(e.pointerId);
-  } catch (err) { /* silent */ }
-  window.removeEventListener('pointermove', onPointerMove);
-  window.removeEventListener('pointerup', onPointerUp);
-  window.removeEventListener('pointercancel', onPointerUp);
-  settle(currentX);
-};
-
-const settle = (delta) => {
-  const absDelta = Math.abs(delta);
-  if (delta < -THRESHOLD) markAsReview();
-  else if (delta > THRESHOLD) markAsKnown();
-  else if (absDelta < 6) {
-    setTranslate(0);
-    flipCard();
-  } else {
-    stampKnownOpacity.value = 0;
-    stampReviewOpacity.value = 0;
-    setTranslate(0);
-  }
-};
 
 const flipCard = () => { isFlipped.value = !isFlipped.value; };
 
-const markAsKnown = () => {
-  if (!currentQuestion.value) return;
-  knownCards.value.push(currentQuestion.value._id);
-  exitCard(600);
-};
-
-const markAsReview = () => {
-  if (!currentQuestion.value) return;
-  reviewCards.value.push(currentQuestion.value._id);
-  exitCard(-600);
-};
-
-const exitCard = (targetX) => {
-  setTranslate(targetX);
-  setTimeout(() => {
-    stampKnownOpacity.value = 0;
-    stampReviewOpacity.value = 0;
-    setTranslate(0, true);
-    nextCard();
-  }, 250);
+const prevCard = () => {
+  if (currentIndex.value > 0) {
+    isFlipped.value = false;
+    currentIndex.value--;
+  }
 };
 
 const nextCard = () => {
   if (!quiz.value || currentIndex.value >= quiz.value.questions.length) return;
+  
+  if (currentQuestion.value && !knownCards.value.includes(currentQuestion.value._id)) {
+    knownCards.value.push(currentQuestion.value._id);
+  }
+
   isFlipped.value = false;
   currentIndex.value++;
 };
@@ -327,23 +241,6 @@ const restartSession = () => {
 </script>
 
 <style scoped>
-.card-wrapper {
-  cursor: grab;
-  user-select: none;
-  -webkit-user-select: none;
-  touch-action: pan-y !important;
-  overscroll-behavior-x: none !important;
-  position: relative;
-}
-.card-wrapper:active {
-  cursor: grabbing;
-}
-
-.card-track {
-  width: 100%;
-  will-change: transform;
-}
-
 .card-inner {
   position: relative;
   width: 100%;

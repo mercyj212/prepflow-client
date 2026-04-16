@@ -18,7 +18,6 @@ import SubjectSelectorView from '../views/SubjectSelectorView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
 import MockExamView from '../views/MockExamView.vue';
 import ProgressView from '../views/ProgressView.vue';
-import NotificationsView from '../views/NotificationsView.vue';
 import FlashcardLandingView from '../views/FlashcardLandingView.vue';
 import PracticeLandingView from '../views/PracticeLandingView.vue';
 import SettingsView from '../views/SettingsView.vue';
@@ -117,12 +116,7 @@ const routes = [
     component: ProgressView,
     meta: { requiresAuth: true }
   },
-  {
-    path: '/notifications',
-    name: 'notifications',
-    component: NotificationsView,
-    meta: { requiresAuth: true }
-  },
+
   {
     path: '/admin',
     name: 'admin',

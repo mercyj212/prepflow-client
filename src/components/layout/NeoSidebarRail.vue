@@ -56,7 +56,6 @@ import {
   Gamepad2, 
   ClipboardList, 
   BarChart3, 
-  Bell, 
   HelpCircle,
   Settings,
   Sparkles
@@ -97,11 +96,6 @@ const navItems = [
     name: 'Progress', 
     path: '/progress', 
     icon: markRaw(BarChart3)
-  },
-  { 
-    name: 'Notifications', 
-    path: '/notifications', 
-    icon: markRaw(Bell)
   },
   { 
     name: 'Help', 
