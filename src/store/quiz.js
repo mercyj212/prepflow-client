@@ -8,6 +8,7 @@ export const useQuizStore = defineStore('quiz', {
     loading: false,
     error: null,
     progressMetrics: null,
+    publicStats: null,   // { totalQuestions, totalQuizzes }
     mySubmissions: [],
     educationPath: localStorage.getItem('educationPath') || null,
     selectedDepartment: null,
@@ -100,6 +101,15 @@ export const useQuizStore = defineStore('quiz', {
         this.error = err.response?.data?.message || 'Failed to fetch progress metrics';
       } finally {
         this.loading = false;
+      }
+    },
+    async fetchPublicStats() {
+      try {
+        const { data } = await api.get('/quizzes/stats');
+        this.publicStats = data;
+        return data;
+      } catch (err) {
+        console.warn('[QUIZ_STORE] Could not fetch public stats:', err.message);
       }
     },
     async fetchAllSubmissions() {

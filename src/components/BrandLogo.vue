@@ -4,16 +4,15 @@
     :class="[gapClass, customClass]"
     @click="$router.push('/')"
   >
-    <span class="mr-2 text-brand drop-shadow-[0_0_8px_rgba(20,184,166,0.3)]" :class="primarySizeClass">✳</span>
     <span 
-      class="font-black tracking-tighter text-black dark:text-white leading-none capitalize"
-      :class="primarySizeClass"
+      class="font-black tracking-tighter leading-none capitalize transition-colors duration-500"
+      :class="[primarySizeClass, isLight ? 'text-black' : 'text-white']"
     >
       PrepUp
     </span>
     <span 
-      class="font-bold uppercase tracking-[0.2em] text-zinc-400"
-      :class="[secondarySizeClass, mbClass]"
+      class="font-bold uppercase tracking-[0.2em] transition-colors duration-500"
+      :class="[secondarySizeClass, mbClass, isLight ? 'text-black/40' : 'text-zinc-400']"
     >
       CBT
     </span>
@@ -31,6 +30,10 @@ const props = defineProps({
   customClass: {
     type: String,
     default: ''
+  },
+  isLight: {
+    type: Boolean,
+    default: false
   }
 });
 

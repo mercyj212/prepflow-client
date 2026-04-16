@@ -1,6 +1,27 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
+import { useAuthStore } from '../store/auth';
+import { useQuizStore } from '../store/quiz';
 import BrandLogo from '../components/BrandLogo.vue';
+
+const authStore = useAuthStore();
+const quizStore = useQuizStore();
+
+// --- Initialization Logic ---
+const isBooting = ref(true);
+const bootProgress = ref(0);
+
+const startBoot = async () => {
+  const steps = 40;
+  for (let i = 0; i <= steps; i++) {
+    bootProgress.value = (i / steps) * 100;
+    // Premium, variable-speed loading
+    const delay = i < 5 ? 120 : i > 35 ? 180 : 35 + Math.random() * 60;
+    await new Promise(r => setTimeout(r, delay));
+  }
+  await new Promise(r => setTimeout(r, 800));
+  isBooting.value = false;
+};
 
 // --- Typing Logic ---
 const lines = [
@@ -37,39 +58,139 @@ const typeLine = async (lineIdx) => {
 
 // --- Interactive & Navigation Logic ---
 const mousePos = ref({ x: 50, y: 50 });
+const heroMouse = ref({ x: 0, y: 0 });
 const isHoveringWindow = ref(false);
 const sectionVisible = ref(false);
 const showMatrix = ref(false);
 const showFinale = ref(false);
 
-const handleMouseMove = (e) => {
-  if (!isHoveringWindow.value) return;
+const handleGlobalMouseMove = (e) => {
+  // Parallax tracking
+  const px = (e.clientX / window.innerWidth - 0.5) * 20;
+  const py = (e.clientY / window.innerHeight - 0.5) * 20;
+  heroMouse.value = { x: px, y: py };
+
+  // Percentage tracking for crosshair/spotlight
+  const pctX = (e.clientX / window.innerWidth) * 100;
+  const pctY = (e.clientY / window.innerHeight) * 100;
+  mousePos.value = { x: pctX, y: pctY };
+};
+
+const handleViewfinderMove = (e) => {
   const rect = e.currentTarget.getBoundingClientRect();
   const x = ((e.clientX - rect.left) / rect.width) * 100;
   const y = ((e.clientY - rect.top) / rect.height) * 100;
   mousePos.value = { x, y };
 };
 
-const academicSubjects = [
-  { code: 'MAT_101', name: 'MATHEMATICS', status: 'READY' },
-  { code: 'PHY_202', name: 'PHYSICS', status: 'ACTIVE' },
-  { code: 'CHE_303', name: 'CHEMISTRY', status: 'READY' },
-  { code: 'ENG_404', name: 'USE OF ENGLISH', status: 'READY' },
-  { code: 'BIO_505', name: 'BIOLOGY', status: 'LOCKED' },
-  { code: 'ECO_606', name: 'ECONOMICS', status: 'READY' },
-];
+// ── Live Data Computeds ──────────────────────────────────────────────
+const academicSubjects = computed(() => {
+  if (quizStore.progressMetrics?.subjectMastery?.length > 0) {
+    // Use real subject mastery from backend, cap at 6 entries
+    return quizStore.progressMetrics.subjectMastery.slice(0, 6).map((m, i) => ({
+      code: `${m.subject.substring(0, 3).toUpperCase()}_${String(i + 1).padStart(3, '0')}`,
+      name: m.subject.toUpperCase(),
+      status: m.mastery >= 80 ? 'MASTERED' : m.mastery >= 50 ? 'ACTIVE' : 'BUILDING',
+      mastery: m.mastery
+    }));
+  }
+  // Fallback static grid for visitors not logged in
+  return [
+    { code: 'ENG_001', name: 'USE OF ENGLISH', status: 'READY', mastery: 90 },
+    { code: 'MAT_002', name: 'MATHEMATICS', status: 'READY', mastery: 85 },
+    { code: 'PHY_003', name: 'PHYSICS', status: 'ACTIVE', mastery: 72 },
+    { code: 'CHE_004', name: 'CHEMISTRY', status: 'READY', mastery: 68 },
+    { code: 'BIO_005', name: 'BIOLOGY', status: 'ACTIVE', mastery: 60 },
+    { code: 'ECO_006', name: 'ECONOMICS', status: 'READY', mastery: 55 },
+  ];
+});
 
-const socialSignals = [
-  'STUDENT_SCORE: 312_JAMB',
-  'SUBJECT_MASTERY: PHYSICS_94%',
-  'STUDENT_READY: WAEC_2026',
-  'SYSTEM_LOG: 20,000+_STUDENTS',
-  'AVERAGE_SCORE: 88.4%',
-  'TOP_PERFORMANCE: BIOLOGY_A1'
-];
+const totalQuestions = computed(() => {
+  // Priority: publicStats (exact DB count) → quizzes array → hardcoded fallback
+  if (quizStore.publicStats?.totalQuestions != null) {
+    const n = quizStore.publicStats.totalQuestions;
+    if (n >= 1000) return `${(n / 1000).toFixed(1)}k+`;
+    return n > 0 ? `${n}+` : '0';
+  }
+  if (quizStore.quizzes.length > 0) {
+    const total = quizStore.quizzes.reduce((acc, q) => acc + (q.questions?.length || 0), 0);
+    return total >= 1000 ? `${(total / 1000).toFixed(1)}k+` : `${total}+`;
+  }
+  return '—';
+});
+
+const totalQuizzes = computed(() => {
+  if (quizStore.publicStats?.totalQuizzes != null) return quizStore.publicStats.totalQuizzes;
+  if (quizStore.quizzes.length > 0) return quizStore.quizzes.length;
+  return null;
+});
+
+// --- Animated Score Counter ---
+const animatedScore = ref(0);
+const isSyncingScore = ref(true);
+
+const runScoreAnimation = (target) => {
+  isSyncingScore.value = true;
+  let current = 0;
+  const steps = 60;
+  const increment = target / steps;
+  let step = 0;
+  
+  const interval = setInterval(() => {
+    step++;
+    current += increment;
+    animatedScore.value = Math.round(current);
+    if (step >= steps) {
+      animatedScore.value = target;
+      isSyncingScore.value = false;
+      clearInterval(interval);
+    }
+  }, 20);
+};
+
+const averageScore = computed(() => {
+  const userScore = quizStore.progressMetrics?.averageScore;
+  const platformScore = quizStore.publicStats?.averageScore;
+  
+  if (authStore.isAuthenticated && userScore != null) return userScore;
+  if (platformScore != null) return platformScore;
+  return 74; // Default design benchmark
+});
+
+const displayScore = computed(() => isSyncingScore.value ? animatedScore.value : averageScore.value);
+
+watch(averageScore, (newVal) => {
+  if (newVal != null) runScoreAnimation(newVal);
+}, { immediate: true });
+
+const socialSignals = computed(() => {
+  const score = averageScore.value != null ? `${averageScore.value}%` : 'UNTRACKED';
+  const firstSubject = academicSubjects.value[0];
+  const subjectTag = firstSubject
+    ? `${firstSubject.name} ${firstSubject.mastery}%`
+    : 'SUBJECTS READY';
+  const qCount = totalQuestions.value !== '—' ? `${totalQuestions.value} ITEMS` : 'LOADING';
+  return [
+    `STUDENT SCORE: ${score}`,
+    `SUBJECT MASTERY: ${subjectTag}`,
+    'PLATFORM STATUS: ONLINE SYNCED',
+    `RESOURCE BANK: ${qCount}`,
+    `AVERAGE PERFORMANCE: ${score}`,
+    'SYSTEM STATUS: OPERATIONAL'
+  ];
+});
 
 onMounted(async () => {
-  // Observers for Sections
+  startBoot();
+
+  // ── Public stats: available to ALL visitors, no auth needed ──
+  quizStore.fetchPublicStats();
+
+  // ── User-specific data: only when logged in ──
+  if (authStore.isAuthenticated) {
+    quizStore.fetchProgressMetrics();
+  }
+
   const tacObserver = new IntersectionObserver((entries) => {
     sectionVisible.value = entries[0].isIntersecting;
   }, { threshold: 0.2 });
@@ -91,10 +212,18 @@ onMounted(async () => {
   const finaleSection = document.querySelector('#social-intelligence');
   if (finaleSection) finaleObserver.observe(finaleSection);
 
-  // Start Typing Loop
   (async () => {
+    const tourSections = ['hero-scene', 'tactical-section', 'mastery-matrix', 'social-intelligence'];
+    let currentIdx = 0;
+
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      if (isBooting.value) {
+        await new Promise(r => setTimeout(r, 100));
+        continue;
+      }
+
+      // Typing Animation Sync
       isDone.value = false;
       displayedLines.value = [
         [{ text: '', class: '' }, { text: '', class: 'text-zinc-500' }],
@@ -105,56 +234,120 @@ onMounted(async () => {
         if (i < lines.length - 1) await new Promise(r => setTimeout(r, 200));
       }
       isDone.value = true;
-      
-      await new Promise(r => setTimeout(r, 4000));
-      const nextSection = document.querySelector('#tactical-section');
-      if (nextSection && !sectionVisible.value && !showMatrix.value && !showFinale.value) {
+
+      // Wait at current section
+      await new Promise(r => setTimeout(r, 8000));
+
+      // Auto-Scroll to next sequence
+      currentIdx = (currentIdx + 1) % tourSections.length;
+      const nextSection = document.getElementById(tourSections[currentIdx]);
+      if (nextSection) {
         nextSection.scrollIntoView({ behavior: 'smooth' });
       }
-      
-      await new Promise(r => setTimeout(r, 5000));
     }
   })();
 });
 </script>
 
 <template>
-  <div class="h-screen overflow-y-auto scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black">
+  <div @mousemove="handleGlobalMouseMove" class="h-screen overflow-y-auto scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black">
     
+    <!-- Premium Cinematic Entrance (Outside the content wrapper to stay sharp) -->
+    <Transition
+      leave-active-class="transition duration-[2s] ease-in-out"
+      leave-from-class="opacity-100 scale-100 blur-0"
+      leave-to-class="opacity-0 scale-[8] blur-3xl"
+    >
+      <div v-if="isBooting" class="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden">
+        <div class="relative flex flex-col items-center transition-all duration-1000">
+           <!-- Centered Premium Identity -->
+           <div class="relative group">
+             <div class="absolute inset-0 blur-[60px] bg-brand/30 animate-pulse transition-all duration-1000"
+                  :style="{ transform: `scale(${1 + bootProgress / 100})`, opacity: bootProgress / 100 }"></div>
+             <BrandLogo size="lg" class="relative z-10 transition-transform duration-1000"
+                        :style="{ transform: `scale(${0.9 + (bootProgress / 100) * 0.1})` }" />
+           </div>
+           
+           <!-- Large Elegant Counter -->
+           <div class="mt-20 flex flex-col items-center gap-2">
+             <span class="text-[clamp(48px,10vw,120px)] font-black tracking-tighter tabular-nums leading-none">
+               {{ Math.round(bootProgress) }}<span class="text-zinc-700 text-[clamp(24px,5vw,48px)]">%</span>
+             </span>
+             <span class="text-[10px] font-black uppercase tracking-[0.8em] text-zinc-500 animate-pulse">
+               Synchronizing Identity
+             </span>
+           </div>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- Site Content (Targeted for entrance zoom/blur) -->
+    <div 
+      class="transition-all duration-[2s] ease-out"
+      :class="isBooting ? 'scale-[0.95] blur-md opacity-0' : 'scale-100 blur-0 opacity-100'"
+    >
+
     <!-- Floating Elite Header -->
     <header 
       class="fixed top-0 left-0 right-0 z-[100] px-6 sm:px-12 md:px-20 py-8 flex justify-between items-center transition-all duration-700 pointer-events-none"
       :class="showFinale ? 'text-black' : 'text-white'"
     >
-      <div 
-        class="pointer-events-auto transition-all duration-700" 
-        :class="{ 'dark': !showFinale }"
-      >
-        <BrandLogo size="md" />
+      <div class="pointer-events-auto transition-all duration-700">
+        <BrandLogo size="md" :is-light="showFinale" />
       </div>
 
       <nav class="flex items-center gap-8 pointer-events-auto">
-        <router-link 
-          to="/login" 
+        <router-link to="/login" 
           class="text-[11px] font-black uppercase tracking-[0.3em] transition-colors"
-          :class="showFinale ? 'text-black hover:text-zinc-600' : 'text-white hover:text-zinc-400'"
-        >
+          :class="showFinale ? 'text-black hover:text-zinc-600' : 'text-white hover:text-zinc-400'">
           Login
         </router-link>
-        <router-link 
-          to="/register" 
-          class="group flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-700 border border-transparent hover:border-current px-4 py-2"
-          :class="showFinale ? 'text-black border-black/10' : 'text-white border-white/10'"
+        <router-link to="/register" 
+          class="group relative overflow-hidden px-8 py-3 border transition-all duration-500 rounded-none pointer-events-auto"
+          :class="showFinale ? 'border-black/20 hover:border-black' : 'border-white/20 hover:border-white'"
         >
-          Get Started
+          <span 
+            class="relative z-10 text-[11px] font-black uppercase tracking-[0.3em] transition-colors"
+            :class="showFinale ? 'text-black group-hover:text-white' : 'text-white group-hover:text-black'"
+          >
+            Get Started
+          </span>
+          <div 
+            class="absolute inset-0 translate-y-full group-hover:translate-y-0 transition-transform duration-500"
+            :class="showFinale ? 'bg-black' : 'bg-white'"
+          ></div>
         </router-link>
       </nav>
     </header>
 
     <!-- Scene 1: The Narrative Hero -->
-    <section class="min-h-screen scroll-snap-align-start shrink-0 relative flex flex-col md:flex-row overflow-hidden border-b border-white/5 noise-overlay">
-      <div class="flex-1 z-20 flex flex-col justify-center px-6 sm:px-12 md:px-20 py-20 bg-black/40 backdrop-blur-[2px]">
-        <div class="max-w-xl text-left">
+    <section id="hero-scene" class="min-h-screen snap-start shrink-0 relative flex flex-col md:flex-row overflow-hidden border-b border-white/5 noise-overlay cursor-crosshair">
+      <!-- Tactical Scope UI -->
+      <div class="absolute inset-0 z-[5] pointer-events-none opacity-40">
+        <!-- Corner Brackets -->
+        <div class="absolute top-12 left-12 w-6 h-6 border-t-2 border-l-2 border-white/40"></div>
+        <div class="absolute top-12 right-12 w-6 h-6 border-t-2 border-r-2 border-white/40"></div>
+        <div class="absolute bottom-12 left-12 w-6 h-6 border-b-2 border-l-2 border-white/40"></div>
+        <div class="absolute bottom-12 right-12 w-6 h-6 border-b-2 border-r-2 border-white/40"></div>
+        
+        <!-- Floating Crosshair Lines -->
+        <div class="absolute inset-x-0 h-px bg-white/10" :style="{ top: mousePos.y + '%' }"></div>
+        <div class="absolute inset-y-0 w-px bg-white/10" :style="{ left: mousePos.x + '%' }"></div>
+      </div>
+
+      <!-- Tactical Spotlight Overlay -->
+      <div class="absolute inset-0 z-[2] pointer-events-none transition-opacity duration-300" 
+           :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(20,184,166,0.15) 0%, transparent 60%)` }"></div>
+
+      <div class="absolute inset-0 z-[1] pointer-events-none opacity-20"
+           :style="{ transform: `translate(${heroMouse.x * -0.5}px, ${heroMouse.y * -0.5}px)` }">
+        <div class="absolute top-1/2 left-20 w-px h-64 bg-white/10"></div>
+        <div class="absolute top-1/4 right-[30%] w-px h-32 bg-white/10"></div>
+      </div>
+
+      <div class="flex-1 z-20 flex flex-col justify-start pt-[20vh] px-6 sm:px-12 md:px-20 py-20 bg-black/40 backdrop-blur-[2px]">
+        <div class="max-w-xl text-left" :style="{ transform: `translate(${heroMouse.x * 0.5}px, ${heroMouse.y * 0.5}px)` }">
+          
           <h1 class="text-[clamp(44px,7vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[4em]">
             <template v-for="(line, lIdx) in displayedLines" :key="lIdx">
               <span v-for="(seg, sIdx) in line" :key="sIdx" :class="seg.class">
@@ -169,10 +362,11 @@ onMounted(async () => {
             Practice real CBT questions, track every gain, and approach your exams with complete precision.
           </p>
           
-          <div class="mt-8 flex flex-col sm:flex-row items-center gap-6 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
-            <router-link to="/register" class="group relative px-10 py-5 bg-white text-black text-[13px] font-black uppercase tracking-widest overflow-hidden hover:bg-zinc-200 transition-colors w-full sm:w-auto text-center font-bold">
-              Start Practicing
-              <span class="absolute right-4 group-hover:translate-x-1 transition-transform">→</span>
+          <div class="mt-10 flex flex-col sm:flex-row items-center gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
+            <router-link to="/register" class="group relative px-12 py-5 border border-white/20 hover:border-white text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
+              <span class="relative z-10 group-hover:text-black transition-colors">Start Practicing</span>
+              <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
+              <span class="absolute right-6 group-hover:translate-x-1 transition-transform z-10 group-hover:text-black">→</span>
             </router-link>
             
             <router-link to="/login" class="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
@@ -181,15 +375,34 @@ onMounted(async () => {
           </div>
         </div>
       </div>
+
+      <!-- Hero Visual with Depth -->
       <div class="absolute inset-y-0 right-0 w-full md:w-[65%] z-0 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10 md:block hidden"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-10 md:hidden block"></div>
-        <img src="/avatar-female.jpg" alt="Focused Student" class="absolute inset-0 w-full h-full object-cover grayscale brightness-[1.05] contrast-[1.1] transition-transform duration-[2s] hover:scale-105"/>
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-zinc-900/40 to-transparent z-10 md:hidden block"></div>
+        <img 
+          src="/avatar-female.jpg" 
+          alt="Focused Student" 
+          class="absolute inset-0 w-full h-full object-cover grayscale brightness-[1.05] contrast-[1.1] transition-transform duration-[2s]"
+          :style="{ transform: `scale(1.1) translate(${heroMouse.x * -1.5}px, ${heroMouse.y * -1.5}px)` }"
+        />
+        
+        <!-- Tactical HUD Layer -->
+        <div class="absolute inset-0 z-20 pointer-events-none opacity-40" :style="{ transform: `translate(${heroMouse.x * 2}px, ${heroMouse.y * 2}px)` }">
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] border border-white/10 rounded-full flex items-center justify-center">
+            <div class="w-[80%] h-[80%] border border-white/5 rounded-full animate-pulse"></div>
+          </div>
+          <div class="absolute top-[20%] right-20 text-[8px] font-mono tracking-[0.3em] text-white/40 space-y-1 text-right">
+            <div>TARGET ACQUISITION: SUCCESS</div>
+            <div>STUDENT READY: TRUE</div>
+            <div>LATENCY: 0.2ms</div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Scene 2: The Focused Path -->
-    <section id="tactical-section" class="min-h-screen scroll-snap-align-start shrink-0 flex items-center justify-center bg-zinc-950 relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
+    <!-- Scene 2: The Focused Path (Viewfinder) -->
+    <section id="tactical-section" class="min-h-screen snap-start shrink-0 flex items-center justify-center bg-zinc-950 relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
       <div class="absolute inset-0 pointer-events-none opacity-[0.03] grid-pattern z-0"></div>
       <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-12 gap-12 items-center z-10">
         <div class="md:col-span-5 text-left order-2 md:order-1">
@@ -198,89 +411,107 @@ onMounted(async () => {
             <span class="text-zinc-600">not overwhelming.</span>
           </h2>
           <router-link to="/login" class="group inline-flex items-center gap-2 mt-8 text-[11px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-white transition-all duration-500">
-            <span class="transition-transform group-hover:-translate-x-1">[</span> DASHBOARD_ACCESS <span class="transition-transform group-hover:translate-x-1">]</span>
+            <span class="transition-transform group-hover:-translate-x-1">[</span> Go to Dashboard <span class="transition-transform group-hover:translate-x-1">]</span>
           </router-link>
         </div>
         <div class="md:col-span-7 relative order-1 md:order-2 flex justify-end">
-          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out" :class="sectionVisible ? 'animate-aperture-pulse' : 'h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @mousemove="handleMouseMove">
+          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out rounded-none shadow-2xl" :class="sectionVisible ? 'animate-aperture-pulse' : 'h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @mousemove="handleViewfinderMove">
             <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/40 z-30"></div>
             <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/40 z-30"></div>
             <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/40 z-30"></div>
             <div class="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-white/40 z-30"></div>
-            <div class="absolute top-6 left-12 flex items-start gap-4 z-30 hidden sm:flex text-left">
-              <div class="text-[8px] font-mono uppercase tracking-widest text-white/40 leading-relaxed">// FOCUS_DEPTH: 88.42% <br/> // STUDY_MODE: ACTIVE</div>
+            <div class="absolute top-6 left-12 flex items-start gap-4 z-30 hidden sm:flex text-left font-bold tracking-tight">
+              <div class="text-[8px] uppercase tracking-widest text-white/40 leading-relaxed font-bold">Focus Depth: {{ averageScore }}% <br/> Study Mode Active</div>
               <svg width="40" height="20" class="opacity-30"><path d="M0 10 L5 10 L8 2 L12 18 L15 10 L40 10" stroke="white" fill="none" class="animate-pulse-path" /></svg>
             </div>
-            <div class="absolute bottom-6 right-12 text-[8px] font-mono uppercase tracking-widest text-white/40 z-30 hidden sm:block text-right">MASTERED: TRUE <br/> TIME_PER_QN: 0.04s</div>
+            <div class="absolute bottom-6 right-12 text-[8px] font-bold uppercase tracking-widest text-white/40 z-30 hidden sm:block text-right">Mastered <br/> Synced Database</div>
             <div class="absolute inset-x-0 h-[1px] bg-white/40 z-20 animate-scan"></div>
             <div class="absolute inset-0 transition-all duration-[1.5s] ease-out" :class="isHoveringWindow ? 'blur-0 contrast-125' : 'blur-[2px] contrast-100'">
               <img src="/avatar-male.jpg" alt="Focused Eyes" class="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:scale-105 transition-transform duration-[5s]" style="object-position: 85% 32%;"/>
               <div v-if="isHoveringWindow" class="absolute inset-0 bg-white/5 z-20 mix-blend-overlay animate-glitch"></div>
             </div>
-            <div class="absolute inset-0 z-30 pointer-events-none transition-opacity duration-700" :class="isHoveringWindow ? 'opacity-100' : 'opacity-0'" :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(255,255,255,0.15) 0%, transparent 60%)` }"></div>
+              <div class="absolute inset-0 transition-opacity duration-300 pointer-events-none" :class="isHoveringWindow ? 'opacity-100' : 'opacity-0'" :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(20,184,166,0.15) 0%, transparent 70%)` }"></div>
             <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent z-10 opacity-60"></div>
           </div>
-          <div class="absolute -right-6 top-0 bottom-0 flex flex-col justify-between py-4 opacity-10 hidden lg:flex"><div v-for="i in 10" :key="i" class="w-4 h-[1px] bg-white"></div></div>
         </div>
       </div>
     </section>
 
-    <!-- Scene 3: The Academic Command Center -->
-    <section id="mastery-matrix" class="min-h-screen scroll-snap-align-start shrink-0 flex items-center justify-center bg-black relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
+    <!-- Scene 3: The Academic Command Center (The Matrix) -->
+    <section id="mastery-matrix" class="min-h-screen snap-start shrink-0 flex items-center justify-center bg-black relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
       <div class="absolute inset-0 pointer-events-none opacity-[0.02] grid-pattern z-0 scale-[0.5]"></div>
       <div class="max-w-7xl w-full z-10 transition-all duration-[1.5s]" :class="showMatrix ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-white/10">
-          <div class="p-10 border-b border-white/10 lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between min-h-[400px] text-left">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-zinc-100 dark:border-zinc-800 rounded-none overflow-hidden bg-white/5 backdrop-blur-xl shadow-2xl">
+          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r flex flex-col justify-between min-h-[440px] text-left">
             <div>
-              <p class="text-[10px] font-mono uppercase tracking-[0.4em] text-white/30 mb-8">// YOUR_EXAM_SCORE</p>
-              <div class="relative inline-block"><span class="text-[clamp(60px,8vw,120px)] font-black leading-none tracking-tighter">82.4</span><span class="text-[clamp(24px,3vw,40px)] font-black text-white/20 ml-2">%</span></div>
+              <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">
+                {{ authStore.isAuthenticated ? 'Your Avg. Exam Score' : 'Platform Avg. Score' }}
+              </p>
+              <div class="relative inline-block">
+                <span class="text-[clamp(64px,8vw,128px)] font-black leading-none tracking-tighter transition-all duration-700">
+                  {{ displayScore }}
+                </span>
+                <span v-if="averageScore !== null" class="text-[clamp(24px,3vw,40px)] font-black text-zinc-500 ml-2">%</span>
+              </div>
             </div>
-            <div class="text-[11px] text-zinc-500 font-bold max-w-[200px] leading-relaxed">Your performance rating across all practice sessions.</div>
+            <div class="text-[11px] text-zinc-500 font-bold max-w-xs leading-relaxed">
+              {{ authStore.isAuthenticated
+                ? 'Your performance rating across all verified practice sessions.'
+                : 'Login to track your personal score and subject mastery.'
+              }}
+            </div>
           </div>
-          <div class="p-10 border-b border-white/10 lg:border-b-0 lg:border-r border-white/10 min-h-[400px] text-left">
-            <p class="text-[10px] font-mono uppercase tracking-[0.4em] text-white/30 mb-8">// STUDY_SUBJECTS</p>
+          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[440px] text-left">
+            <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Academic Mastery</p>
             <div class="space-y-6">
-              <div v-for="sub in academicSubjects" :key="sub.code" class="flex flex-col gap-1 group text-left">
+              <div v-for="sub in academicSubjects" :key="sub.code" class="flex flex-col gap-2 group text-left">
                 <div class="flex justify-between items-end">
-                  <span class="text-[12px] font-black tracking-widest text-white/60 group-hover:text-white transition-colors">{{ sub.name }}</span>
-                  <span class="text-[8px] font-mono text-white/20">{{ sub.status }}</span>
+                  <span class="text-[13px] font-black tracking-widest text-zinc-400 group-hover:text-white transition-colors">{{ sub.name }}</span>
+                  <span class="text-[8px] font-mono font-bold text-zinc-600">{{ sub.status }}</span>
                 </div>
-                <div class="w-full h-[1px] bg-white/5 relative overflow-hidden"><div class="absolute inset-y-0 left-0 bg-white/20 transition-all duration-1000" :style="{ width: showMatrix ? '40%' : '0%' }"></div></div>
+                <div class="w-full h-[2px] bg-white/5 relative overflow-hidden rounded-none"><div class="absolute inset-y-0 left-0 bg-brand/40 transition-all duration-1000" :style="{ width: showMatrix ? `${sub.mastery}%` : '0%' }"></div></div>
               </div>
             </div>
           </div>
-          <div class="p-10 border-b border-white/10 lg:border-b-0 lg:border-r border-white/10 flex flex-col justify-between min-h-[400px] text-left">
+          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[440px] flex flex-col justify-between text-left">
             <div>
-              <p class="text-[10px] font-mono uppercase tracking-[0.4em] text-white/30 mb-8">// QUESTION_BANK</p>
-              <h3 class="text-[clamp(32px,4vw,48px)] font-black leading-tight tracking-tighter uppercase text-left">24k+ <br/> <span class="text-zinc-700">Questions</span></h3>
+              <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Resource Bank</p>
+              <h3 class="text-[clamp(32px,4vw,48px)] font-black leading-tight tracking-tighter uppercase text-left">
+                <span class="uppercase">{{ totalQuestions }}</span>
+                <br/>
+                <span class="text-zinc-700 uppercase">Questions</span>
+              </h3>
+              <p v-if="totalQuizzes" class="mt-3 text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-widest">
+                Across {{ totalQuizzes }} quiz{{ totalQuizzes !== 1 ? 'zes' : '' }}
+              </p>
             </div>
             <div class="space-y-4">
-              <div class="flex items-center gap-4 text-left"><div class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></div><span class="text-[9px] font-mono text-white/30">SOURCE: JAMB/WAEC_OFFICIAL</span></div>
-              <div class="flex items-center gap-4 text-left"><div class="w-1.5 h-1.5 bg-zinc-700 rounded-full"></div><span class="text-[9px] font-mono text-white/30">LATEST_UPDATE: CURRENT</span></div>
+              <div class="flex items-center gap-4 text-left"><div class="w-2 h-2 bg-brand rounded-full animate-pulse shadow-[0_0_10px_rgba(20,184,166,0.5)]"></div><span class="text-[9px] font-mono font-bold text-zinc-500">SOURCE: JAMB OFFICIAL</span></div>
+              <div class="flex items-center gap-4 text-left"><div class="w-2 h-2 bg-zinc-700 rounded-full"></div><span class="text-[9px] font-mono font-bold text-zinc-500">LATEST UPDATE: CURRENT</span></div>
             </div>
           </div>
-          <div class="p-10 flex flex-col justify-center items-center min-h-[400px] bg-white/5 group hover:bg-white transition-all duration-700 cursor-pointer text-center">
+          <div class="p-12 flex flex-col justify-center items-center min-h-[440px] bg-white/5 text-white hover:bg-white transition-all duration-700 cursor-pointer text-center group">
             <router-link to="/subjects" class="text-center">
-              <span class="text-[10px] font-mono uppercase tracking-[0.4em] mb-4 block text-white/40 group-hover:text-black/40 transition-colors">START_LEARNING</span>
-              <h4 class="text-[28px] font-black tracking-tighter uppercase text-white group-hover:text-black transition-colors leading-none">PRACTICE <br/> NOW</h4>
-              <div class="mt-8 flex justify-center gap-1 opacity-20 group-hover:opacity-100 transition-opacity"><div class="w-3 h-3 border border-white group-hover:border-black"></div><div class="w-3 h-3 border border-white group-hover:border-black bg-white group-hover:bg-black"></div><div class="w-3 h-3 border border-white group-hover:border-black"></div></div>
+              <span class="text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block text-zinc-400 group-hover:text-black transition-colors">Jump back in</span>
+              <h4 class="text-[32px] font-black tracking-tighter uppercase leading-none group-hover:text-black transition-colors">PRACTICE <br/> NOW</h4>
+              <div class="mt-10 flex justify-center gap-2 opacity-20 group-hover:opacity-100 transition-opacity"><div class="w-4 h-4 rounded-none border border-white group-hover:border-black"></div><div class="w-4 h-4 rounded-none bg-white group-hover:bg-black"></div><div class="w-4 h-4 rounded-none border border-white group-hover:border-black"></div></div>
             </router-link>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Scene 4: The Social Intelligence (The White-Out Finale) -->
-    <section id="social-intelligence" class="min-h-screen scroll-snap-align-start shrink-0 bg-white text-black relative flex flex-col justify-between py-24 px-6 sm:px-12 md:px-24">
+    <!-- Scene 4: The Social Intelligence (The Finale) -->
+    <section id="social-intelligence" class="min-h-screen snap-start shrink-0 bg-white text-black relative flex flex-col justify-between py-24 px-6 sm:px-12 md:px-24">
       <div class="w-full overflow-hidden whitespace-nowrap border-y-2 border-black py-4">
         <div class="inline-block animate-marquee">
           <span v-for="(sig, i) in socialSignals" :key="i" class="text-[clamp(24px,4vw,48px)] font-black uppercase tracking-tighter mx-12">
-            {{ sig }} <span class="text-zinc-300 ml-12">//</span>
+            {{ sig }} <span class="text-zinc-300 ml-12"></span>
           </span>
         </div>
         <div class="inline-block animate-marquee">
           <span v-for="(sig, i) in socialSignals" :key="i" class="text-[clamp(24px,4vw,48px)] font-black uppercase tracking-tighter mx-12">
-            {{ sig }} <span class="text-zinc-300 ml-12">//</span>
+            {{ sig }} <span class="text-zinc-300 ml-12"></span>
           </span>
         </div>
       </div>
@@ -302,16 +533,17 @@ onMounted(async () => {
 
       <div class="flex flex-col md:flex-row justify-between items-end gap-10">
         <div class="text-left">
-          <BrandLogo class="scale-100 invert mb-6" />
-          <p class="text-[10px] font-black text-black uppercase tracking-widest leading-relaxed">PREPUP // BETTER STUDYING <br/> SYSTEM: ONLINE_READY</p>
+          <BrandLogo size="md" :is-light="true" class="mb-6" />
+          <p class="text-[10px] font-black text-black uppercase tracking-widest leading-relaxed">PREPUP BETTER STUDYING <br/> SYSTEM: ONLINE READY</p>
         </div>
         <div class="text-right">
            <p class="text-[10px] font-black text-black tracking-[0.4em] uppercase mb-2">© 2026 PREPUP CBT</p>
-           <p class="text-[9px] font-mono text-zinc-400 tracking-widest uppercase">BUILT_FOR_STUDENTS // SCALING_AFRICA</p>
+           <p class="text-[9px] font-mono font-bold text-zinc-400 tracking-widest uppercase">BUILT FOR STUDENTS SCALING AFRICA</p>
         </div>
       </div>
     </section>
 
+    </div>
   </div>
 </template>
 
