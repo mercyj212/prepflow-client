@@ -15,8 +15,12 @@ const startBoot = async () => {
   const steps = 40;
   for (let i = 0; i <= steps; i++) {
     bootProgress.value = (i / steps) * 100;
-    // Premium, variable-speed loading
-    const delay = i < 5 ? 120 : i > 35 ? 180 : 35 + Math.random() * 60;
+    // Premium, variable-speed loading: Slow calibration -> Speed run -> Final sync
+    let delay = 35 + Math.random() * 60;
+    if (i < 5) delay = 120; // Initial calibration
+    if (i > 35) delay = 180; // Final synchronization
+    if (i === 20) delay = 600; // Logic gate spike
+    
     await new Promise(r => setTimeout(r, delay));
   }
   await new Promise(r => setTimeout(r, 800));
@@ -254,15 +258,15 @@ onMounted(async () => {
     
     <!-- Premium Cinematic Entrance (Outside the content wrapper to stay sharp) -->
     <Transition
-      leave-active-class="transition duration-[2s] ease-in-out"
+      leave-active-class="transition duration-[2.5s] ease-in-out"
       leave-from-class="opacity-100 scale-100 blur-0"
-      leave-to-class="opacity-0 scale-[8] blur-3xl"
+      leave-to-class="opacity-0 scale-[10] blur-3xl"
     >
-      <div v-if="isBooting" class="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden">
+      <div v-if="isBooting" class="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden pointer-events-none">
         <div class="relative flex flex-col items-center transition-all duration-1000">
            <!-- Centered Premium Identity -->
            <div class="relative group">
-             <div class="absolute inset-0 blur-[60px] bg-brand/30 animate-pulse transition-all duration-1000"
+             <div class="absolute inset-0 blur-[80px] bg-brand/30 animate-pulse transition-all duration-1000"
                   :style="{ transform: `scale(${1 + bootProgress / 100})`, opacity: bootProgress / 100 }"></div>
              <BrandLogo size="lg" class="relative z-10 transition-transform duration-1000"
                         :style="{ transform: `scale(${0.9 + (bootProgress / 100) * 0.1})` }" />
@@ -270,12 +274,20 @@ onMounted(async () => {
            
            <!-- Large Elegant Counter -->
            <div class="mt-20 flex flex-col items-center gap-2">
-             <span class="text-[clamp(48px,10vw,120px)] font-black tracking-tighter tabular-nums leading-none">
-               {{ Math.round(bootProgress) }}<span class="text-zinc-700 text-[clamp(24px,5vw,48px)]">%</span>
-             </span>
-             <span class="text-[10px] font-black uppercase tracking-[0.8em] text-zinc-500 animate-pulse">
-               Synchronizing Identity
-             </span>
+             <div class="flex items-baseline gap-1">
+               <span class="text-[clamp(64px,12vw,140px)] font-black tracking-tighter tabular-nums leading-none">
+                 {{ Math.round(bootProgress) }}
+               </span>
+               <span class="text-zinc-700 font-bold text-[clamp(24px,5vw,48px)]">%</span>
+             </div>
+             
+             <div class="flex items-center gap-4">
+               <div class="h-px w-8 bg-zinc-800"></div>
+               <span class="text-[10px] font-black uppercase tracking-[0.8em] text-zinc-500 animate-pulse translate-x-[0.4em]">
+                 Synchronizing Identity
+               </span>
+               <div class="h-px w-8 bg-zinc-800"></div>
+             </div>
            </div>
         </div>
       </div>
