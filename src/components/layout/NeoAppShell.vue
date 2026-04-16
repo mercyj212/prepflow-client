@@ -1,9 +1,9 @@
 <template>
   <div 
-    class="min-h-screen bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-colors duration-500 overflow-hidden h-screen"
-    :class="[showSidebar ? 'md:pl-32' : 'md:px-12']"
+    class="min-h-screen bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-all duration-500 overflow-hidden h-screen"
+    :class="[showSidebar ? (isSidebarHovered ? 'md:pl-[296px]' : 'md:pl-32') : 'md:px-12']"
   >
-    <NeoSidebarRail v-if="showSidebar" />
+    <NeoSidebarRail v-if="showSidebar" @hover="isSidebarHovered = $event" />
 
     <!-- Application Canvas / Window -->
     <main class="flex-1 bg-[var(--neo-surface)] rounded-[28px] md:rounded-[40px] shadow-neo-md flex flex-col relative border border-white/20 dark:border-white/5 h-full overflow-hidden">
@@ -148,6 +148,7 @@ const authStore = useAuthStore();
 const fileInput = ref(null);
 const isUploading = ref(false);
 const showProfileMenu = ref(false);
+const isSidebarHovered = ref(false);
 const previewModal = ref({ show: false, url: '', file: null });
 
 const avatarUrl = computed(() => {
