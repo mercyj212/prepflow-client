@@ -67,8 +67,10 @@ const isHoveringWindow = ref(false);
 const sectionVisible = ref(false);
 const showMatrix = ref(false);
 const showFinale = ref(false);
+const isTouchDevice = ref(false);
 
 const handleGlobalMouseMove = (e) => {
+  if (isTouchDevice.value) return;
   // Parallax tracking
   const px = (e.clientX / window.innerWidth - 0.5) * 20;
   const py = (e.clientY / window.innerHeight - 0.5) * 20;
@@ -187,8 +189,12 @@ const socialSignals = computed(() => {
 onMounted(async () => {
   startBoot();
 
-  // ── Public stats: available to ALL visitors, no auth needed ──
-  quizStore.fetchPublicStats();
+  // Detect Touch Capability
+  isTouchDevice.value = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+  if (isTouchDevice.value) {
+    // Default spotlight to center-top for mobile visual balance
+    mousePos.value = { x: 50, y: 35 };
+  }
 
   // ── User-specific data: only when logged in ──
   if (authStore.isAuthenticated) {
@@ -216,6 +222,38 @@ onMounted(async () => {
   const finaleSection = document.querySelector('#social-intelligence');
   if (finaleSection) finaleObserver.observe(finaleSection);
 
+  // ── Typing Loop (Independent) ──
+  (async () => {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      if (isBooting.value) {
+        await new Promise(r => setTimeout(r, 100));
+        continue;
+      }
+
+      // Reset & Start Typing
+      isDone.value = false;
+      displayedLines.value = [
+        [{ text: '', class: '' }, { text: '', class: 'text-zinc-500' }],
+        [{ text: '', class: '' }, { text: '', class: 'text-zinc-500' }]
+      ];
+
+      for (let i = 0; i < lines.length; i++) {
+        await typeLine(i);
+        if (i < lines.length - 1) await new Promise(r => setTimeout(r, 200));
+      }
+      isDone.value = true;
+
+      // Pause while fully typed
+      await new Promise(r => setTimeout(r, 5000));
+
+      // Quick fade out before restart (handled by Tailwind transition-opacity on its class)
+      isDone.value = false;
+      await new Promise(r => setTimeout(r, 1000));
+    }
+  })();
+
+  // ── Automatic Scroll Tour (Independent) ──
   (async () => {
     const tourSections = ['hero-scene', 'tactical-section', 'mastery-matrix', 'social-intelligence'];
     let currentIdx = 0;
@@ -227,22 +265,10 @@ onMounted(async () => {
         continue;
       }
 
-      // Typing Animation Sync
-      isDone.value = false;
-      displayedLines.value = [
-        [{ text: '', class: '' }, { text: '', class: 'text-zinc-500' }],
-        [{ text: '', class: '' }, { text: '', class: 'text-zinc-500' }]
-      ];
-      for (let i = 0; i < lines.length; i++) {
-        await typeLine(i);
-        if (i < lines.length - 1) await new Promise(r => setTimeout(r, 200));
-      }
-      isDone.value = true;
+      // Time spent at each section
+      await new Promise(r => setTimeout(r, 10000));
 
-      // Wait at current section
-      await new Promise(r => setTimeout(r, 8000));
-
-      // Auto-Scroll to next sequence
+      // Handle Scroll
       currentIdx = (currentIdx + 1) % tourSections.length;
       const nextSection = document.getElementById(tourSections[currentIdx]);
       if (nextSection) {
@@ -254,7 +280,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div @mousemove="handleGlobalMouseMove" class="h-screen overflow-y-auto scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black">
+  <div @mousemove="handleGlobalMouseMove" class="min-h-[100svh] overflow-y-auto scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black">
     
     <!-- Premium Cinematic Entrance (Outside the content wrapper to stay sharp) -->
     <Transition
@@ -301,25 +327,25 @@ onMounted(async () => {
 
     <!-- Floating Elite Header -->
     <header 
-      class="fixed top-0 left-0 right-0 z-[100] px-6 sm:px-12 md:px-20 py-8 flex justify-between items-center transition-all duration-700 pointer-events-none"
+      class="fixed top-0 left-0 right-0 z-[100] px-4 sm:px-12 md:px-20 py-6 sm:py-8 flex justify-between items-center transition-all duration-700 pointer-events-none"
       :class="showFinale ? 'text-black' : 'text-white'"
     >
       <div class="pointer-events-auto transition-all duration-700">
-        <BrandLogo size="md" :is-light="showFinale" />
+        <BrandLogo :size="window?.innerWidth < 640 ? 'sm' : 'md'" :is-light="showFinale" />
       </div>
 
-      <nav class="flex items-center gap-8 pointer-events-auto">
+      <nav class="flex items-center gap-4 sm:gap-8 pointer-events-auto">
         <router-link to="/login" 
-          class="text-[11px] font-black uppercase tracking-[0.3em] transition-colors"
+          class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] transition-colors"
           :class="showFinale ? 'text-black hover:text-zinc-600' : 'text-white hover:text-zinc-400'">
           Login
         </router-link>
         <router-link to="/register" 
-          class="group relative overflow-hidden px-8 py-3 border transition-all duration-500 rounded-none pointer-events-auto"
+          class="group relative overflow-hidden px-4 sm:px-8 py-2.5 sm:py-3 border transition-all duration-500 rounded-none pointer-events-auto"
           :class="showFinale ? 'border-black/20 hover:border-black' : 'border-white/20 hover:border-white'"
         >
           <span 
-            class="relative z-10 text-[11px] font-black uppercase tracking-[0.3em] transition-colors"
+            class="relative z-10 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] transition-colors"
             :class="showFinale ? 'text-black group-hover:text-white' : 'text-white group-hover:text-black'"
           >
             Get Started
@@ -333,7 +359,7 @@ onMounted(async () => {
     </header>
 
     <!-- Scene 1: The Narrative Hero -->
-    <section id="hero-scene" class="min-h-screen snap-start shrink-0 relative flex flex-col md:flex-row overflow-hidden border-b border-white/5 noise-overlay cursor-crosshair">
+    <section id="hero-scene" class="min-h-[100svh] snap-start shrink-0 relative flex flex-col md:flex-row overflow-hidden border-b border-white/5 noise-overlay cursor-crosshair">
       <!-- Tactical Scope UI -->
       <div class="absolute inset-0 z-[5] pointer-events-none opacity-40">
         <!-- Corner Brackets -->
@@ -357,10 +383,13 @@ onMounted(async () => {
         <div class="absolute top-1/4 right-[30%] w-px h-32 bg-white/10"></div>
       </div>
 
-      <div class="flex-1 z-20 flex flex-col justify-start pt-[20vh] px-6 sm:px-12 md:px-20 py-20 bg-black/40 backdrop-blur-[2px]">
+      <div class="flex-1 z-20 flex flex-col justify-start pt-[15vh] sm:pt-[20vh] px-6 sm:px-12 md:px-20 py-12 bg-black/40 backdrop-blur-[2px]">
         <div class="max-w-xl text-left" :style="{ transform: `translate(${heroMouse.x * 0.5}px, ${heroMouse.y * 0.5}px)` }">
           
-          <h1 class="text-[clamp(44px,7vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[4em]">
+          <h1 
+            class="text-[clamp(44px,7vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[3.6em] transition-opacity duration-1000"
+            :class="isDone || !isBooting ? 'opacity-100' : 'opacity-0'"
+          >
             <template v-for="(line, lIdx) in displayedLines" :key="lIdx">
               <span v-for="(seg, sIdx) in line" :key="sIdx" :class="seg.class">
                 {{ seg.text }}
@@ -414,7 +443,7 @@ onMounted(async () => {
     </section>
 
     <!-- Scene 2: The Focused Path (Viewfinder) -->
-    <section id="tactical-section" class="min-h-screen snap-start shrink-0 flex items-center justify-center bg-zinc-950 relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
+    <section id="tactical-section" class="min-h-[100svh] snap-start shrink-0 flex items-center justify-center bg-zinc-950 relative overflow-hidden py-24 sm:py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
       <div class="absolute inset-0 pointer-events-none opacity-[0.03] grid-pattern z-0"></div>
       <div class="max-w-7xl w-full grid grid-cols-1 md:grid-cols-12 gap-12 items-center z-10">
         <div class="md:col-span-5 text-left order-2 md:order-1">
@@ -427,7 +456,7 @@ onMounted(async () => {
           </router-link>
         </div>
         <div class="md:col-span-7 relative order-1 md:order-2 flex justify-end">
-          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out rounded-none shadow-2xl" :class="sectionVisible ? 'animate-aperture-pulse' : 'h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @mousemove="handleViewfinderMove">
+          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out rounded-none shadow-2xl" :class="sectionVisible ? 'animate-aperture-pulse h-64 sm:h-[32rem]' : 'h-32 sm:h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @mousemove="handleViewfinderMove">
             <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/40 z-30"></div>
             <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/40 z-30"></div>
             <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/40 z-30"></div>
@@ -450,11 +479,11 @@ onMounted(async () => {
     </section>
 
     <!-- Scene 3: The Academic Command Center (The Matrix) -->
-    <section id="mastery-matrix" class="min-h-screen snap-start shrink-0 flex items-center justify-center bg-black relative overflow-hidden py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
+    <section id="mastery-matrix" class="min-h-[100svh] snap-start shrink-0 flex items-center justify-center bg-black relative overflow-hidden py-24 sm:py-32 px-4 sm:px-12 md:px-24 border-b border-white/5">
       <div class="absolute inset-0 pointer-events-none opacity-[0.02] grid-pattern z-0 scale-[0.5]"></div>
       <div class="max-w-7xl w-full z-10 transition-all duration-[1.5s]" :class="showMatrix ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-20'">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border border-zinc-100 dark:border-zinc-800 rounded-none overflow-hidden bg-white/5 backdrop-blur-xl shadow-2xl">
-          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r flex flex-col justify-between min-h-[440px] text-left">
+          <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r flex flex-col justify-between min-h-[320px] sm:min-h-[440px] text-left">
             <div>
               <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">
                 {{ authStore.isAuthenticated ? 'Your Avg. Exam Score' : 'Platform Avg. Score' }}
@@ -473,7 +502,7 @@ onMounted(async () => {
               }}
             </div>
           </div>
-          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[440px] text-left">
+          <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[320px] sm:min-h-[440px] text-left">
             <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Academic Mastery</p>
             <div class="space-y-6">
               <div v-for="sub in academicSubjects" :key="sub.code" class="flex flex-col gap-2 group text-left">
@@ -485,7 +514,7 @@ onMounted(async () => {
               </div>
             </div>
           </div>
-          <div class="p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[440px] flex flex-col justify-between text-left">
+          <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[320px] sm:min-h-[440px] flex flex-col justify-between text-left">
             <div>
               <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Resource Bank</p>
               <h3 class="text-[clamp(32px,4vw,48px)] font-black leading-tight tracking-tighter uppercase text-left">
@@ -502,7 +531,7 @@ onMounted(async () => {
               <div class="flex items-center gap-4 text-left"><div class="w-2 h-2 bg-zinc-700 rounded-full"></div><span class="text-[9px] font-mono font-bold text-zinc-500">LATEST UPDATE: CURRENT</span></div>
             </div>
           </div>
-          <div class="p-12 flex flex-col justify-center items-center min-h-[440px] bg-white/5 text-white hover:bg-white transition-all duration-700 cursor-pointer text-center group">
+          <div class="p-8 sm:p-12 flex flex-col justify-center items-center min-h-[320px] sm:min-h-[440px] bg-white/5 text-white hover:bg-white transition-all duration-700 cursor-pointer text-center group">
             <router-link to="/subjects" class="text-center">
               <span class="text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block text-zinc-400 group-hover:text-black transition-colors">Jump back in</span>
               <h4 class="text-[32px] font-black tracking-tighter uppercase leading-none group-hover:text-black transition-colors">PRACTICE <br/> NOW</h4>
@@ -514,7 +543,7 @@ onMounted(async () => {
     </section>
 
     <!-- Scene 4: The Social Intelligence (The Finale) -->
-    <section id="social-intelligence" class="min-h-screen snap-start shrink-0 bg-white text-black relative flex flex-col justify-between py-24 px-6 sm:px-12 md:px-24">
+    <section id="social-intelligence" class="min-h-[100svh] snap-start shrink-0 bg-white text-black relative flex flex-col justify-between py-12 sm:py-24 px-6 sm:px-12 md:px-24">
       <div class="w-full overflow-hidden whitespace-nowrap border-y-2 border-black py-4">
         <div class="inline-block animate-marquee">
           <span v-for="(sig, i) in socialSignals" :key="i" class="text-[clamp(24px,4vw,48px)] font-black uppercase tracking-tighter mx-12">
