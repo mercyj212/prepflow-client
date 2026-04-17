@@ -16,20 +16,24 @@
           {{ facultyName }}
         </h1>
         <p class="text-[16px] font-normal text-zinc-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-          Choose a department to access its courses and study materials.
+          {{ path === 'entrance' ? 'Select an exam year to access subjects and past questions.' : 'Choose a department to access its courses and study materials.' }}
         </p>
       </header>
 
       <!-- Loading -->
-      <NeoLoader v-if="loading" label="Loading departments..." />
+      <NeoLoader v-if="loading" :label="path === 'entrance' ? 'Loading years...' : 'Loading departments...'" />
 
       <!-- Empty State -->
       <div v-else-if="departments.length === 0" class="py-32 text-center">
         <div class="w-16 h-16 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mx-auto mb-6 shadow-neo-inner">
           <Layers :size="32" :stroke-width="1.2" class="text-zinc-300" />
         </div>
-        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">No departments in this faculty yet.</p>
-        <p class="text-[11px] text-zinc-400 mt-2">Ask your admin to configure departments.</p>
+        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">
+          {{ path === 'entrance' ? 'No years found for this exam track.' : 'No departments in this faculty yet.' }}
+        </p>
+        <p class="text-[11px] text-zinc-400 mt-2">
+          {{ path === 'entrance' ? 'Ask your admin to add exam years.' : 'Ask your admin to configure departments.' }}
+        </p>
       </div>
 
       <!-- Department Grid -->

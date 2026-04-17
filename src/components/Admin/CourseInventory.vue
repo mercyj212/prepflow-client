@@ -8,9 +8,11 @@
       <div class="flex-1 min-w-0">
         <h3 class="text-[19px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-tight leading-none mb-3 group-hover:text-brand transition-colors">{{ course.title }}</h3>
         <p class="text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em] flex items-center gap-3">
+          <span class="text-brand font-black italic">{{ course.level || 'Unset' }}</span>
+          <span class="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
           <span class="text-zinc-500 dark:text-zinc-500">{{ quizzesCount(course._id) }} Tests</span>
           <span class="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
-          <span>{{ course.materials?.length || 0 }} Course Materials</span>
+          <span>{{ course.materials?.length || 0 }} Materials</span>
         </p>
       </div>
       <div class="flex items-center gap-2.5">

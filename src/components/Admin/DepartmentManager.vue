@@ -2,8 +2,14 @@
   <NeoCard variant="extruded" class="!rounded-[28px] p-8">
     <div class="flex items-center justify-between mb-8 pl-2 border-l-4 border-cyan-500">
       <div>
-        <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">Departments</h2>
-        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Assign departments to faculties</p>
+      <div>
+        <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">
+          {{ isEntrancePath ? 'Exam Years' : 'Departments' }}
+        </h2>
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+          {{ isEntrancePath ? 'Manage past question years' : 'Assign departments to faculties' }}
+        </p>
+      </div>
       </div>
     </div>
 
@@ -11,7 +17,7 @@
     <form @submit.prevent="handleCreate" class="flex flex-col sm:flex-row gap-3 mb-8">
       <input
         v-model="newName"
-        placeholder="Department name (e.g. Computer Science)"
+        :placeholder="isEntrancePath ? 'Year (e.g. 2024)' : 'Department name (e.g. Computer Science)'"
         class="flex-1 h-12 px-5 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
       />
       <select
@@ -46,7 +52,8 @@
       >
         <div class="flex items-center gap-4">
           <div class="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center shrink-0">
-            <Layers :size="18" :stroke-width="1.5" class="text-cyan-500" />
+            <Calendar v-if="dept.faculty?.path === 'entrance'" :size="18" :stroke-width="1.5" class="text-cyan-500" />
+            <Layers v-else :size="18" :stroke-width="1.5" class="text-cyan-500" />
           </div>
           <div>
             <p class="text-[14px] font-bold text-zinc-900 dark:text-zinc-100">{{ dept.name }}</p>
@@ -67,8 +74,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { Plus, Layers, Trash2 } from 'lucide-vue-next';
+import { ref, computed, onMounted } from 'vue';
+import { Plus, Layers, Trash2, Calendar } from 'lucide-vue-next';
 import api from '../../api/axios';
 import NeoCard from '../common/NeoCard.vue';
 
@@ -77,6 +84,12 @@ const faculties = ref([]);
 const newName = ref('');
 const selectedFaculty = ref('');
 const loading = ref(false);
+
+const isEntrancePath = computed(() => {
+  if (!selectedFaculty.value) return false;
+  const fac = faculties.value.find(f => f._id === selectedFaculty.value);
+  return fac?.path === 'entrance';
+});
 
 const fetchAll = async () => {
   try {

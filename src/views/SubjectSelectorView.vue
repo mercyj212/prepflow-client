@@ -15,15 +15,15 @@
       <!-- Header Section -->
       <header class="mb-16">
         <h1 class="text-[42px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tighter leading-none mb-4">
-          {{ departmentName }} Courses
+          {{ path === 'entrance' ? departmentName + ' Subjects' : departmentName + ' Courses' }}
         </h1>
         <p class="text-[16px] font-normal text-zinc-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-          Browse courses and practice tests. Filter by level to find exactly what you need.
+          {{ path === 'entrance' ? 'Select a subject to take practice tests from ' + departmentName + ' past questions.' : 'Browse courses and practice tests. Filter by level to find exactly what you need.' }}
         </p>
       </header>
 
       <!-- Level Filter -->
-      <div class="flex items-center gap-4 mb-16 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
+      <div v-if="path !== 'entrance'" class="flex items-center gap-4 mb-16 overflow-x-auto no-scrollbar pb-4 -mx-1 px-1">
         <button
           v-for="level in availableLevels"
           :key="level"
@@ -38,11 +38,13 @@
       </div>
 
       <!-- Loading -->
-      <NeoLoader v-if="loadingCourses" label="Loading courses..." />
+      <NeoLoader v-if="loadingCourses" :label="path === 'entrance' ? 'Loading subjects...' : 'Loading courses...'" />
 
       <!-- Empty State -->
       <div v-else-if="courses.length === 0" class="py-32 text-center">
-        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">No courses found for this criteria.</p>
+        <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">
+          {{ path === 'entrance' ? 'No subjects found for this year.' : 'No courses found for this criteria.' }}
+        </p>
         <button @click="selectLevel('All')" class="mt-8 text-[11px] font-bold underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-300">Clear filter</button>
       </div>
       

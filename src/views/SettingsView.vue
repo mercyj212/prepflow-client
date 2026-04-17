@@ -15,19 +15,30 @@
 
           <!-- Avatar + Name -->
           <div class="flex items-center gap-6">
-            <div class="relative group cursor-pointer flex-shrink-0" @click="triggerFileInput">
-              <!-- Avatar Circle -->
-              <div class="w-20 h-20 rounded-full border-4 border-white dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all group-hover:border-brand/40">
-                <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
-                
-                <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
-                  <Loader2 :size="24" class="animate-spin text-white" />
+            <div class="relative flex-shrink-0">
+              <!-- Backdrop for menu -->
+              <div v-if="showAvatarMenu" class="fixed inset-0 z-[50]" @click="showAvatarMenu = false"></div>
+              
+              <div class="relative group cursor-pointer" @click="showAvatarMenu = !showAvatarMenu">
+                <!-- Avatar Circle -->
+                <div class="w-20 h-20 rounded-full border-4 border-white dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all group-hover:border-brand/40">
+                  <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
+                  
+                  <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Loader2 :size="24" class="animate-spin text-white" />
+                  </div>
+                </div>
+
+                <!-- Plus Badge (Right) -->
+                <div class="absolute -right-1 bottom-2 w-7 h-7 bg-brand dark:bg-zinc-100 rounded-full border-4 border-[var(--neo-bg)] flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
+                  <svg class="w-3.5 h-3.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
                 </div>
               </div>
 
-              <!-- Plus Badge (Right) -->
-              <div class="absolute -right-1 bottom-2 w-7 h-7 bg-brand dark:bg-zinc-100 rounded-full border-4 border-[var(--neo-bg)] flex items-center justify-center shadow-lg transition-transform group-hover:scale-110">
-                <svg class="w-3.5 h-3.5 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M12 5v14M5 12h14"></path></svg>
+              <!-- Avatar Menu Dropdown -->
+              <div v-if="showAvatarMenu" class="absolute top-[85px] left-0 w-40 bg-white dark:bg-zinc-800 rounded-[16px] shadow-xl border border-zinc-100 dark:border-zinc-700 p-2 z-[60] animate-in fade-in zoom-in-95 duration-200">
+                <button @click="viewPhoto" class="w-full text-left px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 rounded-xl text-[12px] font-bold text-zinc-700 dark:text-zinc-200 transition-colors">View Photo</button>
+                <button @click="triggerFileInput" class="w-full text-left px-3 py-2 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 rounded-xl text-[12px] font-bold text-zinc-700 dark:text-zinc-200 transition-colors">Change Photo</button>
               </div>
 
               <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
@@ -99,8 +110,12 @@
       <div class="bg-white dark:bg-zinc-900 w-full max-w-sm rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col">
         <div class="px-8 py-6 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between shrink-0">
           <div>
-            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Appearance Check</h2>
-            <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">New Profile Preview</p>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">
+              {{ previewModal.isViewing ? 'Profile Photo' : 'Appearance Check' }}
+            </h2>
+            <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+              {{ previewModal.isViewing ? 'Current Look' : 'New Profile Preview' }}
+            </p>
           </div>
           <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
             <X :size="20" />
@@ -115,14 +130,21 @@
         </div>
 
         <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex gap-4">
-          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
-            Cancel
-          </button>
-          <button @click="confirmAvatarUpload" 
-            :disabled="isUploading"
-            class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
-            {{ isUploading ? 'Uploading...' : 'Confirm New Look' }}
-          </button>
+          <template v-if="previewModal.isViewing">
+            <button @click="closePreview" class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all">
+              Close
+            </button>
+          </template>
+          <template v-else>
+            <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
+              Cancel
+            </button>
+            <button @click="confirmAvatarUpload" 
+              :disabled="isUploading"
+              class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
+              {{ isUploading ? 'Uploading...' : 'Confirm New Look' }}
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -142,7 +164,8 @@ const router = useRouter();
 
 const fileInput = ref(null);
 const isUploading = ref(false);
-const previewModal = ref({ show: false, url: '', file: null });
+const showAvatarMenu = ref(false);
+const previewModal = ref({ show: false, url: '', file: null, isViewing: false });
 
 const avatarUrl = computed(() => {
   return authStore.user?.profilePicture || `https://api.dicebear.com/7.x/notionists/svg?seed=${authStore.user?.fullName || 'student'}`;
@@ -150,7 +173,18 @@ const avatarUrl = computed(() => {
 
 const triggerFileInput = () => {
   if (isUploading.value) return;
+  showAvatarMenu.value = false;
   fileInput.value.click();
+};
+
+const viewPhoto = () => {
+  showAvatarMenu.value = false;
+  previewModal.value = {
+    show: true,
+    url: avatarUrl.value,
+    file: null,
+    isViewing: true
+  };
 };
 
 const handleAvatarUpload = (event) => {

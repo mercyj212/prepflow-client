@@ -2,8 +2,12 @@
   <NeoCard variant="extruded" class="!rounded-[28px] p-8">
     <div class="flex items-center justify-between mb-8 pl-2 border-l-4 border-amber-500">
       <div>
-        <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">Faculties</h2>
-        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">Manage institution faculties by path</p>
+        <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">
+          {{ newPath === 'entrance' ? 'Exam Titles' : 'Faculties' }}
+        </h2>
+        <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+          {{ newPath === 'entrance' ? 'Manage entrance assessments' : 'Manage institution faculties by path' }}
+        </p>
       </div>
     </div>
 
@@ -11,7 +15,7 @@
     <form @submit.prevent="handleCreate" class="flex flex-col sm:flex-row gap-3 mb-8">
       <input
         v-model="newName"
-        placeholder="Faculty name (e.g. Engineering & Technology)"
+        :placeholder="newPath === 'entrance' ? 'Exam Name (e.g. JAMB)' : 'Faculty name (e.g. Engineering)'"
         class="flex-1 h-12 px-5 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
       />
       <select
@@ -50,7 +54,9 @@
           </div>
           <div>
             <p class="text-[14px] font-bold text-zinc-900 dark:text-zinc-100">{{ fac.name }}</p>
-            <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">{{ fac.path }}</p>
+            <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+              {{ fac.path === 'entrance' ? 'Exam Track' : fac.path }}
+            </p>
           </div>
         </div>
         <button

@@ -12,23 +12,37 @@
           </div>
           Generative AI Lab
         </h2>
-        <p class="text-[11px] font-black italic text-zinc-400 uppercase tracking-widest ml-12">Universal synthesis protocol</p>
+        <p class="text-[11px] font-black italic text-zinc-400 uppercase tracking-widest ml-12">AI Generation Settings</p>
       </div>
       
       <div v-if="loading" class="flex items-center gap-3 px-5 py-2.5 bg-brand/5 border border-brand/20 rounded-2xl animate-pulse">
         <span class="w-1.5 h-1.5 bg-brand rounded-full"></span>
-        <span class="text-[9px] font-black text-brand uppercase tracking-[0.2em]">Context Binding...</span>
+        <span class="text-[9px] font-black text-brand uppercase tracking-[0.2em]">Processing...</span>
       </div>
     </header>
 
     <form @submit.prevent="handleSubmit" class="space-y-10 relative z-10">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <!-- Level Filter -->
+        <div class="space-y-3">
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Academic Level</label>
+          <div class="relative">
+            <select v-model="form.level" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
+              <option value="">All Levels</option>
+              <option v-for="l in levels" :key="l" :value="l">{{ l }}</option>
+            </select>
+            <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
+              <ChevronDown :size="16" />
+            </div>
+          </div>
+        </div>
+
         <div class="md:col-span-2 space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Destination Node</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Target Practice Test</label>
           <div class="relative">
             <select v-model="form.quizId" required class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
-              <option value="" disabled>Select target gateway...</option>
-              <option v-for="q in quizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.questions?.length || 0 }} Items)</option>
+              <option value="" disabled>Select a practice test...</option>
+              <option v-for="q in filteredQuizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.course?.level || 'N/A' }})</option>
             </select>
             <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
               <ChevronDown :size="16" />
@@ -37,17 +51,16 @@
         </div>
         
         <div class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Synthesis Depth</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Num. Questions</label>
           <div class="relative">
             <input v-model="form.count" required type="number" min="1" max="200" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner">
-            <span class="absolute right-6 top-1/2 -translate-y-1/2 text-[9px] font-black text-zinc-300 uppercase tracking-widest">Units</span>
           </div>
         </div>
       </div>
 
       <div class="space-y-4">
         <div class="flex items-center justify-between ml-1">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Source Feed (Raw text)</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Source Text</label>
           <button 
             v-if="form.material" 
             type="button" 
@@ -55,23 +68,23 @@
             class="text-[9px] font-black text-rose-500 hover:text-rose-600 uppercase tracking-widest transition-colors flex items-center gap-2"
           >
             <Trash2 :size="14" />
-            Purge Feed
+            Clear Text
           </button>
         </div>
         <div class="group/textarea relative">
           <textarea v-model="form.material" 
             class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-[32px] px-8 py-8 text-[15px] text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner h-56 font-mono resize-none leading-relaxed" 
-            placeholder="Introduce curriculum context or lecture data..."></textarea>
+            placeholder="Paste your study material here..."></textarea>
           <div class="absolute bottom-8 right-10 text-[9px] font-black uppercase tracking-widest text-zinc-300 pointer-events-none group-focus-within/textarea:text-brand transition-colors">
-            Universal Input Node
+            Input Text
           </div>
         </div>
       </div>
 
       <div class="space-y-5">
         <div class="flex items-center justify-between px-1">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Document Artifacts</label>
-          <span class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">{{ files.length }}/10 Slices</span>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Upload Files</label>
+          <span class="text-[9px] font-black text-zinc-300 uppercase tracking-widest">{{ files.length }}/10 Files</span>
         </div>
         
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -80,7 +93,7 @@
             <div class="w-12 h-12 rounded-2xl bg-white dark:bg-zinc-800 flex items-center justify-center mb-4 group-hover/upload:scale-110 group-hover/upload:bg-brand group-hover/upload:text-white shadow-neo transition-all">
               <Plus :size="24" />
             </div>
-            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover/upload:text-brand">Uplink Context</span>
+            <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 group-hover/upload:text-brand">Add Files</span>
             <input type="file" multiple accept="image/*,.pdf" class="hidden" @change="onFileChange" />
           </label>
 
@@ -110,17 +123,17 @@
           <div class="relative flex justify-center items-center gap-4 text-[12px] font-black uppercase tracking-[0.4em]">
             <Zap v-if="!loading" :size="20" class="group-hover/btn:rotate-12 transition-transform" />
             <div v-else class="w-5 h-5 border-3 border-zinc-500/30 border-t-brand rounded-full animate-spin"></div>
-            <span>{{ loading ? 'Synchronizing Intelligence...' : 'Initiate AI Synthesis' }}</span>
+            <span>{{ loading ? 'Generating Questions...' : 'Generate Questions' }}</span>
           </div>
         </button>
-        <p v-if="!form.quizId" class="text-center mt-5 text-[9px] font-black text-rose-500 uppercase tracking-[0.3em] animate-pulse">Gateway selection required</p>
+        <p v-if="!form.quizId" class="text-center mt-5 text-[9px] font-black text-rose-500 uppercase tracking-[0.3em] animate-pulse">Please select a test</p>
       </div>
     </form>
   </NeoCard>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { Zap, ChevronDown, Trash2, Plus, FileText, Image, X } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 
@@ -131,10 +144,21 @@ const props = defineProps({
 
 const emit = defineEmits(['generate']);
 
+const levels = ['100L', '200L', '300L', '400L', '500L', 'ND1', 'ND2', 'HND1', 'HND2', 'JAMB', 'WAEC', 'NECO', 'POST-UTME'];
+
 const form = ref({
   quizId: '',
+  level: '',
   material: '',
   count: 60
+});
+
+const filteredQuizzes = computed(() => {
+  if (!form.value.level) return props.quizzes;
+  return props.quizzes.filter(q => {
+    const courseLevel = q.course?.level || '';
+    return courseLevel === form.value.level;
+  });
 });
 
 const files = ref([]);
@@ -152,8 +176,6 @@ const removeFile = (index) => {
 const handleSubmit = () => {
   if (!form.value.quizId) return;
   emit('generate', { ...form.value, files: files.value });
-  // Clear file list after start to signify processing if needed, 
-  // though usually we keep it until success. Dashboard handles loading state.
 };
 </script>
 

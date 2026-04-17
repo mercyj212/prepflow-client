@@ -7,7 +7,7 @@
           <h2 class="text-[32px] font-medium text-zinc-800 dark:text-zinc-100 tracking-tighter italic">Student List</h2>
           <button @click="emit('email-blast')" class="w-fit h-12 flex items-center gap-3 px-8 bg-brand hover:brightness-110 text-white rounded-full text-[10px] font-black uppercase tracking-[0.3em] transition-all shadow-neo-pill active:scale-95 shrink-0">
             <Megaphone :size="16" />
-            Send Email blast
+            Email All Students
           </button>
         </div>
         <p class="text-zinc-500 dark:text-zinc-500 text-[11px] font-black uppercase tracking-[0.3em] ml-1">View and manage all students in your system.</p>
@@ -25,7 +25,7 @@
             <tr class="bg-zinc-50/50 dark:bg-zinc-800/20 border-b border-zinc-100 dark:border-zinc-800/50">
               <th class="px-10 py-7 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400">Student</th>
               <th class="px-10 py-7 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 text-center">Email</th>
-              <th class="px-10 py-7 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 text-center">Last Seen</th>
+              <th class="px-10 py-7 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 text-center">Last Active</th>
               <th class="px-10 py-7 text-[9px] font-black uppercase tracking-[0.3em] text-zinc-400 text-right">Actions</th>
             </tr>
           </thead>
@@ -97,7 +97,7 @@
               <span class="text-[12px] font-medium text-zinc-600 dark:text-zinc-300 truncate ml-4 lowercase">{{ student.email }}</span>
             </div>
             <div class="flex items-center justify-between py-4 border-b border-zinc-100 dark:border-zinc-800/50">
-              <span class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Last Seen</span>
+              <span class="text-[9px] font-black text-zinc-400 uppercase tracking-widest">Last Active</span>
               <div class="text-right">
                 <p class="text-[11px] font-black text-zinc-900 dark:text-white tracking-widest">{{ new Date(student.lastLogin || student.createdAt).toLocaleDateString() }}</p>
                 <p class="text-[9px] font-black text-brand uppercase tracking-widest mt-1">{{ formatTime(student.lastLogin || student.createdAt) }}</p>

@@ -56,37 +56,37 @@ const props = defineProps({
 
 const statsList = computed(() => [
   { 
-    label: 'Knowledge Assets', 
+    label: 'Courses', 
     value: props.coursesCount,
-    description: 'Total Active Curriculums',
+    description: 'Total Active Courses',
     icon: markRaw(BookOpen),
     bgClass: 'bg-brand',
     textClass: 'text-brand',
     iconWrapperClass: 'bg-brand/10 text-brand'
   },
   { 
-    label: 'Evaluation Gateways', 
+    label: 'Practice Tests', 
     value: props.quizzesCount,
-    description: 'Active Assessment Paths',
+    description: 'Total Practice Tests',
     icon: markRaw(ClipboardList),
     bgClass: 'bg-emerald-500',
     textClass: 'text-emerald-500',
     iconWrapperClass: 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
   },
   { 
-    label: 'Scholar Registry', 
+    label: 'Students', 
     value: props.studentsCount,
-    description: 'Verified Active Users',
+    description: 'Total Registered Students',
     icon: markRaw(Users),
     bgClass: 'bg-rose-500',
     textClass: 'text-rose-500',
     iconWrapperClass: 'bg-rose-50 dark:bg-rose-500/10 text-rose-600 dark:text-rose-400'
   },
   { 
-    label: 'Global Performance', 
+    label: 'Average Score', 
     value: props.globalAverage,
     suffix: '%',
-    description: 'Platform Assessment Avg',
+    description: 'Average Student Score',
     icon: markRaw(Zap),
     bgClass: 'bg-amber-500',
     textClass: 'text-amber-500',

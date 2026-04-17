@@ -7,6 +7,8 @@
         <p class="text-[9px] font-black text-zinc-400 uppercase tracking-[0.3em] flex items-center gap-3">
           <span class="text-brand/80">{{ quiz.course?.title || 'General Subject' }}</span>
           <span class="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
+          <span class="text-emerald-500">{{ quiz.course?.level || 'N/A' }}</span>
+          <span class="w-1 h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full"></span>
           <span>{{ quiz.questions?.length || 0 }} Questions</span>
         </p>
       </div>

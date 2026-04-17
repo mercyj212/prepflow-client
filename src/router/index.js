@@ -7,7 +7,11 @@ import QuizView from '../views/QuizView.vue';
 import ResultView from '../views/ResultView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
-import AdminDashboardView from '../views/AdminDashboardView.vue';
+import AdminLayout from '../components/layout/AdminLayout.vue';
+import AdminOverview from '../views/admin/AdminOverview.vue';
+import AdminInventory from '../views/admin/AdminInventory.vue';
+import AdminHierarchy from '../views/admin/AdminHierarchy.vue';
+import AdminStudents from '../views/admin/AdminStudents.vue';
 import FlashcardView from '../views/FlashcardView.vue';
 import PracticeView from '../views/PracticeView.vue';
 import VerifyEmailView from '../views/VerifyEmailView.vue';
@@ -119,9 +123,14 @@ const routes = [
 
   {
     path: '/admin',
-    name: 'admin',
-    component: AdminDashboardView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    component: AdminLayout,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    children: [
+      { path: '', name: 'admin-overview', component: AdminOverview },
+      { path: 'inventory', name: 'admin-inventory', component: AdminInventory },
+      { path: 'hierarchy', name: 'admin-hierarchy', component: AdminHierarchy },
+      { path: 'students', name: 'admin-students', component: AdminStudents }
+    ]
   },
   {
     path: '/help',

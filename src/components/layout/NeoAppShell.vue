@@ -19,16 +19,49 @@
              <!-- Profile Section -->
              <div class="relative flex items-center gap-3">
                <!-- Name Label (Clickable) -->
-               <div @click="showProfileMenu = !showProfileMenu" class="hidden sm:flex flex-col items-end cursor-pointer group/name">
-                 <span class="text-[13px] font-black text-zinc-800 dark:text-zinc-100 tracking-tight group-hover/name:text-zinc-500 dark:group-hover/name:text-zinc-400 transition-colors text-right">
-                   {{ authStore.user?.fullName || 'PrepUp User' }}
-                 </span>
-                 <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Student</span>
+               <div class="relative hidden sm:flex flex-col items-end cursor-pointer group/name">
+                 <div @click="showProfileMenu = !showProfileMenu; showAvatarMenu = false" class="flex flex-col items-end">
+                   <span class="text-[13px] font-black text-zinc-800 dark:text-zinc-100 tracking-tight group-hover/name:text-zinc-500 dark:group-hover/name:text-zinc-400 transition-colors text-right">
+                     {{ authStore.user?.fullName || 'PrepUp User' }}
+                   </span>
+                   <span class="text-[9px] font-black uppercase tracking-[0.2em] text-zinc-400">Student</span>
+                 </div>
+                 
+                 <!-- 🔽 PROFILE SETTINGS DROPDOWN MENU -->
+                 <Transition
+                   enter-active-class="transition duration-200 ease-out"
+                   enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                   enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                   leave-active-class="transition duration-150 ease-in"
+                   leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                   leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+                 >
+                   <div v-if="showProfileMenu" class="absolute top-12 right-0 w-64 bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-100 dark:border-white/5 py-3 px-3 z-50 overflow-hidden cursor-default" @click.stop>
+                      <div class="fixed inset-0 z-[-1] bg-transparent" @click.stop="showProfileMenu = false"></div>
+
+                      <div class="px-5 py-4 mb-2 border-b border-zinc-50 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5 rounded-[20px]">
+                        <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-1">Active Session</p>
+                        <p class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 truncate">{{ authStore.user?.email }}</p>
+                      </div>
+
+                      <div class="space-y-1">
+                        <router-link to="/settings" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
+                          <Settings :size="16" :stroke-width="2" class="opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                          Settings
+                        </router-link>
+
+                        <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-[18px] transition-all group/item">
+                          <LogOut :size="16" :stroke-width="2" class="opacity-70 group-hover/item:opacity-100 transition-opacity" />
+                          Sign Out
+                        </button>
+                      </div>
+                   </div>
+                 </Transition>
                </div>
 
                <!-- Avatar Circle with Menu Toggle -->
                <div class="relative group">
-                 <div @click="showProfileMenu = !showProfileMenu" class="w-10 h-10 rounded-full border-2 border-white/40 dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all cursor-pointer group-hover:border-brand/50 active:scale-95">
+                 <div @click="showAvatarMenu = !showAvatarMenu; showProfileMenu = false" class="w-10 h-10 rounded-full border-2 border-white/40 dark:border-white/10 shadow-lg overflow-hidden bg-zinc-200 transition-all cursor-pointer group-hover:border-brand/50 active:scale-95">
                    <img :src="avatarUrl" alt="avatar" class="w-full h-full object-cover transition-opacity" :class="{'opacity-50': isUploading}">
                    <div v-if="isUploading" class="absolute inset-0 flex items-center justify-center bg-black/40">
                      <Loader2 class="animate-spin text-white w-4 h-4" />
@@ -39,39 +72,30 @@
                  <div @click="triggerFileInput" class="absolute -right-1 -bottom-1 w-[18px] h-[18px] bg-brand dark:bg-zinc-100 rounded-full border-2 border-[var(--neo-surface)] flex items-center justify-center shadow-sm transition-transform cursor-pointer hover:scale-110 active:scale-90 z-10">
                    <Plus :size="10" :stroke-width="4" class="text-white dark:text-zinc-900" />
                  </div>
+
+                 <!-- 🔽 AVATAR DROPDOWN MENU -->
+                 <Transition
+                   enter-active-class="transition duration-200 ease-out"
+                   enter-from-class="transform scale-95 opacity-0 -translate-y-2"
+                   enter-to-class="transform scale-100 opacity-100 translate-y-0"
+                   leave-active-class="transition duration-150 ease-in"
+                   leave-from-class="transform scale-100 opacity-100 translate-y-0"
+                   leave-to-class="transform scale-95 opacity-0 -translate-y-2"
+                 >
+                   <div v-if="showAvatarMenu" class="absolute top-14 right-0 w-48 bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-100 dark:border-white/5 py-3 px-3 z-50 overflow-hidden cursor-default" @click.stop>
+                      <div class="fixed inset-0 z-[-1] bg-transparent" @click.stop="showAvatarMenu = false"></div>
+
+                      <div class="space-y-1">
+                        <button @click="viewPhoto" class="w-full text-left flex items-center px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all">
+                          View Photo
+                        </button>
+                        <button @click="triggerFileInput" class="w-full text-left flex items-center px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all">
+                          Change / Add Photo
+                        </button>
+                      </div>
+                   </div>
+                 </Transition>
                </div>
-
-               <!-- 🔽 PROFILE DROPDOWN MENU -->
-               <Transition
-                 enter-active-class="transition duration-200 ease-out"
-                 enter-from-class="transform scale-95 opacity-0 -translate-y-2"
-                 enter-to-class="transform scale-100 opacity-100 translate-y-0"
-                 leave-active-class="transition duration-150 ease-in"
-                 leave-from-class="transform scale-100 opacity-100 translate-y-0"
-                 leave-to-class="transform scale-95 opacity-0 -translate-y-2"
-               >
-                 <div v-if="showProfileMenu" class="absolute top-14 right-0 w-64 bg-white dark:bg-zinc-900 rounded-[28px] shadow-2xl border border-zinc-100 dark:border-white/5 py-3 px-3 z-50 overflow-hidden">
-                    <!-- Invisible Backdrop to catch clicks outside (only when menu is open) -->
-                    <div class="fixed inset-0 z-[-1] bg-transparent" @click.stop="showProfileMenu = false"></div>
-
-                    <div class="px-5 py-4 mb-2 border-b border-zinc-50 dark:border-white/5 bg-zinc-50/50 dark:bg-white/5 rounded-[20px]">
-                      <p class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 mb-1">Active Session</p>
-                      <p class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200 truncate">{{ authStore.user?.email }}</p>
-                    </div>
-
-                    <div class="space-y-1">
-                      <router-link to="/settings" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
-                        <Settings :size="16" :stroke-width="2" class="opacity-50 group-hover/item:opacity-100 transition-opacity" />
-                        Settings
-                      </router-link>
-
-                      <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-[18px] transition-all group/item">
-                        <LogOut :size="16" :stroke-width="2" class="opacity-70 group-hover/item:opacity-100 transition-opacity" />
-                        Sign Out
-                      </button>
-                    </div>
-                 </div>
-               </Transition>
 
                <input type="file" ref="fileInput" hidden accept="image/*" @change="handleAvatarUpload">
              </div>
@@ -90,8 +114,12 @@
       <div class="bg-white dark:bg-zinc-900 w-full max-w-sm rounded-[32px] border border-zinc-100 dark:border-zinc-800 shadow-2xl overflow-hidden flex flex-col">
         <div class="px-8 py-6 border-b border-zinc-50 dark:border-zinc-800 flex items-center justify-between shrink-0">
           <div>
-            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">Update Profile Image</h2>
-            <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">New Look Preview</p>
+            <h2 class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">
+              {{ previewModal.isViewing ? 'Profile Photo' : 'Update Profile Image' }}
+            </h2>
+            <p class="text-sm font-black text-zinc-900 dark:text-zinc-100 tracking-tight">
+              {{ previewModal.isViewing ? 'Current Look' : 'New Look Preview' }}
+            </p>
           </div>
           <button @click="closePreview" class="p-3 text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl transition-all">
             <X :size="20" />
@@ -106,14 +134,21 @@
         </div>
 
         <div class="p-8 border-t border-zinc-50 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex gap-4">
-          <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
-            Cancel
-          </button>
-          <button @click="confirmAvatarUpload" 
-            :disabled="isUploading"
-            class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
-            {{ isUploading ? 'Uploading...' : 'Save Changes' }}
-          </button>
+          <template v-if="previewModal.isViewing">
+            <button @click="closePreview" class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all">
+              Close
+            </button>
+          </template>
+          <template v-else>
+            <button @click="closePreview" class="flex-1 py-4 bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] transition-all">
+              Cancel
+            </button>
+            <button @click="confirmAvatarUpload" 
+              :disabled="isUploading"
+              class="flex-[2] py-4 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-[20px] font-black text-[11px] uppercase tracking-[0.2em] shadow-lg transition-all disabled:opacity-50">
+              {{ isUploading ? 'Uploading...' : 'Save Changes' }}
+            </button>
+          </template>
         </div>
       </div>
     </div>
@@ -148,16 +183,30 @@ const authStore = useAuthStore();
 const fileInput = ref(null);
 const isUploading = ref(false);
 const showProfileMenu = ref(false);
+const showAvatarMenu = ref(false);
 const isSidebarHovered = ref(false);
-const previewModal = ref({ show: false, url: '', file: null });
+const previewModal = ref({ show: false, url: '', file: null, isViewing: false });
 
 const avatarUrl = computed(() => {
   return authStore.user?.profilePicture || `https://api.dicebear.com/7.x/notionists/svg?seed=${authStore.user?.fullName || 'student'}`;
 });
 
 const triggerFileInput = () => {
+  showProfileMenu.value = false;
+  showAvatarMenu.value = false;
   if (isUploading.value) return;
   fileInput.value.click();
+};
+
+const viewPhoto = () => {
+  showProfileMenu.value = false;
+  showAvatarMenu.value = false;
+  previewModal.value = {
+    show: true,
+    url: avatarUrl.value,
+    file: null,
+    isViewing: true
+  };
 };
 
 const handleAvatarUpload = (event) => {

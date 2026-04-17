@@ -62,19 +62,21 @@
 </template>
 
 <script setup>
-import { ref, markRaw } from 'vue';
+import { ref, markRaw, computed } from 'vue';
 import { 
   Home, 
   BookOpen, 
   Layers, 
   MessageSquare, 
   Gamepad2, 
-  ClipboardList, 
-  BarChart3, 
+  ClipboardList,
+  BarChart3,
   HelpCircle,
   Settings,
-  Sparkles
+  Sparkles,
+  ShieldAlert
 } from 'lucide-vue-next';
+import { useAuthStore } from '../../store/auth';
 
 const isHovered = ref(false);
 const emit = defineEmits(['hover']);
@@ -84,7 +86,9 @@ const handleHover = (val) => {
   emit('hover', val);
 };
 
-const navItems = [
+const authStore = useAuthStore();
+
+const baseNavItems = [
   { 
     name: 'Dashboard', 
     path: '/dashboard', 
@@ -126,6 +130,16 @@ const navItems = [
     icon: markRaw(HelpCircle)
   }
 ];
+
+const navItems = computed(() => {
+  if (authStore.user?.role === 'admin') {
+    return [
+      { name: 'Admin Portal', path: '/admin', icon: markRaw(ShieldAlert) },
+      ...baseNavItems
+    ];
+  }
+  return baseNavItems;
+});
 </script>
 
 <style scoped>
