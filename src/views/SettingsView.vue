@@ -84,7 +84,7 @@
           <div class="flex items-center justify-between">
             <div>
               <p class="text-[15px] font-semibold text-zinc-800 dark:text-zinc-100 mb-0.5">Sign Out</p>
-              <p class="text-[13px] text-zinc-500 dark:text-zinc-500">You will be redirected to the login page.</p>
+              <p class="text-[13px] text-zinc-500 dark:text-zinc-500">You will be redirected to the homepage.</p>
             </div>
             <button @click="logout" class="px-5 py-2 rounded-xl text-[13px] font-semibold bg-rose-500/10 text-rose-500 dark:text-rose-400 hover:bg-rose-500/20 border border-rose-500/20 transition-all duration-200">
               Log Out
@@ -189,6 +189,6 @@ const confirmAvatarUpload = async () => {
 
 const logout = () => {
   authStore.logout();
-  router.push('/login');
+  router.push('/');
 };
 </script>

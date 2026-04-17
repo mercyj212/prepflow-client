@@ -43,10 +43,6 @@
         </router-link>
       </div>
 
-       <!-- Decorative Label (Hidden on mobile or when expanded) -->
-      <div v-if="!isHovered" class="hidden md:block absolute -right-8 top-1/2 -translate-y-1/2 rotate-90 origin-left text-[9px] font-bold tracking-[0.3em] text-black/20 dark:text-black/30 uppercase whitespace-nowrap pointer-events-none transition-opacity duration-300">
-        PREPUP NAV
-      </div>
     </nav>
 
     <!-- Bottom Settings Pill -->

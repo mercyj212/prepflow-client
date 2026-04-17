@@ -278,6 +278,8 @@ async function nextQuestion() {
   }
 }
 
+const currentSubmissionId = ref(null);
+
 const handleFinish = async () => {
   if (isSubmitting.value) return;
   const score = Object.values(localAnswers.value).filter(a => a.selectedOption.isCorrect).length;
@@ -285,14 +287,25 @@ const handleFinish = async () => {
   resultModal.value = { show: true, score, total };
   isSubmitting.value = true;
   try {
-    await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, (quiz.value.timeLimit * 60) - timeLeft.value, total);
+    const response = await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, (quiz.value.timeLimit * 60) - timeLeft.value, total);
+    if (response && response._id) {
+      currentSubmissionId.value = response._id;
+    }
   } catch (err) { console.error(err); }
   finally { isSubmitting.value = false; }
 };
 
 const handleConfirm = () => { if (confirmModal.value.onConfirm) confirmModal.value.onConfirm(); confirmModal.value.show = false; };
 const retakeQuiz = () => window.location.reload();
-const goToResults = () => router.push({ path: '/result', query: { score: resultModal.value.score, total: resultModal.value.total, quizId: quiz.value._id } });
+const goToResults = () => router.push({ 
+  path: '/result', 
+  query: { 
+    score: resultModal.value.score, 
+    total: resultModal.value.total, 
+    quizId: quiz.value._id,
+    submissionId: currentSubmissionId.value
+  } 
+});
 const goBack = () => { confirmModal.value = { show: true, title: 'Leave Practice?', message: 'Leaving will lose your progress on this test. Are you sure?', confirmText: 'Leave', isDanger: true, onConfirm: () => router.push('/dashboard') }; };
 const onNextClick = () => nextQuestion();
 const flaggedQuestionIndexes = computed(() => quiz.value ? quiz.value.questions.map((q, i) => flaggedQuestions.value.has(q._id) ? i : -1).filter(i => i !== -1) : []);

@@ -125,6 +125,33 @@ export const useQuizStore = defineStore('quiz', {
         this.loading = false;
       }
     },
+    async fetchLatestSubmission(quizId) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.get(`/submissions/quiz/${quizId}`);
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to fetch the latest result';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+    async fetchSubmissionById(submissionId) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.get(`/submissions/${submissionId}`);
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Failed to fetch the specific result';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+
 
     // ── Hierarchy Actions ──────────────────────────────────
     async fetchFaculties(path) {

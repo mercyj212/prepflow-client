@@ -5,13 +5,13 @@
     @click="$router.push('/')"
   >
     <span 
-      class="font-black tracking-tighter leading-none capitalize transition-colors duration-500"
+      class="font-black tracking-tight leading-none capitalize transition-colors duration-500"
       :class="[primarySizeClass, isLight ? 'text-black' : 'text-white']"
     >
       PrepUp
     </span>
     <span 
-      class="font-bold uppercase tracking-[0.2em] transition-colors duration-500"
+      class="font-black uppercase tracking-[0.3em] transition-colors duration-500"
       :class="[secondarySizeClass, mbClass, isLight ? 'text-black/40' : 'text-zinc-400']"
     >
       CBT
