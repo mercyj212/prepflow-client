@@ -1,7 +1,7 @@
 <template>
   <NeoAppShell>
     <!-- Simplified 2-column paradigm -->
-    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
+    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-4 md:gap-8">
       
       <!-- Main Content Column -->
       <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
@@ -22,7 +22,7 @@
                <!-- Massive Stat Card -->
                <div>
                  <h2 class="text-[18px] font-normal text-zinc-800 dark:text-zinc-100 mb-4 px-1">My Progress</h2>
-                 <NeoCard variant="extruded" :glass="true" class="!rounded-[28px] p-10 relative group">
+                 <NeoCard variant="extruded" :glass="true" class="!rounded-[28px] p-6 sm:p-10 relative group">
                    
                    <!-- The "+204%" glowing pill -->
                    <div class="absolute right-8 top-[4.5rem]">
@@ -35,7 +35,7 @@
 
                    <h3 class="text-[15px] font-medium text-zinc-600 dark:text-zinc-300 mb-2">Questions Passed</h3>
                    <div class="flex items-end gap-6 mb-10">
-                     <div class="text-[6rem] font-light leading-[1] tracking-tighter text-[#1f2937] dark:text-zinc-100 -ml-1">{{ totalQuestionsDone }}</div>
+                     <div class="text-[clamp(4rem,15vw,6rem)] font-light leading-[1] tracking-tighter text-[#1f2937] dark:text-zinc-100 -ml-1">{{ totalQuestionsDone }}</div>
                    </div>
                    
                    <router-link to="/progress" class="text-[14px] font-medium text-zinc-700 dark:text-zinc-200 hover:text-zinc-900 transition-colors flex items-center gap-2 group-hover:gap-3">
@@ -149,18 +149,18 @@
                           class="!rounded-2xl p-4 flex items-center justify-between cursor-pointer hover:bg-zinc-100 dark:hover:bg-zinc-800/80 transition-colors border border-white/40 dark:border-white/5 group"
                           @click="openSubmission(sub)"
                         >
-                           <div class="flex items-center gap-3">
-                              <div class="w-8 h-8 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform">
-                                <FileText :size="16" :stroke-width="1.5" class="text-zinc-500 dark:text-zinc-400" />
-                              </div>
-                              <div class="flex flex-col">
-                                <span class="text-[13px] font-medium text-zinc-800 dark:text-zinc-200">{{ sub.quiz?.title || 'Unknown Test' }}</span>
-                                <span class="text-[10px] font-medium text-zinc-400 mt-0.5">{{ formatDate(sub.createdAt) }}</span>
-                              </div>
-                           </div>
-                           <div class="px-2.5 py-1 rounded border border-black/5 dark:border-white/10 text-[10px] font-bold text-zinc-600 bg-black/5 dark:bg-white/5 shadow-inner">
-                             {{ sub.score }}/{{ sub.totalQuestions }}
-                           </div>
+                           <div class="flex items-center gap-2 md:gap-3 min-w-0">
+                               <div class="w-7 h-7 md:w-8 md:h-8 rounded-full bg-zinc-200 dark:bg-zinc-900 flex items-center justify-center shadow-inner group-hover:scale-110 transition-transform shrink-0">
+                                 <FileText :size="14" md:size="16" :stroke-width="1.5" class="text-zinc-500 dark:text-zinc-400" />
+                               </div>
+                               <div class="flex flex-col min-w-0">
+                                 <span class="text-[12px] md:text-[13px] font-medium text-zinc-800 dark:text-zinc-200 truncate">{{ sub.quiz?.title || 'Unknown Test' }}</span>
+                                 <span class="text-[9px] md:text-[10px] font-medium text-zinc-400 mt-0.5">{{ formatDate(sub.createdAt) }}</span>
+                               </div>
+                            </div>
+                            <div class="px-2 py-0.5 md:px-2.5 md:py-1 rounded border border-black/5 dark:border-white/10 text-[9px] md:text-[10px] font-bold text-zinc-600 bg-black/5 dark:bg-white/5 shadow-inner shrink-0">
+                              {{ sub.score }}/{{ sub.totalQuestions }}
+                            </div>
                        </NeoCard>
                    </div>
                </div>

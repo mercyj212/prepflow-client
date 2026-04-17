@@ -25,7 +25,7 @@
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Level Filter -->
         <div class="space-y-3">
-          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Academic Level</label>
+          <label class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400 ml-1">Filter by Year/Track</label>
           <div class="relative">
             <select v-model="form.level" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
               <option value="">All Levels</option>

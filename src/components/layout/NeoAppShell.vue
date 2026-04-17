@@ -8,10 +8,10 @@
     <!-- Application Canvas / Window -->
     <main class="flex-1 bg-[var(--neo-surface)] rounded-[28px] md:rounded-[40px] shadow-neo-md flex flex-col relative border border-white/20 dark:border-white/5 h-full overflow-hidden">
       <!-- "Mac" Window Header -->
-      <header class="h-16 flex items-center px-6 md:px-8 shrink-0 relative z-20">
+      <header class="h-14 md:h-16 flex items-center px-4 md:px-8 shrink-0 relative z-20">
         <slot name="header">
           <!-- Default Header content -->
-          <div class="flex items-center scale-[0.80] md:scale-90 origin-left">
+          <div class="flex items-center scale-[0.7] md:scale-90 origin-left">
             <BrandLogo />
           </div>
 

@@ -8,12 +8,12 @@
 
     <main class="flex-1 bg-white dark:bg-zinc-900 rounded-[28px] md:rounded-[40px] shadow-2xl flex flex-col relative border border-white/5 h-full overflow-hidden">
       <!-- Admin Header -->
-      <header class="h-16 flex items-center px-6 md:px-8 shrink-0 relative z-20 border-b border-zinc-100 dark:border-white/5">
+      <header class="h-14 md:h-16 flex items-center px-4 md:px-8 shrink-0 relative z-20 border-b border-zinc-100 dark:border-white/5">
         <div>
-          <h1 class="text-[18px] font-black tracking-tight leading-none text-zinc-900 dark:text-white capitalize">{{ routeName }}</h1>
+          <h1 class="text-[15px] md:text-[18px] font-black tracking-tight leading-none text-zinc-900 dark:text-white capitalize">{{ routeName }}</h1>
           <div class="flex items-center gap-2 mt-1">
              <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_12px_rgba(16,185,129,0.4)]"></span>
-             <span class="text-[9px] font-black italic text-zinc-400 uppercase tracking-widest">Admin Portal</span>
+             <span class="text-[8px] font-black italic text-zinc-400 uppercase tracking-widest">Admin Portal</span>
           </div>
         </div>
         

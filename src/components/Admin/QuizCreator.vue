@@ -9,7 +9,7 @@
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Filter by Level</label>
+          <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Filter by Difficulty/Year</label>
           <div class="relative">
             <select v-model="form.level" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all shadow-neo-inner outline-none appearance-none cursor-pointer">
               <option value="">All Levels</option>
@@ -21,7 +21,7 @@
           </div>
         </div>
         <div>
-          <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Select Course</label>
+          <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Select Subject</label>
           <div class="relative">
             <select v-model="form.course" required class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all shadow-neo-inner outline-none appearance-none cursor-pointer">
               <option value="" disabled>Select a course...</option>

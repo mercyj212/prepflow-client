@@ -432,7 +432,7 @@ onMounted(async () => {
         <div class="max-w-xl text-left" :style="{ transform: `translate(${heroMouse.x * 0.5}px, ${heroMouse.y * 0.5}px)` }">
           
           <h1 
-            class="text-[clamp(44px,7vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[3.6em] transition-opacity duration-1000"
+            class="text-[clamp(36px,10vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[3.6em] transition-opacity duration-1000"
             :class="isDone || !isBooting ? 'opacity-100' : 'opacity-0'"
           >
             <template v-for="(line, lIdx) in displayedLines" :key="lIdx">
@@ -448,14 +448,14 @@ onMounted(async () => {
             Practice real CBT questions, track every gain, and approach your exams with complete precision.
           </p>
           
-          <div class="mt-10 flex flex-col sm:flex-row items-center gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
-            <router-link to="/register" class="group relative px-12 py-5 border border-white/20 hover:border-white text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
+          <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
+            <router-link to="/register" class="group relative px-10 sm:px-12 py-4 sm:py-5 border border-white/20 hover:border-white text-[12px] sm:text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
               <span class="relative z-10 group-hover:text-black transition-colors">Start Practicing</span>
               <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
               <span class="absolute right-6 group-hover:translate-x-1 transition-transform z-10 group-hover:text-black">→</span>
             </router-link>
             
-            <router-link to="/login" class="text-[11px] font-black uppercase tracking-[0.3em] text-white/40 hover:text-white transition-colors">
+            <router-link to="/login" class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-colors w-full sm:w-auto text-center py-2">
               Go to Dashboard
             </router-link>
           </div>

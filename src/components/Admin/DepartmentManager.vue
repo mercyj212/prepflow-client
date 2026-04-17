@@ -1,7 +1,6 @@
 <template>
   <NeoCard variant="extruded" class="!rounded-[28px] p-8">
-    <div class="flex items-center justify-between mb-8 pl-2 border-l-4 border-cyan-500">
-      <div>
+    <div class="flex items-center justify-between mb-8 pl-2 border-l-4 border-zinc-900 dark:border-white">
       <div>
         <h2 class="text-[12px] font-black text-zinc-900 dark:text-white tracking-[0.4em] uppercase mb-1">
           {{ isEntrancePath ? 'Exam Years' : 'Departments' }}
@@ -10,32 +9,33 @@
           {{ isEntrancePath ? 'Manage past question years' : 'Assign departments to faculties' }}
         </p>
       </div>
-      </div>
     </div>
 
-    <!-- Create Form -->
-    <form @submit.prevent="handleCreate" class="flex flex-col sm:flex-row gap-3 mb-8">
-      <input
-        v-model="newName"
-        :placeholder="isEntrancePath ? 'Year (e.g. 2024)' : 'Department name (e.g. Computer Science)'"
-        class="flex-1 h-12 px-5 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
-      />
-      <select
-        v-model="selectedFaculty"
-        class="h-12 px-4 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white min-w-[200px]"
-      >
-        <option value="" disabled>Choose Faculty</option>
-        <option v-for="fac in faculties" :key="fac._id" :value="fac._id">
-          {{ fac.name }} ({{ fac.path }})
-        </option>
-      </select>
+    <!-- Create Form (Vertical for Sidebar) -->
+    <form @submit.prevent="handleCreate" class="flex flex-col gap-3 mb-8">
+      <div class="space-y-3">
+        <input
+          v-model="newName"
+          :placeholder="isEntrancePath ? 'Year (e.g. 2024)' : 'Department name (e.g. Computer Science)'"
+          class="w-full h-12 px-5 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
+        />
+        <select
+          v-model="selectedFaculty"
+          class="w-full h-12 px-4 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
+        >
+          <option value="" disabled>Choose Faculty/Exam</option>
+          <option v-for="fac in faculties" :key="fac._id" :value="fac._id">
+            {{ fac.name }}
+          </option>
+        </select>
+      </div>
       <button
         type="submit"
         :disabled="!newName.trim() || !selectedFaculty || loading"
-        class="h-12 px-6 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl text-[11px] font-black uppercase tracking-widest disabled:opacity-30 hover:scale-[1.02] active:scale-95 transition-all flex items-center gap-2 shrink-0"
+        class="w-full h-12 px-6 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-2xl text-[11px] font-black uppercase tracking-widest disabled:opacity-30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2"
       >
         <Plus :size="14" />
-        Add
+        Add {{ isEntrancePath ? 'Year' : 'Dept' }}
       </button>
     </form>
 

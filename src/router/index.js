@@ -9,8 +9,10 @@ import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import AdminLayout from '../components/layout/AdminLayout.vue';
 import AdminOverview from '../views/admin/AdminOverview.vue';
-import AdminInventory from '../views/admin/AdminInventory.vue';
-import AdminHierarchy from '../views/admin/AdminHierarchy.vue';
+import AdminPractice from '../views/admin/AdminPractice.vue';
+import AdminStructure from '../views/admin/AdminStructure.vue';
+import AdminCourses from '../views/admin/AdminCourses.vue';
+import AdminEntrance from '../views/admin/AdminEntrance.vue';
 import AdminStudents from '../views/admin/AdminStudents.vue';
 import FlashcardView from '../views/FlashcardView.vue';
 import PracticeView from '../views/PracticeView.vue';
@@ -127,8 +129,10 @@ const routes = [
     meta: { requiresAuth: true, requiresAdmin: true },
     children: [
       { path: '', name: 'admin-overview', component: AdminOverview },
-      { path: 'inventory', name: 'admin-inventory', component: AdminInventory },
-      { path: 'hierarchy', name: 'admin-hierarchy', component: AdminHierarchy },
+      { path: 'practice', name: 'admin-practice', component: AdminPractice },
+      { path: 'structure', name: 'admin-structure', component: AdminStructure },
+      { path: 'courses', name: 'admin-courses', component: AdminCourses },
+      { path: 'entrance', name: 'admin-entrance', component: AdminEntrance },
       { path: 'students', name: 'admin-students', component: AdminStudents }
     ]
   },
