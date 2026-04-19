@@ -588,8 +588,8 @@ onMounted(async () => {
     </section>
 
     <!-- Scene 4: The Social Intelligence (The Finale) -->
-    <section id="social-intelligence" class="min-h-[100svh] h-[100svh] snap-start shrink-0 bg-white text-black relative flex flex-col justify-between pt-32 pb-8 sm:pb-16 px-6 sm:px-12 md:px-24 overflow-hidden">
-      <div class="w-full overflow-hidden whitespace-nowrap border-y border-black/10 py-12 bg-zinc-50/50 flex items-center">
+    <section id="social-intelligence" class="min-h-[100svh] h-[100svh] snap-start shrink-0 bg-white text-black relative flex flex-col justify-between pt-24 sm:pt-32 pb-6 sm:pb-16 px-6 sm:px-12 md:px-24 overflow-hidden">
+      <div class="w-full overflow-hidden whitespace-nowrap border-y border-black/10 py-6 sm:py-12 bg-zinc-50/50 flex items-center">
         <div class="inline-block animate-marquee">
           <span v-for="(sig, i) in socialSignals" :key="i" class="text-[clamp(24px,4vw,48px)] font-black uppercase tracking-tighter mx-24">
             <span class="text-zinc-200 mr-6">●</span> {{ sig }}
@@ -602,15 +602,15 @@ onMounted(async () => {
         </div>
       </div>
 
-      <div class="flex flex-col items-center justify-center flex-1 py-10">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-12 sm:gap-20 w-full mb-12 sm:mb-16 max-w-5xl opacity-80">
-          <div class="flex flex-col items-center"><span class="text-[60px] font-black leading-none mb-4">JAMB</span><span class="text-[12px] font-bold tracking-[.4em] uppercase text-zinc-400">Exam Ready</span></div>
-          <div class="flex flex-col items-center"><span class="text-[60px] font-black leading-none mb-4">WAEC</span><span class="text-[12px] font-bold tracking-[.4em] uppercase text-zinc-400">Past Papers</span></div>
-          <div class="flex flex-col items-center"><span class="text-[60px] font-black leading-none mb-4">NECO</span><span class="text-[12px] font-bold tracking-[.4em] uppercase text-zinc-400">Complete Bank</span></div>
+      <div class="flex flex-col items-center justify-center flex-1 py-4 sm:py-10">
+        <div class="grid grid-cols-3 gap-4 sm:gap-20 w-full mb-6 sm:mb-16 max-w-5xl opacity-80">
+          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">JAMB</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Exam Ready</span></div>
+          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">WAEC</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Past Papers</span></div>
+          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">NECO</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Complete Bank</span></div>
         </div>
 
-        <router-link to="/register" class="group relative w-full max-w-3xl overflow-hidden py-6 border-4 border-black text-center transition-all duration-500 hover:bg-black">
-          <span class="text-[clamp(32px,6vw,84px)] font-black uppercase tracking-tighter text-black group-hover:text-white transition-colors relative z-10">
+        <router-link to="/register" class="group relative w-full max-w-3xl overflow-hidden py-4 sm:py-6 border-4 border-black text-center transition-all duration-500 hover:bg-black">
+          <span class="text-[clamp(28px,6vw,84px)] font-black uppercase tracking-tighter text-black group-hover:text-white transition-colors relative z-10">
             Get Started Now
           </span>
           <div class="absolute inset-0 bg-black translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
