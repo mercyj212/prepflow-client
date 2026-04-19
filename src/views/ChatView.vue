@@ -116,7 +116,7 @@
               </div>
 
               <!-- Bubble Group -->
-              <div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[75%]">
+              <div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[75%] group relative">
                 <!-- Name for Group/Global chat -->
                 <span 
                   v-if="(activeConversation.isGlobal || activeConversation.isGroup) && (msg.sender?._id || msg.sender) !== currentUserId" 
@@ -127,17 +127,42 @@
                   <span v-if="activeConversation.isGroup && msg.sender?._id === activeConversation.admin?._id" class="text-[8px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-600 font-bold">Admin</span>
                 </span>
 
-                <!-- Bubble -->
-                <div 
-                  class="p-4 sm:p-5 rounded-[24px] text-[13px] leading-relaxed shadow-neo border relative"
-                  :class="[
-                    (msg.sender?._id || msg.sender) === currentUserId 
-                      ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-tr-sm border-transparent' 
-                      : 'bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 rounded-tl-sm border-zinc-200/50 dark:border-white/5'
-                  ]"
-                >
-                  <div class="whitespace-pre-wrap">{{ msg.text }}</div>
-                  <div class="text-[9px] mt-2 opacity-30 text-right">{{ formatTime(msg.createdAt) }}</div>
+                <!-- Editing Mode -->
+                <div v-if="editingMessageId === msg._id" class="w-full min-w-[250px] p-4 rounded-[24px] bg-zinc-100 dark:bg-zinc-800 border border-brand/30 shadow-neo">
+                  <textarea v-model="editingMessageText" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 rounded-xl p-3 text-[13px] outline-none text-zinc-700 dark:text-zinc-300 resize-none min-h-[80px] custom-scrollbar"></textarea>
+                  <div class="flex justify-end gap-2 mt-3">
+                    <button @click="cancelEditing" class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest text-zinc-500 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
+                    <button @click="saveEditMessage(msg)" class="px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-brand text-white hover:opacity-90 transition-opacity flex items-center gap-1">Save <Check :size="12"/></button>
+                  </div>
+                </div>
+
+                <!-- Bubble Display -->
+                <div v-else class="relative group/bubble flex items-center gap-2" :class="[(msg.sender?._id || msg.sender) === currentUserId ? 'flex-row-reverse' : 'flex-row']">
+                  <!-- Edit Icon (Only for own messages) -->
+                  <button 
+                    v-if="(msg.sender?._id || msg.sender) === currentUserId"
+                    @click="startEditing(msg)"
+                    class="p-1.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-brand shadow-sm opacity-0 group-hover/bubble:opacity-100 transition-opacity shrink-0"
+                    title="Edit Message"
+                  >
+                    <Edit2 :size="12" />
+                  </button>
+
+                  <div 
+                    class="p-4 sm:p-5 rounded-[24px] text-[13px] leading-relaxed shadow-neo border relative overflow-hidden"
+                    :class="[
+                      (msg.sender?._id || msg.sender) === currentUserId 
+                        ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-tr-sm border-transparent' 
+                        : 'bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 rounded-tl-sm border-zinc-200/50 dark:border-white/5'
+                    ]"
+                  >
+                    <div class="markdown-body font-sans" v-html="parseMarkdown(msg.text)"></div>
+                    <div class="text-[9px] mt-2 opacity-30 text-right flex items-center justify-end gap-1">
+                      <span v-if="msg.isEdited" class="italic tracking-wide">(edited)</span>
+                      {{ formatTime(msg.createdAt) }}
+                      <Check v-if="(msg.sender?._id || msg.sender) === currentUserId" :size="10" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -377,8 +402,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
-import { Search, Send, Plus, X, MessageSquare, ChevronLeft, Users, Settings, UserPlus, Check, Trash2 } from 'lucide-vue-next';
+import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
+import { 
+  Plus, Users, MessageSquare, Compass, Send, Search, 
+  ChevronLeft, Settings, X, UserPlus, Trash2, Edit2, Check
+} from 'lucide-vue-next';
+import { marked } from 'marked';
+import DOMPurify from 'dompurify';
+import hljs from 'highlight.js';
+import 'highlight.js/styles/github-dark.css';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
 import api from '../api/axios';
@@ -395,6 +427,51 @@ const messageInterval = ref(null);
 const convoInterval = ref(null);
 const chatContainer = ref(null);
 const isLoading = ref(false);
+
+// Markdown setup
+marked.setOptions({
+  highlight: function(code, lang) {
+    const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+    return hljs.highlight(code, { language }).value;
+  },
+  breaks: true,
+  gfm: true
+});
+
+const parseMarkdown = (text) => {
+  if (!text) return '';
+  const rawHtml = marked.parse(text);
+  return DOMPurify.sanitize(rawHtml);
+};
+
+// Message Editing State
+const editingMessageId = ref(null);
+const editingMessageText = ref('');
+
+const startEditing = (msg) => {
+  editingMessageId.value = msg._id;
+  editingMessageText.value = msg.text;
+};
+
+const cancelEditing = () => {
+  editingMessageId.value = null;
+  editingMessageText.value = '';
+};
+
+const saveEditMessage = async (msg) => {
+  if (!editingMessageText.value.trim() || editingMessageText.value === msg.text) {
+    cancelEditing();
+    return;
+  }
+  try {
+    const res = await api.put(`/chat/message/${msg._id}`, { text: editingMessageText.value });
+    const index = messages.value.findIndex(m => m._id === msg._id);
+    if (index !== -1) messages.value[index] = res.data;
+    cancelEditing();
+  } catch (error) {
+    console.error('Failed to edit message:', error);
+  }
+};
 
 // Modal State
 const showModal = ref(false);
@@ -430,28 +507,27 @@ const isGroupAdmin = computed(() => {
   return adminId?.toString() === currentUserId.value;
 });
 
-// ── Helpers ───────────────────────────────────────────────────────────
+// ── UI Helpers ────────────────────────────────────────────────────────
 const scrollToBottom = async () => {
   await nextTick();
   if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
 };
 
 const getConvoTitle = (convo) => {
-  if (convo.isGroup) return convo.name || 'Group Chat';
-  if (convo.course) return `${convo.course.title} Study Group`;
+  if (convo.course) return convo.course.title;
+  if (convo.isGroup) return convo.name || 'Study Group';
   if (convo.isGlobal) return 'Global Study Room';
   if (convo.isAI) return 'PrepUp AI Tutor';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
-  return other?.fullName || 'Direct Chat';
+  return other?.fullName || 'Direct Message';
 };
 
 const getConvoImage = (convo) => {
-  if (convo.isGroup) return `https://api.dicebear.com/7.x/shapes/svg?seed=${convo.name}`;
-  if (convo.course) return `https://api.dicebear.com/7.x/notionists/svg?seed=${convo.course.title}`;
-  if (convo.isGlobal) return 'https://api.dicebear.com/7.x/notionists/svg?seed=global';
-  if (convo.isAI) return 'https://api.dicebear.com/7.x/notionists/svg?seed=ai1';
+  if (convo.course) return `https://api.dicebear.com/7.x/initials/svg?seed=${convo.course.title}&backgroundColor=3b82f6`;
+  if (convo.isGlobal) return 'https://api.dicebear.com/7.x/initials/svg?seed=Gl&backgroundColor=9333ea';
+  if (convo.isAI) return 'https://api.dicebear.com/7.x/initials/svg?seed=AI&backgroundColor=10b981';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
-  return `https://api.dicebear.com/7.x/notionists/svg?seed=${other?.fullName || 'user'}`;
+  return other?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${other?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
 
 const getConvoIconStyle = (convo) => {
@@ -463,8 +539,8 @@ const getConvoIconStyle = (convo) => {
 };
 
 const getMessageAvatar = (msg) => {
-  if (msg.isModel) return 'https://api.dicebear.com/7.x/notionists/svg?seed=ai1';
-  return `https://api.dicebear.com/7.x/notionists/svg?seed=${msg.sender?.fullName || 'user'}`;
+  if (msg.isModel) return 'https://api.dicebear.com/7.x/initials/svg?seed=AI&backgroundColor=10b981';
+  return msg.sender?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${msg.sender?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
 
 const getUserColor = (name) => {
