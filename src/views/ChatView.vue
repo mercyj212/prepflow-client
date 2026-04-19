@@ -47,6 +47,9 @@
                 </span>
                 <span v-if="convo.isAI" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-bold uppercase tracking-widest">AI</span>
                 <span v-else-if="convo.isGroup" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-bold uppercase tracking-widest">Group</span>
+                <span v-if="convo.unreadCount > 0" class="flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-brand text-white text-[10px] font-black shadow-lg animate-pulse">
+                  {{ convo.unreadCount }}
+                </span>
               </div>
               <p class="text-[11px] text-zinc-500 truncate">{{ convo.lastMessage?.text || 'Start a conversation...' }}</p>
             </div>
@@ -138,29 +141,42 @@
 
                 <!-- Bubble Display -->
                 <div v-else class="relative group/bubble flex items-center gap-2" :class="[(msg.sender?._id || msg.sender) === currentUserId ? 'flex-row-reverse' : 'flex-row']">
-                  <!-- Edit Icon (Only for own messages) -->
-                  <button 
-                    v-if="(msg.sender?._id || msg.sender) === currentUserId"
-                    @click="startEditing(msg)"
-                    class="p-1.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-brand shadow-sm opacity-0 group-hover/bubble:opacity-100 transition-opacity shrink-0"
-                    title="Edit Message"
-                  >
-                    <Edit2 :size="12" />
-                  </button>
+                  <!-- Action Bar (Copy + Edit) -->
+                  <div class="flex flex-col sm:flex-row items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity shrink-0">
+                    <button 
+                      v-if="(msg.sender?._id || msg.sender) === currentUserId"
+                      @click="startEditing(msg)"
+                      class="p-1.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-brand shadow-sm transition-colors"
+                      title="Edit Message"
+                    >
+                      <Edit2 :size="12" />
+                    </button>
+                    <button 
+                      @click="copyToClipboard(msg.text)"
+                      class="p-1.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-brand shadow-sm transition-colors"
+                      title="Copy Message"
+                    >
+                      <Copy :size="12" />
+                    </button>
+                  </div>
 
+                  <!-- The Bubble -->
                   <div 
                     class="p-4 sm:p-5 rounded-[24px] text-[13px] leading-relaxed shadow-neo border relative overflow-hidden"
                     :class="[
                       (msg.sender?._id || msg.sender) === currentUserId 
-                        ? 'bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 rounded-tr-sm border-transparent' 
-                        : 'bg-zinc-50 dark:bg-zinc-800/80 text-zinc-700 dark:text-zinc-300 rounded-tl-sm border-zinc-200/50 dark:border-white/5'
+                        ? 'bg-blue-600 text-white rounded-tr-sm border-transparent' 
+                        : 'bg-white dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-200 rounded-tl-sm border-zinc-200/50 dark:border-white/5'
                     ]"
                   >
                     <div class="markdown-body font-sans" v-html="parseMarkdown(msg.text)"></div>
-                    <div class="text-[9px] mt-2 opacity-30 text-right flex items-center justify-end gap-1">
-                      <span v-if="msg.isEdited" class="italic tracking-wide">(edited)</span>
+                    <div class="text-[9px] mt-2 opacity-60 text-right flex items-center justify-end gap-1">
+                      <span v-if="msg.isEdited" class="italic tracking-wide opacity-70">(edited)</span>
                       {{ formatTime(msg.createdAt) }}
-                      <Check v-if="(msg.sender?._id || msg.sender) === currentUserId" :size="10" />
+                      <div v-if="(msg.sender?._id || msg.sender) === currentUserId" class="flex items-center -space-x-1.5 ml-0.5">
+                        <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
+                        <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -170,7 +186,7 @@
             <!-- Loading Indicator -->
             <div v-if="isLoading" class="flex items-end gap-3 justify-start">
               <div class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 overflow-hidden shrink-0 hidden sm:block">
-                 <img src="https://api.dicebear.com/7.x/notionists/svg?seed=ai-bot" class="w-full h-full object-cover">
+                 <img src="/ai-tutor.png" class="w-full h-full object-cover">
               </div>
               <div class="max-w-[85%] p-5 rounded-[24px] rounded-tl-sm bg-zinc-50 dark:bg-zinc-800/80 shadow-neo border border-zinc-200/50 dark:border-white/5 flex gap-1.5 items-center">
                 <span class="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" style="animation-delay: 0ms"></span>
@@ -244,19 +260,22 @@
         <footer v-if="activeConversation" class="p-4 sm:p-6 z-10">
           <form @submit.prevent="sendMessage">
             <NeoCard variant="depressed" class="!rounded-[28px] p-2 border-[0.5px] border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-950/40">
-              <div class="flex items-center gap-2 w-full h-full">
-                <input 
-                  type="text" 
+              <div class="flex items-end gap-2 w-full h-full">
+                <textarea 
+                  ref="messageInput"
                   v-model="newMessage"
+                  @keydown.enter.exact.prevent="sendMessage"
+                  @input="adjustTextareaHeight"
                   :disabled="isLoading"
                   placeholder="Type a message..." 
-                  class="flex-1 bg-transparent border-none outline-none px-4 text-[13px] text-zinc-700 dark:text-zinc-200 disabled:opacity-50"
-                  enterkeyhint="send"
-                >
+                  rows="1"
+                  class="flex-1 bg-transparent border-none outline-none px-4 py-2 text-[13px] text-zinc-700 dark:text-zinc-200 disabled:opacity-50 resize-none max-h-32 custom-scrollbar transition-all"
+                  style="min-height: 40px;"
+                ></textarea>
                 <button 
                   type="submit" 
                   :disabled="!newMessage.trim() || isLoading"
-                  class="w-10 h-10 shrink-0 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center transition-transform active:scale-90 hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:active:scale-100"
+                  class="w-10 h-10 shrink-0 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 flex items-center justify-center transition-transform active:scale-90 hover:scale-105 disabled:opacity-30 disabled:hover:scale-100 disabled:active:scale-100 mb-0.5"
                 >
                   <Send :size="16" class="pointer-events-none" />
                 </button>
@@ -278,19 +297,7 @@
           </div>
           
           <div class="p-6">
-            <!-- Tabs -->
-            <div class="flex gap-2 mb-6">
-            <button
-              @click="modalTab = 'dm'"
-              class="flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all"
-              :class="modalTab === 'dm' ? 'bg-zinc-900 dark:bg-white text-white dark:text-zinc-900' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'"
-            >Direct Message</button>
-            <button
-              @click="modalTab = 'group'"
-              class="flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all"
-              :class="modalTab === 'group' ? 'bg-brand text-white dark:text-zinc-900 border-brand' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'"
-            >Create Group</button>
-          </div>
+            <!-- Tab switchers removed per user request -->
 
           <!-- DM Tab -->
           <div v-if="modalTab === 'dm'">
@@ -405,7 +412,7 @@
 import { ref, onMounted, onUnmounted, nextTick, watch, computed } from 'vue';
 import { 
   Plus, Users, MessageSquare, Compass, Send, Search, 
-  ChevronLeft, Settings, X, UserPlus, Trash2, Edit2, Check
+  ChevronLeft, Settings, X, UserPlus, Trash2, Edit2, Check, Copy
 } from 'lucide-vue-next';
 import { marked } from 'marked';
 import DOMPurify from 'dompurify';
@@ -427,6 +434,36 @@ const messageInterval = ref(null);
 const convoInterval = ref(null);
 const chatContainer = ref(null);
 const isLoading = ref(false);
+const messageInput = ref(null);
+
+// Audio Assets
+const typingAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
+const sendAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3');
+typingAudio.volume = 0.2;
+sendAudio.volume = 0.4;
+
+let lastTypingTime = 0;
+const playTypingSound = () => {
+  const now = Date.now();
+  if (now - lastTypingTime > 150) { // Throttle typing sound
+    typingAudio.currentTime = 0;
+    typingAudio.play().catch(() => {});
+    lastTypingTime = now;
+  }
+};
+
+const playSendSound = () => {
+  sendAudio.currentTime = 0;
+  sendAudio.play().catch(() => {});
+};
+
+const adjustTextareaHeight = () => {
+  const el = messageInput.value;
+  if (!el) return;
+  el.style.height = 'auto';
+  el.style.height = (el.scrollHeight) + 'px';
+  playTypingSound();
+};
 
 // Markdown setup
 marked.setOptions({
@@ -434,6 +471,7 @@ marked.setOptions({
     const language = hljs.getLanguage(lang) ? lang : 'plaintext';
     return hljs.highlight(code, { language }).value;
   },
+  langPrefix: 'hljs language-',
   breaks: true,
   gfm: true
 });
@@ -441,7 +479,8 @@ marked.setOptions({
 const parseMarkdown = (text) => {
   if (!text) return '';
   const rawHtml = marked.parse(text);
-  return DOMPurify.sanitize(rawHtml);
+  // Guarantee DOMPurify doesn't strip the `.hljs` classes required for coloring
+  return DOMPurify.sanitize(rawHtml, { ADD_ATTR: ['class'] });
 };
 
 // Message Editing State
@@ -456,6 +495,30 @@ const startEditing = (msg) => {
 const cancelEditing = () => {
   editingMessageId.value = null;
   editingMessageText.value = '';
+};
+
+const copyToClipboard = async (text) => {
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      // Fallback for insecure environments (e.g. local IP network testing)
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      // Prevent scrolling to bottom
+      textArea.style.position = "fixed";
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.opacity = "0";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+    }
+  } catch (err) {
+    console.error('Failed to copy', err);
+  }
 };
 
 const saveEditMessage = async (msg) => {
@@ -525,7 +588,7 @@ const getConvoTitle = (convo) => {
 const getConvoImage = (convo) => {
   if (convo.course) return `https://api.dicebear.com/7.x/initials/svg?seed=${convo.course.title}&backgroundColor=3b82f6`;
   if (convo.isGlobal) return 'https://api.dicebear.com/7.x/initials/svg?seed=Gl&backgroundColor=9333ea';
-  if (convo.isAI) return 'https://api.dicebear.com/7.x/initials/svg?seed=AI&backgroundColor=10b981';
+  if (convo.isAI) return '/ai-tutor.png';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
   return other?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${other?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
@@ -539,7 +602,7 @@ const getConvoIconStyle = (convo) => {
 };
 
 const getMessageAvatar = (msg) => {
-  if (msg.isModel) return 'https://api.dicebear.com/7.x/initials/svg?seed=AI&backgroundColor=10b981';
+  if (msg.isModel) return '/ai-tutor.png';
   return msg.sender?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${msg.sender?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
 
@@ -585,6 +648,7 @@ const sendMessage = async () => {
   const text = newMessage.value.trim();
   const convoId = activeConversation.value._id;
   newMessage.value = '';
+  nextTick(() => { adjustTextareaHeight(); });
   systemError.value = null;
 
   const tempId = Date.now().toString();
@@ -599,6 +663,7 @@ const sendMessage = async () => {
     if (activeConversation.value._id === convoId && res.data.aiMessage) {
       messages.value.push(res.data.aiMessage);
     }
+    playSendSound();
   } catch (error) {
     if (error.response?.status === 429) systemError.value = error.response.data.message || 'Rate limit reached.';
     else systemError.value = 'Failed to deliver message.';
@@ -771,3 +836,39 @@ onUnmounted(() => {
   if (convoInterval.value) clearInterval(convoInterval.value);
 });
 </script>
+
+<style>
+/* Markdown overrides for Tailwind reset */
+.markdown-body pre {
+  background-color: #1a1b26;
+  color: #a9b1d6;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  font-family: inherit;
+  font-size: 13px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background-color: rgba(128, 128, 128, 0.15);
+  padding: 0.15rem 0.3rem;
+  border-radius: 4px;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.markdown-body p {
+  margin-bottom: 0.5rem;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+</style>
