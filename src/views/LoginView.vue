@@ -9,7 +9,7 @@
     >
       <div class="absolute inset-0 bg-black/85"></div>
       <div class="z-10 mt-8 flex justify-between w-full pr-12">
-        <BrandLogo size="lg" />
+        <BrandLogo size="lg" theme="dark" />
         <ThemeToggle />
       </div>
 

@@ -89,7 +89,7 @@
         <div class="absolute inset-0 bg-zinc-950/50 backdrop-blur-[2px]"></div>
 
         <div class="z-10 mt-8 flex justify-between w-full pr-12">
-          <BrandLogo size="lg" />
+          <BrandLogo size="lg" theme="dark" />
           <ThemeToggle />
         </div>
         <div class="z-10 mb-36 max-w-md">

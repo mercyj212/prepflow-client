@@ -6,13 +6,13 @@
   >
     <span 
       class="font-black tracking-tight leading-none capitalize transition-colors duration-500"
-      :class="[primarySizeClass, isLight ? 'text-black' : 'text-white']"
+      :class="[primarySizeClass, logoColorClass]"
     >
       PrepUp
     </span>
     <span 
       class="font-black uppercase tracking-[0.3em] transition-colors duration-500"
-      :class="[secondarySizeClass, mbClass, isLight ? 'text-black/40' : 'text-zinc-400']"
+      :class="[secondarySizeClass, mbClass, subColorClass]"
     >
       CBT
     </span>
@@ -31,10 +31,33 @@ const props = defineProps({
     type: String,
     default: ''
   },
+  // 'light' (on light bg -> dark text), 'dark' (on dark bg -> white text), 'auto' (theme-aware)
+  theme: {
+    type: String,
+    default: 'auto'
+  },
+  // Deprecated prop compatibility
   isLight: {
     type: Boolean,
-    default: false
+    default: null
   }
+});
+
+const calculatedTheme = computed(() => {
+  if (props.isLight !== null) return props.isLight ? 'light' : 'dark';
+  return props.theme;
+});
+
+const logoColorClass = computed(() => {
+  if (calculatedTheme.value === 'light') return 'text-zinc-950';
+  if (calculatedTheme.value === 'dark') return 'text-white';
+  return 'text-zinc-900 dark:text-white';
+});
+
+const subColorClass = computed(() => {
+  if (calculatedTheme.value === 'light') return 'text-zinc-900/40';
+  if (calculatedTheme.value === 'dark') return 'text-zinc-400';
+  return 'text-zinc-500 dark:text-zinc-400';
 });
 
 const primarySizeClass = computed(() => {

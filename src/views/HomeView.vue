@@ -325,7 +325,10 @@ onMounted(async () => {
     @mousemove="handleGlobalMouseMove" 
     @wheel="handleInteraction"
     @touchstart="handleInteraction"
-    class="min-h-screen h-screen overflow-y-auto overscroll-none scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black"
+    :class="[
+      'min-h-screen h-screen overflow-y-auto overscroll-none scroll-snap-y-mandatory scroll-smooth hide-scrollbar bg-black text-white font-sans selection:bg-white selection:text-black transition-all duration-[1.5s]',
+      { 'dark': !showFinale }
+    ]"
   >
     <!-- Floating Elite Header (Direct child to ensure it stays pinned) -->
     <header 
