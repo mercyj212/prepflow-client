@@ -444,7 +444,7 @@ onMounted(async () => {
             <span v-if="!isDone" class="inline-block w-[0.15em] h-[0.8em] bg-white ml-1 animate-pulse align-middle"></span>
           </h1>
           
-          <p class="mt-4 text-[16px] sm:text-[18px] text-white/50 font-medium max-w-md leading-relaxed transition-opacity duration-1000" :class="isDone ? 'opacity-100' : 'opacity-0'">
+          <p class="mt-8 sm:mt-4 text-[16px] sm:text-[18px] text-white/50 font-medium max-w-md leading-relaxed transition-opacity duration-1000" :class="isDone ? 'opacity-100' : 'opacity-0'">
             Practice real CBT questions, track every gain, and approach your exams with complete precision.
           </p>
           
