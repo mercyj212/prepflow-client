@@ -110,6 +110,10 @@
                               <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500/60 mb-2">Correct Response</p>
                               <p class="text-[13px] font-bold text-emerald-600 dark:text-emerald-400">{{ q.correctAnswer }}</p>
                             </div>
+                            <!-- Subject Tag -->
+                            <div class="px-3 py-1 bg-zinc-100 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5 flex items-center justify-center sm:justify-start">
+                              <span class="text-[9px] font-black uppercase tracking-widest text-zinc-400">{{ q.subject }}</span>
+                            </div>
                           </div>
 
                           <div v-if="q.explanation" class="pt-4 border-t border-zinc-100 dark:border-white/5">
@@ -127,14 +131,49 @@
                 </div>
 
                 <!-- Tab Content: Weakness -->
-                <div v-else-if="currentTab === 'weakness'" class="mt-4 animate-in fade-in duration-700">
-                  <NeoCard variant="depressed" class="!rounded-[24px] p-10 border-[0.5px] border-black/5 dark:border-white/5 text-center">
-                     <div class="w-16 h-16 bg-brand/10 text-brand rounded-3xl flex items-center justify-center mx-auto mb-6">
-                       <Zap :size="24" :stroke-width="3" />
-                     </div>
-                     <h3 class="text-xl font-bold text-zinc-800 dark:text-zinc-100 mb-2">Topic Analysis coming soon</h3>
-                     <p class="text-sm text-zinc-500 max-w-xs mx-auto">We're building a smarter way to categorize your mistakes into actionable study paths.</p>
-                  </NeoCard>
+                <div v-else-if="currentTab === 'weakness'" class="mt-4 animate-in fade-in duration-700 space-y-4">
+                  <div class="mb-8 px-1">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-2">{{ result?.analysisLabel || 'Course Analysis' }}</h3>
+                    <p class="text-sm text-zinc-500 font-medium tracking-tight">Focus your studies on the areas with the lowest proficiency scores below.</p>
+                  </div>
+                  
+                  <div v-if="result && result.subjectAnalysis && result.subjectAnalysis.length > 0" class="space-y-3">
+                    <NeoCard v-for="item in result.subjectAnalysis" :key="item.subject" variant="depressed" class="!rounded-[24px] p-6 border-[0.5px] border-black/5 dark:border-white/5">
+                      <div class="flex flex-col gap-4">
+                        <div class="flex items-center justify-between">
+                          <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-xl bg-brand/10 flex items-center justify-center">
+                              <Zap :size="14" class="text-brand" />
+                            </div>
+                            <span class="text-[14px] font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-tight">{{ item.subject }}</span>
+                          </div>
+                          <span class="text-[12px] font-black" :class="item.percentage >= 70 ? 'text-emerald-500' : (item.percentage >= 40 ? 'text-amber-500' : 'text-rose-500')">
+                            {{ item.correct }} / {{ item.total }} <span class="opacity-40 ml-1">{{ item.percentage }}%</span>
+                          </span>
+                        </div>
+                        
+                        <!-- Mini Brutalist Progress Bar -->
+                        <div class="h-3 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-black/5 dark:border-white/5 p-[2px]">
+                          <div 
+                            class="h-full rounded-full transition-all duration-[1.5s] ease-out-expo"
+                            :class="item.percentage >= 70 ? 'bg-emerald-500' : (item.percentage >= 40 ? 'bg-amber-500' : 'bg-rose-500')"
+                            :style="{ width: `${item.percentage}%` }"
+                          ></div>
+                        </div>
+
+                        <div v-if="item.percentage < 50" class="flex items-center gap-2 mt-1">
+                          <AlertCircle :size="12" class="text-rose-500" />
+                          <span class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Priority Study Recommended</span>
+                        </div>
+                      </div>
+                    </NeoCard>
+                  </div>
+                  <div v-else class="text-center py-20 opacity-40">
+                    <div class="w-16 h-16 bg-brand/10 text-brand rounded-3xl flex items-center justify-center mx-auto mb-6">
+                      <Zap :size="24" :stroke-width="3" />
+                    </div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.3em]">No categorical data present</p>
+                  </div>
                 </div>
               </div>
             </div>
