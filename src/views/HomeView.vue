@@ -190,7 +190,7 @@ const socialSignals = computed(() => {
   return [
     `BANK UPDATE ${qCount} QUESTIONS READY IN THE BANK`,
     `TOP PERFORMANCE STUDENT ACHIEVED ${score} READINESS`,
-    'SYLLABUS OFFICIAL 2026 JAMB BANK IS LIVE',
+    'OFFICIAL HIGHER INSTITUTION CBT BANK IS LIVE',
     'LIVE NOW NEW PRACTICE SESSION STARTED',
     `PLATFORM AVG STUDENTS AVERAGING ${score} THIS WEEK`,
     'CONNECTION SYNCING AT TOP SPEEDS',
@@ -388,13 +388,11 @@ onMounted(async () => {
                <span class="text-zinc-700 font-bold text-[clamp(24px,5vw,48px)]">%</span>
              </div>
              
-             <div class="flex items-center gap-4">
-               <div class="h-px w-8 bg-zinc-800"></div>
-               <span class="text-[10px] font-black uppercase tracking-[0.8em] text-zinc-500 animate-pulse translate-x-[0.4em]">
-                 Synchronizing Identity
-               </span>
-               <div class="h-px w-8 bg-zinc-800"></div>
-             </div>
+            <div class="flex items-center gap-4">
+              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 animate-pulse">
+                Preparing your practice environment...
+              </span>
+            </div>
            </div>
         </div>
       </div>
@@ -439,27 +437,23 @@ onMounted(async () => {
             :class="isDone || !isBooting ? 'opacity-100' : 'opacity-0'"
           >
             <template v-for="(line, lIdx) in displayedLines" :key="lIdx">
-              <span v-for="(seg, sIdx) in line" :key="sIdx" :class="seg.class">
+              <span v-for="(seg, sIdx) in line" :key="sIdx" :class="[seg.class, 'block sm:inline']">
                 {{ seg.text }}
               </span>
-              <br v-if="lIdx < displayedLines.length - 1"/>
+              <br v-if="lIdx < displayedLines.length - 1" class="hidden sm:block"/>
             </template>
             <span v-if="!isDone" class="inline-block w-[0.15em] h-[0.8em] bg-white ml-1 animate-pulse align-middle"></span>
           </h1>
           
           <p class="mt-8 sm:mt-4 text-[16px] sm:text-[18px] text-white/50 font-medium max-w-md leading-relaxed transition-opacity duration-1000" :class="isDone ? 'opacity-100' : 'opacity-0'">
-            Practice real CBT questions, track every gain, and approach your exams with complete precision.
+            Practice CBT exams, master polytechnic & university courses, and prepare for any entrance exams — all in one platform.
           </p>
           
           <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
-            <router-link to="/register" class="group relative px-10 sm:px-12 py-4 sm:py-5 border border-white/20 hover:border-white text-[12px] sm:text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
-              <span class="relative z-10 group-hover:text-black transition-colors">Start Practicing</span>
-              <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
-              <span class="absolute right-6 group-hover:translate-x-1 transition-transform z-10 group-hover:text-black">→</span>
-            </router-link>
-            
-            <router-link to="/login" class="text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] text-zinc-500 hover:text-white transition-colors w-full sm:w-auto text-center py-2">
-              Go to Dashboard
+            <router-link to="/register" class="group relative px-10 sm:px-12 py-4 sm:py-5 border border-white/20 hover:border-white active:scale-95 text-[12px] sm:text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
+              <span class="relative z-10 group-hover:text-black group-active:text-black transition-colors">Start Practicing</span>
+              <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 group-active:translate-y-0 transition-transform duration-500"></div>
+              <span class="absolute right-6 group-hover:translate-x-1 group-active:translate-x-1 transition-transform z-10 group-hover:text-black group-active:text-black">→</span>
             </router-link>
           </div>
         </div>
@@ -500,11 +494,11 @@ onMounted(async () => {
             <span class="text-zinc-600">not overwhelming.</span>
           </h2>
           <router-link to="/login" class="group inline-flex items-center gap-2 mt-8 text-[11px] font-black uppercase tracking-[0.4em] text-white/20 hover:text-white transition-all duration-500">
-            <span class="transition-transform group-hover:-translate-x-1">[</span> Go to Dashboard <span class="transition-transform group-hover:translate-x-1">]</span>
+            <span class="transition-transform group-hover:-translate-x-1">[</span> Start Practicing <span class="transition-transform group-hover:translate-x-1">]</span>
           </router-link>
         </div>
         <div class="md:col-span-7 relative order-1 md:order-2 flex justify-end">
-          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out rounded-none shadow-2xl" :class="sectionVisible ? 'animate-aperture-pulse h-64 sm:h-[32rem]' : 'h-32 sm:h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @mousemove="handleViewfinderMove">
+          <div class="relative w-full max-w-2xl group cursor-crosshair overflow-hidden border border-white/20 bg-black transition-all duration-[3.5s] ease-in-out rounded-none shadow-2xl" :class="sectionVisible ? 'animate-aperture-pulse h-64 sm:h-[32rem]' : 'h-32 sm:h-44'" @mouseenter="isHoveringWindow = true" @mouseleave="isHoveringWindow = false" @touchstart="isHoveringWindow = true" @touchend="isHoveringWindow = false" @mousemove="handleViewfinderMove">
             <div class="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-white/40 z-30"></div>
             <div class="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-white/40 z-30"></div>
             <div class="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-white/40 z-30"></div>
@@ -534,20 +528,19 @@ onMounted(async () => {
           <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r flex flex-col justify-between min-h-[320px] sm:min-h-[440px] text-left">
             <div>
               <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">
-                {{ authStore.isAuthenticated ? 'Your Avg. Exam Score' : 'Platform Avg. Score' }}
+                Global Engagement
               </p>
-              <div class="relative inline-block">
-                <span class="text-[clamp(64px,8vw,128px)] font-black leading-none tracking-tighter transition-all duration-700">
-                  {{ displayScore }}
+              <div class="relative inline-block mb-8">
+                <span class="text-[clamp(40px,5vw,68px)] font-black leading-none tracking-tighter uppercase block">
+                  {{ totalQuestions }}
                 </span>
-                <span v-if="averageScore !== null" class="text-[clamp(24px,3vw,40px)] font-black text-zinc-500 ml-2">%</span>
+                <span class="text-[clamp(20px,3vw,36px)] font-black tracking-tighter uppercase text-zinc-500 block -mt-1">
+                  Questions
+                </span>
               </div>
             </div>
             <div class="text-[11px] text-zinc-500 font-bold max-w-xs leading-relaxed">
-              {{ authStore.isAuthenticated
-                ? 'Your performance rating across all verified practice sessions.'
-                : 'Login to track your personal score and subject mastery.'
-              }}
+              Practiced across all core subjects and official exam modules.
             </div>
           </div>
           <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[320px] sm:min-h-[440px] text-left">
@@ -564,28 +557,33 @@ onMounted(async () => {
           </div>
           <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r min-h-[320px] sm:min-h-[440px] flex flex-col justify-between text-left">
             <div>
-              <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Resource Bank</p>
-              <h3 class="text-[clamp(32px,4vw,48px)] font-black leading-tight tracking-tighter uppercase text-left group">
-                <span class="uppercase text-white">{{ totalQuestions }}</span>
+              <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">Exam Protocol</p>
+              <h3 class="text-[clamp(32px,3.5vw,44px)] font-black leading-[0.9] tracking-tighter uppercase text-left group">
+                <span class="uppercase text-white">CBT Exam</span>
                 <br/>
-                <span class="text-zinc-500 uppercase">Questions</span>
+                <span class="text-zinc-500 uppercase">Simulation</span>
               </h3>
-              <p v-if="totalQuizzes" class="mt-3 text-[9px] font-mono font-bold text-zinc-600 uppercase tracking-widest">
-                Across {{ totalQuizzes }} modules
+              <p class="mt-4 text-[11px] text-zinc-500 font-bold max-w-xs leading-relaxed">
+                Mirroring the exact environment of university and polytechnic CBTs and entrance examinations.
               </p>
             </div>
             <div class="space-y-4">
-              <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-zinc-400 rounded-none animate-pulse"></div><span class="text-[9px] font-mono font-bold text-zinc-500">SOURCE: JAMB OFFICIAL</span></div>
+              <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-zinc-400 rounded-none animate-pulse"></div><span class="text-[9px] font-mono font-bold text-zinc-500">SOURCE: UNIVERSITY DATABASES</span></div>
               <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-zinc-700 rounded-none"></div><span class="text-[9px] font-mono font-bold text-zinc-500">LATEST UPDATE: CURRENT</span></div>
             </div>
           </div>
-          <div class="p-8 sm:p-12 flex flex-col justify-center items-center min-h-[320px] sm:min-h-[440px] bg-white/5 text-white hover:bg-white transition-all duration-700 cursor-pointer text-center group">
-            <router-link to="/subjects" class="text-center">
-              <span class="text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block text-zinc-400 group-hover:text-black transition-colors">Jump back in</span>
-              <h4 class="text-[32px] font-black tracking-tighter uppercase leading-none group-hover:text-black transition-colors">PRACTICE <br/> NOW</h4>
-              <div class="mt-10 flex justify-center gap-2 opacity-20 group-hover:opacity-100 transition-opacity"><div class="w-4 h-4 rounded-none border border-white group-hover:border-black"></div><div class="w-4 h-4 rounded-none bg-white group-hover:bg-black"></div><div class="w-4 h-4 rounded-none border border-white group-hover:border-black"></div></div>
-            </router-link>
-          </div>
+          <router-link 
+            to="/subjects" 
+            class="p-8 sm:p-12 flex flex-col justify-center items-center min-h-[320px] sm:min-h-[440px] bg-white/5 text-white hover:bg-white active:bg-white transition-all duration-700 cursor-pointer text-center group"
+          >
+            <span class="text-[10px] font-bold uppercase tracking-[0.4em] mb-6 block text-zinc-400 group-hover:text-black group-active:text-black transition-colors">Jump back in</span>
+            <h4 class="text-[32px] font-black tracking-tighter uppercase leading-none group-hover:text-black group-active:text-black transition-colors">PRACTICE <br/> NOW</h4>
+            <div class="mt-10 flex justify-center gap-2 opacity-20 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
+              <div class="w-4 h-4 rounded-none border border-white group-hover:border-black group-active:border-black"></div>
+              <div class="w-4 h-4 rounded-none bg-white group-hover:bg-black group-active:bg-black"></div>
+              <div class="w-4 h-4 rounded-none border border-white group-hover:border-black group-active:border-black"></div>
+            </div>
+          </router-link>
         </div>
       </div>
     </section>
@@ -606,10 +604,10 @@ onMounted(async () => {
       </div>
 
       <div class="flex flex-col items-center justify-center flex-1 py-4 sm:py-10">
-        <div class="grid grid-cols-3 gap-4 sm:gap-20 w-full mb-6 sm:mb-16 max-w-5xl opacity-80">
-          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">JAMB</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Exam Ready</span></div>
-          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">WAEC</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Past Papers</span></div>
-          <div class="flex flex-col items-center"><span class="text-[clamp(28px,6vw,60px)] font-black leading-none mb-2 sm:mb-4">NECO</span><span class="text-[10px] sm:text-[12px] font-bold tracking-[.3em] sm:tracking-[.4em] uppercase text-zinc-400">Complete Bank</span></div>
+        <div class="grid grid-cols-3 gap-2 sm:gap-16 w-full mb-6 sm:mb-16 max-w-5xl opacity-80 px-2">
+          <div class="flex flex-col items-center text-center"><span class="text-[clamp(18px,3.5vw,40px)] font-black leading-none mb-2 sm:mb-4 text-center">UNIVERSITY</span><span class="text-[9px] sm:text-[12px] font-bold tracking-[.2em] sm:tracking-[.4em] uppercase text-zinc-400 text-center">Varsity Ready</span></div>
+          <div class="flex flex-col items-center text-center"><span class="text-[clamp(18px,3.5vw,40px)] font-black leading-none mb-2 sm:mb-4 text-center">POLYTECHNIC</span><span class="text-[9px] sm:text-[12px] font-bold tracking-[.2em] sm:tracking-[.4em] uppercase text-zinc-400 text-center">Past Papers</span></div>
+          <div class="flex flex-col items-center text-center"><span class="text-[clamp(18px,3.5vw,40px)] font-black leading-none mb-2 sm:mb-4 text-center">CBT EXAM</span><span class="text-[9px] sm:text-[12px] font-bold tracking-[.2em] sm:tracking-[.4em] uppercase text-zinc-400 text-center">Complete Bank</span></div>
         </div>
 
         <router-link to="/register" class="group relative w-full max-w-3xl overflow-hidden py-4 sm:py-6 border-4 border-black text-center transition-all duration-500 hover:bg-black">

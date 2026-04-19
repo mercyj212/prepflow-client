@@ -98,14 +98,15 @@
         </div>
 
         <!-- Success Fancy Display -->
-        <div v-if="showSuccess" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/90 dark:bg-zinc-950/90 backdrop-blur-sm transition-all duration-700 animate-in fade-in">
-          <div class="flex flex-col items-center gap-6 scale-up-center">
-            <div class="w-10 h-10 rounded-full bg-brand text-white flex items-center justify-center font-bold text-sm shadow-md shadow-brand/10 ring-2 ring-white dark:ring-zinc-900">
-              <Check :size="24" :stroke-width="3" />
+        <div v-if="showSuccess" class="fixed inset-0 z-[100] flex items-center justify-center bg-white/95 dark:bg-zinc-950/95 backdrop-blur-md transition-all duration-700 animate-in fade-in">
+          <div class="flex flex-col items-center gap-8 scale-up-center">
+            <div class="w-20 h-20 rounded-full bg-zinc-900 dark:bg-white text-white dark:text-black flex items-center justify-center shadow-2xl shadow-zinc-500/30 ring-4 ring-white dark:ring-zinc-900 animate-bounce">
+              <Check :size="40" :stroke-width="3" />
             </div>
-            <div class="text-center">
-              <h3 class="text-2xl font-bold text-black dark:text-white mb-1">Welcome Back!</h3>
-              <p class="text-zinc-500 dark:text-zinc-400">Login successful, redirecting...</p>
+            <div class="text-center px-6">
+              <h3 class="text-4xl font-black text-zinc-900 dark:text-white tracking-tighter">
+                Welcome back, {{ authStore.user?.fullName?.split(' ')[0] || 'Scholar' }}!
+              </h3>
             </div>
           </div>
         </div>
