@@ -69,7 +69,7 @@ api.interceptors.response.use(
         console.warn('[SESSION EXPIRED]: Silent refresh failed, clearing local state.');
         localStorage.removeItem('user');
         refreshSubscribers = [];
-        window.location.href = '/login';
+        // window.location.href = '/login'; // Remove hard redirect to allow public access
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;

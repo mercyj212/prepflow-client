@@ -431,11 +431,11 @@ onMounted(async () => {
         <div class="absolute top-1/4 right-[30%] w-px h-32 bg-white/10"></div>
       </div>
 
-      <div class="flex-1 z-20 flex flex-col justify-start pt-[15vh] sm:pt-[20vh] px-6 sm:px-12 md:px-20 py-12 bg-black/40 backdrop-blur-[2px]">
+      <div class="flex-1 z-20 flex flex-col justify-start pt-[18vh] sm:pt-[20vh] px-6 sm:px-12 md:px-20 py-12 bg-black/20 md:bg-black/40 backdrop-blur-[1px] md:backdrop-blur-[2px]">
         <div class="max-w-xl text-left" :style="{ transform: `translate(${heroMouse.x * 0.5}px, ${heroMouse.y * 0.5}px)` }">
           
           <h1 
-            class="text-[clamp(36px,10vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[3.6em] transition-opacity duration-1000"
+            class="text-[clamp(30px,9vw,84px)] leading-[0.9] font-black tracking-tighter uppercase min-h-[4em] sm:min-h-[3.6em] transition-opacity duration-1000"
             :class="isDone || !isBooting ? 'opacity-100' : 'opacity-0'"
           >
             <template v-for="(line, lIdx) in displayedLines" :key="lIdx">
@@ -451,7 +451,7 @@ onMounted(async () => {
             Practice real CBT questions, track every gain, and approach your exams with complete precision.
           </p>
           
-          <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
+          <div class="mt-8 sm:mt-10 flex flex-col sm:flex-row items-start sm:items-center gap-6 sm:gap-8 transition-all duration-1000" :class="isDone ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'">
             <router-link to="/register" class="group relative px-10 sm:px-12 py-4 sm:py-5 border border-white/20 hover:border-white text-[12px] sm:text-[13px] font-black uppercase tracking-widest overflow-hidden transition-all w-full sm:w-auto text-center font-bold rounded-none">
               <span class="relative z-10 group-hover:text-black transition-colors">Start Practicing</span>
               <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500"></div>
@@ -468,7 +468,7 @@ onMounted(async () => {
       <!-- Hero Visual with Depth -->
       <div class="absolute inset-y-0 right-0 w-full md:w-[65%] z-0 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10 md:block hidden"></div>
-        <div class="absolute inset-0 bg-gradient-to-t from-black via-zinc-900/40 to-transparent z-10 md:hidden block"></div>
+        <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent z-10 md:hidden block"></div>
         <img 
           src="/avatar-female.jpg" 
           alt="Focused Student" 
