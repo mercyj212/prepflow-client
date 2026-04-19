@@ -85,7 +85,7 @@
         </div>
 
         <!-- Card wrapper -->
-        <div class="mb-8 relative max-w-2xl mx-auto flex items-center justify-center gap-4 sm:gap-8 group/wrapper">
+        <div class="mb-4 relative max-w-2xl mx-auto flex items-center justify-center gap-4 sm:gap-8 group/wrapper">
           
           <!-- Previous Arrow -->
           <button 
@@ -96,9 +96,21 @@
             <ChevronLeft :size="24" :stroke-width="2.5" />
           </button>
 
-          <!-- Visual layer -->
-          <div ref="cardTrackEl" class="w-full max-w-sm sm:max-w-md md:max-w-lg relative shrink-0" style="height: 380px;">
-            <div class="card-inner cursor-pointer" :class="{ 'is-flipped': isFlipped }" @click="flipCard">
+          <!-- Swipeable card track -->
+          <div
+            ref="cardTrackEl"
+            class="w-full max-w-sm sm:max-w-md md:max-w-lg relative shrink-0 select-none"
+            style="height: 380px;"
+            @touchstart.passive="onTouchStart"
+            @touchmove="onTouchMove"
+            @touchend="onTouchEnd"
+          >
+            <div
+              class="card-inner cursor-pointer"
+              :class="{ 'is-flipped': isFlipped, 'no-transition': isDragging }"
+              :style="dragStyle"
+              @click="handleCardClick"
+            >
 
               <!-- Front -->
               <div class="card-face card-front bg-white dark:bg-zinc-900 rounded-[36px] shadow-neo border border-zinc-100 dark:border-white/5 flex flex-col p-8 sm:p-10">
@@ -112,7 +124,7 @@
                   <p class="text-[20px] sm:text-[24px] font-medium text-slate-800 dark:text-zinc-100 leading-snug text-center tracking-tight">{{ currentQuestion.text }}</p>
                 </div>
                 <div class="flex flex-col items-center gap-2 mt-8 opacity-40">
-                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Tap to flip card</span>
+                  <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-400">Tap to flip · Swipe to navigate</span>
                   <div class="flex gap-1">
                     <div class="w-1.5 h-1.5 rounded-full bg-zinc-300 animate-pulse"></div>
                     <div class="w-1.5 h-1.5 rounded-full bg-zinc-300"></div>
@@ -150,6 +162,19 @@
           </button>
         </div>
 
+        <!-- Mobile swipe hint -->
+        <div class="flex sm:hidden items-center justify-center gap-6 mb-6 opacity-40">
+          <div class="flex items-center gap-1.5 text-zinc-400">
+            <ChevronLeft :size="14" :stroke-width="2.5" />
+            <span class="text-[10px] font-black uppercase tracking-widest">Prev</span>
+          </div>
+          <div class="w-px h-3 bg-zinc-300"></div>
+          <div class="flex items-center gap-1.5 text-zinc-400">
+            <span class="text-[10px] font-black uppercase tracking-widest">Next</span>
+            <ArrowRight :size="14" :stroke-width="2.5" />
+          </div>
+        </div>
+
 
       </template>
     </div>
@@ -181,6 +206,23 @@ const isFlipped = ref(false);
 const isDragging = ref(false);
 const cardTrackEl = ref(null);
 
+// Touch swipe state
+const touchStartX = ref(0);
+const touchStartY = ref(0);
+const dragOffsetX = ref(0);
+const isHorizontalSwipe = ref(false); // lock direction once determined
+const SWIPE_THRESHOLD = 60; // px needed to trigger card change
+
+const dragStyle = computed(() => {
+  if (!isDragging.value) return {};
+  const rotate = dragOffsetX.value * 0.04; // subtle tilt
+  const opacity = 1 - Math.abs(dragOffsetX.value) / 400;
+  return {
+    transform: `translateX(${dragOffsetX.value}px) rotate(${rotate}deg)`,
+    opacity: Math.max(opacity, 0.4),
+  };
+});
+
 // Session stats
 const knownCards = ref([]);
 const reviewCards = ref([]);
@@ -211,6 +253,59 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   document.body.style.overscrollBehaviorX = '';
 });
+
+// ── Touch swipe handlers ────────────────────────────────────────────
+const onTouchStart = (e) => {
+  touchStartX.value = e.touches[0].clientX;
+  touchStartY.value = e.touches[0].clientY;
+  dragOffsetX.value = 0;
+  isDragging.value = true;
+  isHorizontalSwipe.value = false;
+};
+
+const onTouchMove = (e) => {
+  if (!isDragging.value) return;
+  const dx = e.touches[0].clientX - touchStartX.value;
+  const dy = e.touches[0].clientY - touchStartY.value;
+
+  // On first meaningful move, lock gesture direction
+  if (!isHorizontalSwipe.value && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+    if (Math.abs(dx) > Math.abs(dy)) {
+      isHorizontalSwipe.value = true;
+    } else {
+      // Vertical — let page scroll happen, abort swipe
+      isDragging.value = false;
+      dragOffsetX.value = 0;
+      return;
+    }
+  }
+
+  if (isHorizontalSwipe.value) {
+    e.preventDefault(); // prevent page scroll during horizontal swipe
+    dragOffsetX.value = dx;
+  }
+};
+
+const onTouchEnd = () => {
+  if (!isDragging.value) return;
+  isDragging.value = false;
+
+  if (isHorizontalSwipe.value) {
+    if (dragOffsetX.value < -SWIPE_THRESHOLD) {
+      nextCard();
+    } else if (dragOffsetX.value > SWIPE_THRESHOLD) {
+      prevCard();
+    }
+  }
+
+  dragOffsetX.value = 0;
+  isHorizontalSwipe.value = false;
+};
+
+// Prevent accidental flip during a drag
+const handleCardClick = () => {
+  if (Math.abs(dragOffsetX.value) < 5) flipCard();
+};
 
 const flipCard = () => { isFlipped.value = !isFlipped.value; };
 
@@ -245,8 +340,11 @@ const restartSession = () => {
   position: relative;
   width: 100%;
   height: 100%;
-  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease;
   transform-style: preserve-3d;
+}
+.card-inner.no-transition {
+  transition: none;
 }
 .card-inner.is-flipped { transform: rotateY(180deg); }
 
