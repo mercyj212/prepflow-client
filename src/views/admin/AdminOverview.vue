@@ -1,7 +1,9 @@
 <template>
   <div class="p-6 md:p-10 max-w-[1600px] mx-auto animate-fade-inShadow">
+    <div class="absolute -right-20 -top-20 w-64 h-64 bg-zinc-900/5 dark:bg-white/5 rounded-full blur-[80px] pointer-events-none"></div>
+    <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-zinc-800/5 dark:bg-zinc-100/5 rounded-full blur-[80px] pointer-events-none"></div>
     <div v-if="adminStore.loading && adminStore.courses.length === 0" class="h-[40vh] flex items-center justify-center">
-      <NeoLoader label="Loading Analytics..." class="text-emerald-500" />
+      <NeoLoader label="Loading Analytics..." class="text-zinc-400 dark:text-zinc-600" />
     </div>
     <div v-else>
       <AnalyticsGrid 

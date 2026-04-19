@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div class="max-w-2xl">
         <h1 class="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter mb-4">
-          Entrance <span class="text-emerald-500">Exams</span>
+          Entrance Exams
         </h1>
         <p class="text-sm text-zinc-500 font-medium leading-relaxed">
           Manage specialized entrance examination content. Organize subjects and practice papers for bodies like JAMB, POST-UTME, and WAEC.
@@ -25,9 +25,9 @@
     <!-- Creator (Repurposed CourseCreator for Entrance) -->
     <transition name="slide-up">
       <div v-if="showCreator" class="grid grid-cols-1 gap-8">
-        <NeoCard variant="depressed" class="p-6 md:p-8 border-emerald-500/20">
+        <NeoCard variant="depressed" class="p-6 md:p-8 border-brand/20">
           <h2 class="text-xl font-black mb-6 md:mb-8 flex items-center gap-3 text-zinc-900 dark:text-zinc-100 uppercase tracking-widest text-[11px]">
-             <PencilLine :size="16" class="text-emerald-500" />
+             <PencilLine :size="16" class="text-brand" />
              Create Entrance Subject
           </h2>
           <form @submit.prevent="handleCreateSubject" class="space-y-6">
@@ -45,7 +45,7 @@
               </div>
             </div>
             
-            <button type="submit" :disabled="loading" class="w-full h-12 md:h-14 bg-emerald-500 hover:bg-emerald-600 text-white font-black rounded-2xl transition-all text-[10px] md:text-[11px] uppercase tracking-[0.2em]">
+            <button type="submit" :disabled="loading" class="w-full h-12 md:h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-2xl transition-all text-[10px] md:text-[11px] uppercase tracking-[0.2em] shadow-xl active:scale-95">
               {{ loading ? 'Saving...' : 'Create Entrance Subject' }}
             </button>
           </form>
@@ -69,11 +69,11 @@
               @click="selectedBody = body"
               class="w-full text-left p-4 rounded-xl border transition-all flex items-center justify-between group"
               :class="selectedBody?._id === body._id 
-                ? 'bg-emerald-500/10 border-emerald-500 text-emerald-500' 
-                : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-white/5 text-zinc-500 hover:border-emerald-500/50'"
+                ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-black' 
+                : 'bg-zinc-50 dark:bg-zinc-900/50 border-zinc-100 dark:border-white/5 text-zinc-500 hover:border-brand/50'"
             >
               <div class="flex items-center gap-3">
-                <span class="w-2 h-2 rounded-full" :class="selectedBody?._id === body._id ? 'bg-emerald-500' : 'bg-zinc-300 dark:bg-zinc-700'"></span>
+                <span class="w-2 h-2 rounded-full" :class="selectedBody?._id === body._id ? 'bg-zinc-400 dark:bg-zinc-500' : 'bg-zinc-300 dark:bg-zinc-700'"></span>
                 <span class="text-sm font-bold">{{ body.name }}</span>
               </div>
               <ChevronRight :size="16" class="opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -96,8 +96,8 @@
         <NeoCard v-if="selectedBody" variant="extruded" class="p-5 md:p-8">
           <div class="flex items-center justify-between mb-6 md:mb-8">
             <div class="flex items-center gap-3 md:gap-4">
-              <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
-                <ShieldCheck :size="20" md:size="24" class="text-emerald-500" />
+              <div class="w-10 h-10 md:w-12 md:h-12 rounded-2xl bg-zinc-900 dark:bg-white flex items-center justify-center shrink-0">
+                <ShieldCheck :size="20" md:size="24" class="text-white dark:text-black" />
               </div>
               <div>
                 <h2 class="text-lg md:text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight">{{ selectedBody.name }} Subjects</h2>
@@ -107,12 +107,12 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-            <div v-for="sub in bodySubjects" :key="sub._id" class="p-4 md:p-6 rounded-2xl border border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50 group hover:border-emerald-500/50 transition-all">
+            <div v-for="sub in bodySubjects" :key="sub._id" class="p-4 md:p-6 rounded-2xl border border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50 group hover:border-brand transition-all">
               <div class="flex items-start justify-between">
                 <div class="min-w-0">
                   <h4 class="text-sm md:text-base font-bold text-zinc-900 dark:text-zinc-100 mb-1 truncate">{{ sub.title }}</h4>
                   <div class="flex items-center gap-2 md:gap-3">
-                    <span class="text-[9px] md:text-[10px] font-black text-emerald-500 uppercase tracking-widest bg-emerald-500/10 px-2 py-0.5 rounded leading-none shrink-0">{{ sub.level || 'ENTRANCE' }}</span>
+                    <span class="text-[9px] md:text-[10px] font-black text-white bg-zinc-900 dark:bg-white dark:text-black uppercase tracking-widest px-2 py-0.5 rounded leading-none shrink-0">{{ sub.level || 'ENTRANCE' }}</span>
                     <span class="text-[9px] md:text-[10px] font-black text-zinc-400 uppercase tracking-widest flex items-center gap-1 shrink-0">
                       <HelpCircle :size="10" />
                       {{ sub.quizCount || 0 }} Papers
@@ -131,7 +131,7 @@
                 <Pencil :size="20" class="text-zinc-300" />
               </div>
               <p class="text-xs text-zinc-500 font-medium tracking-tight">No subjects found for {{ selectedBody.name }}</p>
-              <button @click="showCreator = true" class="mt-4 text-[10px] font-black text-emerald-500 uppercase tracking-widest hover:underline">Add First Subject</button>
+              <button @click="showCreator = true" class="mt-4 text-[10px] font-black text-brand uppercase tracking-widest hover:underline">Add First Subject</button>
             </div>
           </div>
         </NeoCard>

@@ -15,7 +15,7 @@
             Empowering students with a high-fidelity CBT environment and intelligent curriculum tracking for global academic excellence.
           </p>
           <div class="flex items-center gap-4">
-            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-sm shadow-emerald-500/50"></div>
+            <div class="w-2 h-2 bg-zinc-400 dark:bg-zinc-600 rounded-full animate-pulse shadow-sm"></div>
             <span class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">Platform Operational</span>
           </div>
         </div>

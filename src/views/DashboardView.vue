@@ -26,8 +26,8 @@
                    
                    <!-- The "+204%" glowing pill -->
                    <div class="absolute right-8 top-[4.5rem]">
-                      <div class="px-2.5 py-1.5 rounded-lg border border-emerald-500/20 shadow-neo-inner bg-emerald-50/10 dark:bg-emerald-900/10 flex items-center justify-center">
-                       <span class="text-[12px] font-bold text-[#4ade80] drop-shadow-[0_0_8px_rgba(74,222,128,0.6)] tracking-wide">
+                      <div class="px-2.5 py-1.5 rounded-lg border border-zinc-900/10 dark:border-white/20 shadow-neo-inner bg-zinc-900/5 dark:bg-zinc-800/10 flex items-center justify-center">
+                       <span class="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 tracking-wide">
                          ↑ 12%
                        </span>
                      </div>

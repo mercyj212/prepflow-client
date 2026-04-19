@@ -15,7 +15,7 @@
         </header>
 
         <div v-if="loading && !result" class="flex-1 flex flex-col items-center justify-center py-20 gap-6">
-          <NeoLoader color="#14b8a6" size="large" />
+          <NeoLoader color="currentColor" size="large" />
           <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Syncing Intelligence Data...</p>
         </div>
 
@@ -37,7 +37,7 @@
                       <svg class="absolute inset-0 w-full h-full -rotate-90">
                         <circle class="text-zinc-200 dark:text-zinc-800" stroke-width="6" stroke="currentColor" fill="transparent" r="88" cx="96" cy="96" />
                         <circle 
-                          :class="percentage >= 70 ? 'text-brand' : (percentage >= 40 ? 'text-amber-500' : 'text-rose-500')" 
+                          :class="percentage >= 70 ? 'text-zinc-900 dark:text-white' : (percentage >= 40 ? 'text-zinc-400' : 'text-danger')" 
                           stroke-width="6" 
                           :stroke-dasharray="CIRCUMFERENCE" 
                           :stroke-dashoffset="dashOffset" 
@@ -45,7 +45,7 @@
                           stroke="currentColor" 
                           fill="transparent" 
                           r="88" cx="96" cy="96" 
-                          class="transition-all duration-[2000ms] ease-out-expo drop-shadow-[0_0_8px_rgba(20,184,166,0.3)]"
+                          class="transition-all duration-[2000ms] ease-out-expo shadow-xl"
                         />
                       </svg>
                       <div class="text-center">
@@ -95,7 +95,7 @@
                     <NeoCard v-for="(q, idx) in result.questionResults" :key="idx" variant="depressed" class="!rounded-[24px] p-8 border-[0.5px] border-black/5 dark:border-white/5 group hover:border-brand/20 transition-colors">
                       <div class="flex gap-6">
                         <div class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 font-black text-[12px] shadow-sm tracking-tighter transition-all"
-                          :class="q.isCorrect ? 'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-500 border border-rose-500/20'">
+                          :class="q.isCorrect ? 'bg-zinc-900 dark:bg-white text-white dark:text-black border border-black' : 'bg-danger/10 text-danger border border-danger/20'">
                           {{ idx + 1 }}
                         </div>
                         <div class="flex-1 space-y-6">
@@ -104,11 +104,11 @@
                           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div class="p-4 rounded-xl bg-zinc-50 dark:bg-black/20 border border-white/40 dark:border-white/5">
                               <p class="text-[9px] font-black uppercase tracking-widest text-zinc-400 mb-2">Selection</p>
-                              <p class="text-[13px] font-bold" :class="q.isCorrect ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'">{{ q.yourAnswer }}</p>
+                              <p class="text-[13px] font-bold" :class="q.isCorrect ? 'text-zinc-900 dark:text-white' : 'text-danger'">{{ q.yourAnswer }}</p>
                             </div>
-                            <div v-if="!q.isCorrect" class="p-4 rounded-xl bg-emerald-50/30 dark:bg-emerald-500/5 border border-emerald-500/10">
-                              <p class="text-[9px] font-black uppercase tracking-widest text-emerald-500/60 mb-2">Correct Response</p>
-                              <p class="text-[13px] font-bold text-emerald-600 dark:text-emerald-400">{{ q.correctAnswer }}</p>
+                            <div v-if="!q.isCorrect" class="p-4 rounded-xl bg-zinc-100 dark:bg-white/5 border border-black/10 dark:border-white/10">
+                              <p class="text-[9px] font-black uppercase tracking-widest text-zinc-500 mb-2">Correct Response</p>
+                              <p class="text-[13px] font-bold text-zinc-900 dark:text-white">{{ q.correctAnswer }}</p>
                             </div>
                             <!-- Subject Tag -->
                             <div class="px-3 py-1 bg-zinc-100 dark:bg-white/5 rounded-lg border border-black/5 dark:border-white/5 flex items-center justify-center sm:justify-start">
@@ -147,7 +147,7 @@
                             </div>
                             <span class="text-[14px] font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-tight">{{ item.subject }}</span>
                           </div>
-                          <span class="text-[12px] font-black" :class="item.percentage >= 70 ? 'text-emerald-500' : (item.percentage >= 40 ? 'text-amber-500' : 'text-rose-500')">
+                          <span class="text-[12px] font-black" :class="item.percentage >= 70 ? 'text-zinc-900 dark:text-white' : (item.percentage >= 40 ? 'text-zinc-500' : 'text-danger')">
                             {{ item.correct }} / {{ item.total }} <span class="opacity-40 ml-1">{{ item.percentage }}%</span>
                           </span>
                         </div>
@@ -156,14 +156,14 @@
                         <div class="h-3 w-full bg-zinc-100 dark:bg-zinc-900 rounded-full overflow-hidden border border-black/5 dark:border-white/5 p-[2px]">
                           <div 
                             class="h-full rounded-full transition-all duration-[1.5s] ease-out-expo"
-                            :class="item.percentage >= 70 ? 'bg-emerald-500' : (item.percentage >= 40 ? 'bg-amber-500' : 'bg-rose-500')"
+                            :class="item.percentage >= 70 ? 'bg-zinc-900 dark:bg-white' : (item.percentage >= 40 ? 'bg-zinc-400' : 'bg-danger')"
                             :style="{ width: `${item.percentage}%` }"
                           ></div>
                         </div>
 
                         <div v-if="item.percentage < 50" class="flex items-center gap-2 mt-1">
-                          <AlertCircle :size="12" class="text-rose-500" />
-                          <span class="text-[9px] font-black text-rose-500 uppercase tracking-widest">Priority Study Recommended</span>
+                          <AlertCircle :size="12" class="text-danger" />
+                          <span class="text-[9px] font-black text-danger uppercase tracking-widest">Priority Study Recommended</span>
                         </div>
                       </div>
                     </NeoCard>

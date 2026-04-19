@@ -13,7 +13,7 @@
           <!-- Icon Header -->
           <div :class="[
             'w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6 transition-colors',
-            isDanger ? 'bg-red-500/10 text-red-500' : 'bg-amber-500/10 text-amber-500'
+            isDanger ? 'bg-red-500/10 text-red-500' : 'bg-zinc-900/10 text-zinc-900 dark:bg-white/10 dark:text-white'
           ]">
             <AlertCircle v-if="isDanger" :size="32" />
             <AlertTriangle v-else :size="32" />

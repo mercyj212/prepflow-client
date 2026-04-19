@@ -423,7 +423,7 @@ onMounted(async () => {
 
       <!-- Tactical Spotlight Overlay -->
       <div class="absolute inset-0 z-[2] pointer-events-none transition-opacity duration-300" 
-           :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(20,184,166,0.15) 0%, transparent 60%)` }"></div>
+           :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(255,255,255,0.08) 0%, transparent 60%)` }"></div>
 
       <div class="absolute inset-0 z-[1] pointer-events-none opacity-20"
            :style="{ transform: `translate(${heroMouse.x * -0.5}px, ${heroMouse.y * -0.5}px)` }">
@@ -519,7 +519,7 @@ onMounted(async () => {
               <img src="/avatar-male.jpg" alt="Focused Eyes" class="absolute inset-0 w-full h-full object-cover grayscale opacity-80 group-hover:scale-105 transition-transform duration-[5s]" style="object-position: 85% 32%;"/>
               <div v-if="isHoveringWindow" class="absolute inset-0 bg-white/5 z-20 mix-blend-overlay animate-glitch"></div>
             </div>
-              <div class="absolute inset-0 transition-opacity duration-300 pointer-events-none" :class="isHoveringWindow ? 'opacity-100' : 'opacity-0'" :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(20,184,166,0.15) 0%, transparent 70%)` }"></div>
+              <div class="absolute inset-0 transition-opacity duration-300 pointer-events-none" :class="isHoveringWindow ? 'opacity-100' : 'opacity-0'" :style="{ background: `radial-gradient(circle at ${mousePos.x}% ${mousePos.y}%, rgba(255,255,255,0.1) 0%, transparent 70%)` }"></div>
             <div class="absolute inset-0 bg-gradient-to-r from-black via-transparent to-transparent z-10 opacity-60"></div>
           </div>
         </div>
@@ -575,7 +575,7 @@ onMounted(async () => {
               </p>
             </div>
             <div class="space-y-4">
-              <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-brand rounded-none animate-pulse shadow-[0_0_10px_rgba(20,184,166,0.5)]"></div><span class="text-[9px] font-mono font-bold text-zinc-500">SOURCE: JAMB OFFICIAL</span></div>
+              <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-zinc-400 rounded-none animate-pulse"></div><span class="text-[9px] font-mono font-bold text-zinc-500">SOURCE: JAMB OFFICIAL</span></div>
               <div class="flex items-center gap-4 text-left"><div class="w-2.5 h-2.5 bg-zinc-700 rounded-none"></div><span class="text-[9px] font-mono font-bold text-zinc-500">LATEST UPDATE: CURRENT</span></div>
             </div>
           </div>

@@ -108,10 +108,10 @@ const timelineChartData = computed(() => {
     datasets: [{
       label: 'Score %',
       data: data.map(d => d.score),
-      borderColor: '#10b981', // emerald-500
-      backgroundColor: 'rgba(16, 185, 129, 0.1)',
+      borderColor: '#3f3f46', // zinc-700
+      backgroundColor: 'rgba(63, 63, 70, 0.1)',
       borderWidth: 2,
-      pointBackgroundColor: '#10b981',
+      pointBackgroundColor: '#18181b',
       fill: true,
       tension: 0.4
     }]
@@ -166,7 +166,7 @@ const subjectChartData = computed(() => {
     datasets: [{
       label: 'Mastery %',
       data: data.map(d => d.mastery),
-      backgroundColor: '#f59e0b', // amber-500
+      backgroundColor: '#18181b', // zinc-900 (dynamic would be better but this is js)
       borderRadius: 6,
       barThickness: 'flex',
       maxBarThickness: 32

@@ -8,7 +8,7 @@
     <nav class="flex-1 bg-zinc-900 dark:bg-black rounded-2xl md:rounded-[32px] md:py-5 px-2 md:px-3 flex flex-row md:flex-col items-center gap-0 sm:gap-1 md:gap-2 shadow-2xl relative border border-white/10 overflow-x-auto overflow-y-hidden md:overflow-visible hide-scrollbar transition-all duration-500">
       
       <!-- Admin Logo Mark -->
-      <div class="hidden md:flex text-emerald-400 mb-4 shrink-0 px-2 w-full transition-all" :class="isHovered ? 'justify-start ml-1' : 'justify-center'">
+      <div class="hidden md:flex text-zinc-400 dark:text-zinc-500 mb-4 shrink-0 px-2 w-full transition-all" :class="isHovered ? 'justify-start ml-1' : 'justify-center'">
         <ShieldCheck :size="22" :stroke-width="2" />
         <span v-if="isHovered" class="ml-3 text-[13px] font-black uppercase tracking-[0.2em] text-white whitespace-nowrap animate-in fade-in slide-in-from-left-2 duration-500">Admin Panel</span>
       </div>
@@ -17,7 +17,7 @@
       <div class="flex-1 flex flex-row md:flex-col gap-0.5 md:gap-1.5 w-auto md:w-full items-center justify-around md:justify-start px-1 md:px-0 h-full md:h-auto mt-0 md:mt-2">
         <router-link v-for="item in navItems" :key="item.path" :to="item.path" 
           class="relative w-11 md:w-full h-8 md:h-12 shrink-0 flex items-center rounded-xl md:rounded-[18px] text-zinc-500 hover:text-white transition-all duration-300 group overflow-hidden"
-          :class="[isHovered ? 'justify-start px-4' : 'justify-center', {'!text-emerald-400 bg-emerald-500/10': isActive(item.path)}]"
+          :class="[isHovered ? 'justify-start px-4' : 'justify-center', {'!text-white bg-zinc-800 dark:bg-white/10': isActive(item.path)}]"
           >
           
           <component :is="item.icon" :size="20" class="shrink-0 z-10 opacity-70 group-hover:opacity-100 transition-opacity" />
@@ -30,7 +30,7 @@
           </span>
           
           <span v-if="isActive(item.path)" 
-            class="absolute md:bottom-auto bottom-1 bg-emerald-400 rounded-full transition-all duration-500"
+            class="absolute md:bottom-auto bottom-1 bg-white dark:bg-zinc-100 rounded-full transition-all duration-500"
             :class="isHovered ? 'left-1 w-1 h-5 rounded-r-lg' : 'md:-left-[1px] md:w-1 w-5 md:h-5 h-1 md:rounded-r-lg'"></span>
           
           <span v-if="!isHovered" class="hidden md:block absolute left-[70px] px-3 py-2 rounded-xl bg-zinc-800 text-white text-[11px] font-bold opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all pointer-events-none whitespace-nowrap shadow-xl border border-white/5 z-50 tracking-wide">

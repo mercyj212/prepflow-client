@@ -46,7 +46,7 @@
                   {{ getConvoTitle(convo) }}
                 </span>
                 <span v-if="convo.isAI" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-bold uppercase tracking-widest">AI</span>
-                <span v-else-if="convo.isGroup" class="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/10 text-violet-500 font-bold uppercase tracking-widest">Group</span>
+                <span v-else-if="convo.isGroup" class="text-[9px] px-1.5 py-0.5 rounded-full bg-brand/10 text-brand font-bold uppercase tracking-widest">Group</span>
               </div>
               <p class="text-[11px] text-zinc-500 truncate">{{ convo.lastMessage?.text || 'Start a conversation...' }}</p>
             </div>
@@ -73,7 +73,7 @@
                 <span v-if="activeConversation.isGroup && isGroupAdmin" class="text-[9px] px-1.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold uppercase tracking-widest">Admin</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <span class="w-1.5 h-1.5 rounded-full animate-pulse" :class="activeConversation.isAI ? 'bg-brand' : 'bg-emerald-500'"></span>
+                <span class="w-1.5 h-1.5 rounded-full animate-pulse bg-zinc-400 dark:bg-zinc-500"></span>
                 <span class="text-[10px] text-zinc-400 font-bold uppercase tracking-widest">
                   {{ activeConversation.isAI ? 'AI Active' : activeConversation.isGroup ? `${activeConversation.participants?.length || 0} members` : (activeConversation.isGlobal ? 'Group Active' : 'Online') }}
                 </span>
@@ -243,13 +243,18 @@
 
       <!-- ── New Chat / Create Group Modal ── -->
       <div v-if="showModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/20 dark:bg-black/40 backdrop-blur-sm">
-        <NeoCard class="w-full max-w-md !rounded-[32px] p-6 shadow-2xl relative">
-          <button @click="closeModal" class="absolute top-6 right-6 text-zinc-400 hover:text-zinc-600">
-            <X :size="20" />
-          </button>
+        <NeoCard class="w-full max-w-md !rounded-[32px] overflow-hidden shadow-2xl flex flex-col">
+          <!-- Header -->
+          <div class="flex items-center justify-between p-6 pb-4 border-b border-zinc-100 dark:border-white/5">
+             <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-zinc-500">New Conversation</h3>
+             <button @click="closeModal" class="p-2 -mr-2 -mt-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 hover:text-zinc-600 transition-colors">
+               <X :size="18" />
+             </button>
+          </div>
           
-          <!-- Tabs -->
-          <div class="flex gap-2 mb-6">
+          <div class="p-6">
+            <!-- Tabs -->
+            <div class="flex gap-2 mb-6">
             <button
               @click="modalTab = 'dm'"
               class="flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all"
@@ -258,7 +263,7 @@
             <button
               @click="modalTab = 'group'"
               class="flex-1 py-2 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all"
-              :class="modalTab === 'group' ? 'bg-violet-600 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'"
+              :class="modalTab === 'group' ? 'bg-brand text-white dark:text-zinc-900 border-brand' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'"
             >Create Group</button>
           </div>
 
@@ -340,7 +345,7 @@
               >
                 <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${s.fullName}`" class="w-8 h-8 rounded-full">
                 <span class="flex-1 text-[12px] font-medium text-zinc-700 dark:text-zinc-300">{{ s.fullName }}</span>
-                <div :class="isSelectedForGroup(s._id) ? 'bg-violet-600 text-white' : 'border border-zinc-200 dark:border-zinc-600'" class="w-5 h-5 rounded-full flex items-center justify-center">
+                <div :class="isSelectedForGroup(s._id) ? 'bg-brand text-white dark:text-zinc-900' : 'border border-zinc-200 dark:border-zinc-600'" class="w-5 h-5 rounded-full flex items-center justify-center">
                   <Check v-if="isSelectedForGroup(s._id)" :size="10" />
                 </div>
               </div>
@@ -348,21 +353,22 @@
 
             <!-- Selected Members Chips -->
             <div v-if="groupForm.members.length" class="flex flex-wrap gap-2 mb-6">
-              <div v-for="m in groupForm.members" :key="m._id" class="flex items-center gap-1.5 px-3 py-1 bg-violet-50 dark:bg-violet-500/10 rounded-full border border-violet-200 dark:border-violet-500/20">
-                <span class="text-[11px] font-bold text-violet-700 dark:text-violet-300">{{ m.fullName }}</span>
-                <button @click="toggleGroupMember(m)" class="text-violet-400 hover:text-violet-600"><X :size="10" /></button>
+              <div v-for="m in groupForm.members" :key="m._id" class="flex items-center gap-1.5 px-3 py-1 bg-brand/10 rounded-full border border-brand/20">
+                <span class="text-[11px] font-bold text-brand">{{ m.fullName }}</span>
+                <button @click="toggleGroupMember(m)" class="text-brand/60 hover:text-brand"><X :size="10" /></button>
               </div>
             </div>
 
             <button 
               @click="createGroup"
               :disabled="!groupForm.name.trim() || isCreatingGroup"
-              class="w-full py-3 rounded-2xl bg-violet-600 hover:bg-violet-700 text-white text-[12px] font-black uppercase tracking-widest disabled:opacity-40 transition-all flex items-center justify-center gap-2"
+              class="w-full py-3 rounded-2xl bg-brand hover:scale-[1.02] active:scale-[0.98] text-white dark:text-zinc-900 text-[12px] font-black uppercase tracking-widest disabled:opacity-40 transition-all flex items-center justify-center gap-2 shadow-lg"
             >
               <div v-if="isCreatingGroup" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
               <Users v-else :size="14" />
               {{ isCreatingGroup ? 'Creating...' : 'Create Group' }}
             </button>
+          </div>
           </div>
         </NeoCard>
       </div>
@@ -449,10 +455,10 @@ const getConvoImage = (convo) => {
 };
 
 const getConvoIconStyle = (convo) => {
-  if (convo.isGroup) return 'background: linear-gradient(135deg, #7c3aed, #a855f7)';
-  if (convo.course) return 'background: linear-gradient(135deg, #10b981, #3b82f6)';
-  if (convo.isGlobal) return 'background: linear-gradient(135deg, #6366f1, #a855f7)';
-  if (convo.isAI) return 'background: linear-gradient(135deg, #f59e0b, #ec4899)';
+  if (convo.isGroup) return 'background: linear-gradient(135deg, var(--color-brand-600), var(--color-brand-400))';
+  if (convo.course) return 'background: linear-gradient(135deg, var(--color-brand-800), var(--color-brand-500))';
+  if (convo.isGlobal) return 'background: linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700))';
+  if (convo.isAI) return 'background: linear-gradient(135deg, var(--color-brand-500), var(--color-brand-300))';
   return '';
 };
 

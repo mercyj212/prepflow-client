@@ -2,20 +2,20 @@
 @import "tailwindcss";
 
 @theme {
-  --color-brand-50: #f0fdfa;
-  --color-brand-100: #ccfbf1;
-  --color-brand-200: #99f6e4;
-  --color-brand-300: #5eead4;
-  --color-brand-400: #2dd4bf;
-  --color-brand-500: #14b8a6;
-  --color-brand-600: #0d9488;
-  --color-brand-700: #0f766e;
-  --color-brand-800: #115e59;
-  --color-brand-900: #134e4a;
-  --color-brand: var(--color-brand-400);
+  --color-brand-50: #fafafa;
+  --color-brand-100: #f4f4f5;
+  --color-brand-200: #e4e4e7;
+  --color-brand-300: #d4d4d8;
+  --color-brand-400: #a1a1aa;
+  --color-brand-500: #71717a;
+  --color-brand-600: #52525b;
+  --color-brand-700: #3f3f46;
+  --color-brand-800: #27272a;
+  --color-brand-900: #18181b;
+  --color-brand: var(--brand-primary);
   
-  --color-success: #1D9E75;
-  --color-warning: #BA7517;
+  --color-success: var(--brand-primary);
+  --color-warning: #71717a;
   --color-danger: #A32D2D;
   --color-surface-primary: #ffffff;
   --color-surface-secondary: #fafafa;
@@ -32,6 +32,7 @@
 
 @layer base {
   :root {
+    --brand-primary: #000000;
     --neo-bg: #d1d5db; /* gray-300 */
     --neo-surface: #e5e7eb; /* gray-200 */
     --neo-shadow-dark: rgba(156, 163, 175, 0.4); /* soft gray shadow */
@@ -41,6 +42,7 @@
   }
   
   .dark {
+    --brand-primary: #ffffff;
     --neo-bg: #09090b; /* zinc-950 */
     --neo-surface: #18181b; /* zinc-900 */
     --neo-shadow-dark: rgba(0, 0, 0, 0.9);
