@@ -528,7 +528,7 @@ onMounted(async () => {
           <div class="p-8 sm:p-12 border-b border-zinc-100 dark:border-zinc-800 lg:border-b-0 lg:border-r flex flex-col justify-between min-h-[320px] sm:min-h-[440px] text-left">
             <div>
               <p class="text-[10px] font-bold uppercase tracking-[0.4em] text-zinc-400 mb-10">
-                Global Engagement
+                Exam Coverage
               </p>
               <div class="relative inline-block mb-8">
                 <span class="text-[clamp(40px,5vw,68px)] font-black leading-none tracking-tighter uppercase block">
@@ -584,6 +584,97 @@ onMounted(async () => {
               <div class="w-4 h-4 rounded-none border border-white group-hover:border-black group-active:border-black"></div>
             </div>
           </router-link>
+        </div>
+      </div>
+    </section>
+
+    <!-- Scene 3.5: Trust & Validation -->
+    <section id="trust-validation" class="min-h-[100svh] snap-start shrink-0 flex flex-col justify-center bg-zinc-950 relative overflow-hidden py-24 sm:py-32 px-6 sm:px-12 md:px-24 border-b border-white/5">
+      <div class="absolute inset-0 pointer-events-none opacity-[0.02] grid-pattern z-0"></div>
+      
+      <div class="max-w-7xl w-full mx-auto z-10 transition-all duration-[1.5s]">
+        <!-- Headline & Stats -->
+        <div class="mb-16 md:mb-24 text-center md:text-left flex flex-col md:flex-row md:items-end justify-between gap-12">
+          <h2 class="text-[clamp(32px,4vw,54px)] leading-[1] font-black tracking-tighter uppercase max-w-lg">
+            Trusted by Students <span class="text-zinc-600 block">Preparing for Exams.</span>
+          </h2>
+          
+          <div class="flex flex-wrap justify-center md:justify-end gap-x-12 gap-y-6 text-left">
+            <div>
+              <span class="block text-[28px] md:text-[36px] font-black tracking-tighter text-white leading-none">300+</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Active Students</span>
+            </div>
+            <div>
+              <span class="block text-[28px] md:text-[36px] font-black tracking-tighter text-white leading-none">1,200+</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Questions</span>
+            </div>
+            <div>
+              <span class="block text-[28px] md:text-[36px] font-black tracking-tighter text-white leading-none">Multiple</span>
+              <span class="text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-500">Exam Categories</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Card 1 -->
+          <div class="bg-white/5 border border-white/10 p-8 sm:p-10 backdrop-blur-sm rounded-none hover:bg-white/10 transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex gap-1 mb-6 text-yellow-500">
+                <svg v-for="i in 5" :key="i" class="w-3 h-3 sm:w-4 sm:h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <p class="text-[13px] sm:text-[14px] text-zinc-300 font-medium leading-relaxed mb-8">
+                "This platform helped me stay consistent with my prep. The CBT simulation questions feel very real and helped me build confidence."
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <img src="/testi-1.jpg" alt="David O." class="w-10 h-10 object-cover object-top rounded-none border border-white/20"/>
+              <div>
+                <p class="text-[11px] font-black uppercase tracking-widest text-white">Sarah T.</p>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Science Major</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 2 -->
+          <div class="bg-white/5 border border-white/10 p-8 sm:p-10 backdrop-blur-sm rounded-none hover:bg-white/10 transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex gap-1 mb-6 text-yellow-500">
+                <svg v-for="i in 5" :key="i" class="w-3 h-3 sm:w-4 sm:h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <p class="text-[13px] sm:text-[14px] text-zinc-300 font-medium leading-relaxed mb-8">
+                "I love how straight to the point the analytics are. Identifying my weak spots in Chemistry saved me weeks of blind studying."
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <img src="/testi-2.jpg" alt="Sarah T." class="w-10 h-10 object-cover object-top rounded-none border border-white/20"/>
+              <div>
+                <p class="text-[11px] font-black uppercase tracking-widest text-white">David O.</p>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">University Aspirant</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card 3 -->
+          <div class="bg-white/5 border border-white/10 p-8 sm:p-10 backdrop-blur-sm rounded-none hover:bg-white/10 transition-colors flex flex-col justify-between">
+            <div>
+              <div class="flex gap-1 mb-6">
+                <!-- 4 Stars yellow, 1 star gray -->
+                <svg v-for="i in 4" :key="'y'+i" class="w-3 h-3 sm:w-4 sm:h-4 fill-current text-yellow-500" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                <svg class="w-3 h-3 sm:w-4 sm:h-4 fill-current text-white/10" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+              </div>
+              <p class="text-[13px] sm:text-[14px] text-zinc-300 font-medium leading-relaxed mb-8">
+                "The interface is so clean and distraction-free. It literally just forces you to focus. Exactly what a serious student needs."
+              </p>
+            </div>
+            <div class="flex items-center gap-4">
+              <img src="/testi-3.jpg" alt="Michael E." class="w-10 h-10 object-cover object-[center_30%] rounded-none border border-white/20"/>
+              <div>
+                <p class="text-[11px] font-black uppercase tracking-widest text-white">Michael E.</p>
+                <p class="text-[9px] font-bold uppercase tracking-widest text-zinc-500">Engineering Bound</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

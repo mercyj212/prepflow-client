@@ -186,7 +186,7 @@
             <!-- Loading Indicator -->
             <div v-if="isLoading" class="flex items-end gap-3 justify-start">
               <div class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 overflow-hidden shrink-0 hidden sm:block">
-                 <img src="/ai-tutor.png" class="w-full h-full object-cover">
+                 <img src="/ai-tutor.jpg" class="w-full h-full object-cover">
               </div>
               <div class="max-w-[85%] p-5 rounded-[24px] rounded-tl-sm bg-zinc-50 dark:bg-zinc-800/80 shadow-neo border border-zinc-200/50 dark:border-white/5 flex gap-1.5 items-center">
                 <span class="w-1.5 h-1.5 bg-brand rounded-full animate-bounce" style="animation-delay: 0ms"></span>
@@ -588,7 +588,7 @@ const getConvoTitle = (convo) => {
 const getConvoImage = (convo) => {
   if (convo.course) return `https://api.dicebear.com/7.x/initials/svg?seed=${convo.course.title}&backgroundColor=3b82f6`;
   if (convo.isGlobal) return 'https://api.dicebear.com/7.x/initials/svg?seed=Gl&backgroundColor=9333ea';
-  if (convo.isAI) return '/ai-tutor.png';
+  if (convo.isAI) return '/ai-tutor.jpg';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
   return other?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${other?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
@@ -602,7 +602,7 @@ const getConvoIconStyle = (convo) => {
 };
 
 const getMessageAvatar = (msg) => {
-  if (msg.isModel) return '/ai-tutor.png';
+  if (msg.isModel) return '/ai-tutor.jpg';
   return msg.sender?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${msg.sender?.fullName || 'U'}&backgroundColor=3f3f46`;
 };
 
