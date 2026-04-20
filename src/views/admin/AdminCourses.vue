@@ -6,8 +6,12 @@
         <h1 class="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter mb-4">
           Course <span class="text-brand">Management</span>
         </h1>
+        <div class="flex items-center gap-3 py-2 px-4 bg-brand/5 border border-brand/10 rounded-2xl w-fit mb-4">
+          <ShieldCheck :size="16" class="text-brand" />
+          <span class="text-[10px] font-black uppercase tracking-widest text-brand">Standardized Path: Polytechnic / School of ICT / Computer Science / ND1</span>
+        </div>
         <p class="text-sm text-zinc-500 font-medium leading-relaxed">
-          Manage your academic materials with hierarchical depth. Create, filter, and organize courses by institution type, faculty, department, and level.
+          Manage academic materials for the standardized Computer Science ND1 curriculum. Dashboard is currently optimized for this controlled path.
         </p>
       </div>
       
@@ -134,7 +138,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Plus, Book, Edit3, Trash2, Search, Filter } from 'lucide-vue-next';
+import { Plus, Book, Edit3, Trash2, Search, Filter, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../../components/common/NeoCard.vue';
 import CourseCreator from '../../components/Admin/CourseCreator.vue';
 import { useAdminStore } from '../../store/admin';
@@ -145,10 +149,10 @@ const showCreator = ref(false);
 const loading = ref(false);
 
 const filters = ref({
-  path: '',
+  path: 'polytechnic',
   faculty: '',
   department: '',
-  level: ''
+  level: 'ND1'
 });
 
 const faculties = ref([]);
@@ -172,14 +176,17 @@ const availableLevels = computed(() => {
 });
 
 const onPathChange = async () => {
-  filters.value.faculty = '';
-  filters.value.department = '';
-  filters.value.level = '';
-  departments.value = [];
   if (filters.value.path) {
     try {
       const { data } = await api.get(`/faculties?path=${filters.value.path}`);
       faculties.value = data;
+      
+      // Auto-select School of ICT if it exists
+      const ict = data.find(f => f.name.toLowerCase().includes('ict'));
+      if (ict) {
+        filters.value.faculty = ict._id;
+        await onFacultyChange();
+      }
     } catch (err) { faculties.value = []; }
   } else {
     faculties.value = [];
@@ -187,11 +194,16 @@ const onPathChange = async () => {
 };
 
 const onFacultyChange = async () => {
-  filters.value.department = '';
   if (filters.value.faculty) {
     try {
       const { data } = await api.get(`/departments?faculty=${filters.value.faculty}`);
       departments.value = data;
+      
+      // Auto-select Computer Science if it exists
+      const cs = data.find(d => d.name.toLowerCase().includes('computer science'));
+      if (cs) {
+        filters.value.department = cs._id;
+      }
     } catch (err) { departments.value = []; }
   } else {
     departments.value = [];
@@ -226,8 +238,9 @@ const handleEdit = (course) => {
   alert('Edit logic coming soon');
 };
 
-onMounted(() => {
-  adminStore.fetchCoreData();
+onMounted(async () => {
+  await adminStore.fetchCoreData();
+  await onPathChange();
 });
 </script>
 

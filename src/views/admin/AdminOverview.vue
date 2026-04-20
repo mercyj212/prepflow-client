@@ -6,6 +6,13 @@
       <NeoLoader label="Loading Analytics..." class="text-zinc-400 dark:text-zinc-600" />
     </div>
     <div v-else>
+      <div class="flex items-center gap-3 py-3 px-5 bg-brand/10 border-l-4 border-brand rounded-r-2xl w-fit mb-8 shadow-sm">
+        <ShieldCheck :size="18" class="text-brand" />
+        <div>
+          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white block">Controlled Curriculum Mode</span>
+          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / ICT / CS / ND1</span>
+        </div>
+      </div>
       <AnalyticsGrid 
         :loading="adminStore.loading"
         :courses-count="adminStore.courses.length"
@@ -24,6 +31,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import { ShieldCheck } from 'lucide-vue-next';
 import { useAdminStore } from '../../store/admin';
 import api from '../../api/axios';
 import AnalyticsGrid from '../../components/Admin/AnalyticsGrid.vue';

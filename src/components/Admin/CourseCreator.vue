@@ -24,41 +24,34 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <!-- Institution Type -->
-          <div class="space-y-2">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Institution Type</label>
-            <select v-model="form.path" required @change="onPathChange" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all outline-none appearance-none">
-              <option value="" disabled>Choose Type</option>
-              <option value="university">University</option>
+          <div class="space-y-2 opacity-60">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Institution Type (Locked)</label>
+            <select v-model="form.path" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
               <option value="polytechnic">Polytechnic</option>
             </select>
           </div>
 
           <!-- Faculty -->
-          <div class="space-y-2">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">
-              {{ form.path === 'polytechnic' ? 'School / Faculty' : 'Faculty' }}
-            </label>
-            <select v-model="form.faculty" @change="onFacultyChange" required :disabled="!form.path" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all outline-none appearance-none disabled:opacity-40">
-              <option value="" disabled>Choose Faculty</option>
+          <div class="space-y-2 opacity-60">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">School / Faculty (Locked)</label>
+            <select v-model="form.faculty" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
               <option v-for="f in faculties" :key="f._id" :value="f._id">{{ f.name }}</option>
             </select>
           </div>
 
           <!-- Department -->
-          <div class="space-y-2">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Department</label>
-            <select v-model="form.department" required :disabled="!form.faculty" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all outline-none appearance-none disabled:opacity-40">
-              <option value="" disabled>Choose Dept</option>
+          <div class="space-y-2 opacity-60">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Department (Locked)</label>
+            <select v-model="form.department" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
               <option v-for="d in departments" :key="d._id" :value="d._id">{{ d.name }}</option>
             </select>
           </div>
 
           <!-- Level -->
-          <div class="space-y-2">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Academic Level</label>
-            <select v-model="form.level" required :disabled="!form.path" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all outline-none appearance-none disabled:opacity-40">
-              <option value="" disabled>Choose Level</option>
-              <option v-for="l in availableLevels" :key="l" :value="l">{{ l }}</option>
+          <div class="space-y-2 opacity-60">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Academic Level (Locked)</label>
+            <select v-model="form.level" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
+              <option value="ND1">ND1</option>
             </select>
           </div>
         </div>
@@ -109,7 +102,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue';
+import { ref, computed, watch, onMounted } from 'vue';
 import { BookPlus, ArrowRight } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 import api from '../../api/axios';
@@ -127,10 +120,10 @@ const form = ref({
   title: '',
   code: '',
   description: '',
-  path: '',
+  path: 'polytechnic',
   faculty: '',
   department: '',
-  level: '',
+  level: 'ND1',
   notifyStudents: false
 });
 
@@ -174,23 +167,34 @@ const onFacultyChange = async () => {
 };
 
 // Automatic level detection from course title/code
-watch(() => form.value.title, (newTitle) => {
-  if (!newTitle) return;
-  const match = newTitle.match(/\d/);
-  if (match) {
-    const num = match[0];
-    const isPoly = form.value.path === 'polytechnic';
-    if (num === '1') form.value.level = isPoly ? 'ND1' : '100L';
-    else if (num === '2') form.value.level = isPoly ? 'ND2' : '200L';
+onMounted(async () => {
+  if (form.value.path) {
+    try {
+      const { data } = await api.get(`/faculties?path=${form.value.path}`);
+      faculties.value = data;
+      
+      const ict = data.find(f => f.name.toLowerCase().includes('ict'));
+      if (ict) {
+        form.value.faculty = ict._id;
+        // Fetch departments
+        const { data: dData } = await api.get(`/departments?faculty=${ict._id}`);
+        departments.value = dData;
+        const cs = dData.find(d => d.name.toLowerCase().includes('computer science'));
+        if (cs) {
+          form.value.department = cs._id;
+        }
+      }
+    } catch (err) { console.error('Creator Setup Error:', err); }
   }
 });
 
 const handleSubmit = () => {
   const payload = { ...form.value };
   emit('create', payload);
-  // Reset fields
-  form.value = { title: '', code: '', description: '', path: '', faculty: '', department: '', level: '', notifyStudents: false };
-  faculties.value = [];
-  departments.value = [];
+  // Reset non-locked fields only
+  form.value.title = '';
+  form.value.code = '';
+  form.value.description = '';
+  form.value.notifyStudents = false;
 };
 </script>

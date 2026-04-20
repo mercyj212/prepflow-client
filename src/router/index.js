@@ -29,6 +29,7 @@ import PracticeLandingView from '../views/PracticeLandingView.vue';
 import SettingsView from '../views/SettingsView.vue';
 import ChatView from '../views/ChatView.vue';
 import GamesView from '../views/GamesView.vue';
+import PrepDriveView from '../views/PrepDriveView.vue';
 import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
 import DepartmentHubView from '../views/DepartmentHubView.vue';
 import DepartmentListView from '../views/DepartmentListView.vue';
@@ -185,6 +186,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/games/prepdrive',
+    name: 'prepdrive',
+    component: PrepDriveView,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'not-found',
     component: NotFoundView,
@@ -206,7 +213,7 @@ router.beforeEach((to, from) => {
   }
 
   if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
-    return '/dashboard';
+    return to.path.startsWith('/games') ? '/games' : '/dashboard';
   }
   
   if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
