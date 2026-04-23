@@ -18,26 +18,22 @@
           <NeoCard 
             @click="handlePrepDriveClick" 
             variant="extruded" 
-            class="group !rounded-[32px] p-8 flex flex-col transition-all relative overflow-hidden h-[360px]"
-            :class="!isAdmin ? 'bg-zinc-50/70 dark:bg-zinc-900/60 border-zinc-200 dark:border-white/5 cursor-pointer' : 'bg-zinc-50 dark:bg-zinc-900 hover:border-brand/50 dark:hover:border-brand/30 border-zinc-100 dark:border-white/5 cursor-pointer'"
+            class="group !rounded-[32px] p-8 flex flex-col transition-all relative overflow-hidden h-[360px] bg-zinc-50 dark:bg-zinc-900 hover:border-brand/50 dark:hover:border-brand/30 border-zinc-100 dark:border-white/5 cursor-pointer"
           >
             <div class="absolute top-0 right-0 w-48 h-48 bg-brand/10 dark:bg-brand/20 blur-3xl rounded-full translate-x-16 -translate-y-16"></div>
             
-            <div class="w-16 h-16 rounded-[24px] bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center shadow-neo-inner transition-transform duration-500 mb-auto relative z-10" :class="isAdmin ? 'group-hover:scale-110 group-hover:-rotate-6' : ''">
-               <Gamepad2 v-if="isAdmin" :size="32" :stroke-width="1.5" />
-               <Lock v-else :size="28" :stroke-width="1.5" class="text-zinc-400 dark:text-zinc-600" />
+            <div class="w-16 h-16 rounded-[24px] bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 flex items-center justify-center shadow-neo-inner transition-transform duration-500 mb-auto relative z-10 group-hover:scale-110 group-hover:-rotate-6">
+               <Gamepad2 :size="32" :stroke-width="1.5" />
             </div>
             
-            <!-- "Under Development" Badge -->
-            <div v-if="!isAdmin" class="absolute top-6 right-6 z-20">
-              <div class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-500 font-bold text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-sm">
-                <span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
-                In Development
+            <div class="absolute top-6 right-6 z-20">
+              <div class="px-3 py-1 rounded-full bg-brand/10 dark:bg-brand/20 border border-brand/20 dark:border-brand/30 text-brand font-bold text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-sm">
+                <span class="w-1.5 h-1.5 rounded-full bg-brand animate-pulse"></span>
+                Active Mission
               </div>
             </div>
             
-            <!-- Opacity dimming if restricted -->
-            <div class="mt-8 relative z-10 transition-all duration-300" :class="!isAdmin ? 'opacity-80' : ''">
+            <div class="mt-8 relative z-10 transition-all duration-300">
               <h3 class="text-xl font-medium text-zinc-800 dark:text-zinc-100 mb-2">PrepDrive</h3>
               <p class="text-[13px] text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
                 A quiz-based driving game where you move into the lane of the correct answer.
@@ -46,7 +42,6 @@
               <div class="flex items-center justify-between">
                 <span class="text-[10px] font-black uppercase tracking-widest text-brand">Read. Choose. Drive. Learn.</span>
                 <div 
-                  v-if="isAdmin"
                   class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-700 flex items-center justify-center bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 group-hover:scale-110 transition-transform shadow-lg shadow-black/10 dark:shadow-white/10"
                 >
                   <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
@@ -221,11 +216,6 @@ const showPrepDriveModal = ref(false);
 const showComingSoonToast = ref(false);
 
 const handlePrepDriveClick = () => {
-  if (isAdmin.value) {
-    showPrepDriveModal.value = true;
-  } else {
-    showComingSoonToast.value = true;
-    setTimeout(() => { showComingSoonToast.value = false; }, 4000);
-  }
+  showPrepDriveModal.value = true;
 };
 </script>

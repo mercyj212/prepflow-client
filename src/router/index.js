@@ -189,7 +189,7 @@ const routes = [
     path: '/games/prepdrive',
     name: 'prepdrive',
     component: PrepDriveView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAdmin: false }
   },
   {
     path: '/:pathMatch(.*)*',
