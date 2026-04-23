@@ -1,10 +1,16 @@
 <template>
   <NeoCard variant="depressed" class="p-8">
-    <h2 class="text-xl font-semibold mb-8 flex items-center gap-3 text-zinc-900 dark:text-zinc-100 uppercase tracking-widest text-[11px] font-black">
-      <div class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-        <ClipboardList :size="16" class="text-zinc-500" />
+    <h2 class="text-xl font-semibold mb-8 flex items-center justify-between text-zinc-900 dark:text-zinc-100 uppercase tracking-widest text-[11px] font-black">
+      <div class="flex items-center gap-3">
+        <div class="w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+          <ClipboardList :size="16" class="text-zinc-500" />
+        </div>
+        Add Practice Test
       </div>
-      Add Practice Test
+      <div class="flex items-center gap-2 px-3 py-1 bg-brand/10 text-brand rounded-full text-[8px]">
+        <ShieldCheck :size="10" />
+        <span>CONTROLLED MODE</span>
+      </div>
     </h2>
     <form @submit.prevent="handleSubmit" class="space-y-6">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -51,7 +57,7 @@
 
 <script setup>
 import { ref, computed } from 'vue';
-import { ClipboardList, ArrowRight, ChevronDown } from 'lucide-vue-next';
+import { ClipboardList, ArrowRight, ChevronDown, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 
 const props = defineProps({
@@ -65,7 +71,7 @@ const levels = ['100L', '200L', '300L', '400L', '500L', 'ND1', 'ND2', 'HND1', 'H
 
 const form = ref({
   course: '',
-  level: '',
+  level: 'ND1',
   title: '',
   timeLimit: 30
 });

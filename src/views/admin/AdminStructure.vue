@@ -1,11 +1,21 @@
 <template>
   <div class="p-4 md:p-10 max-w-[1700px] mx-auto animate-fade-inShadow space-y-10 md:space-y-16">
     <!-- Header Strategy -->
-    <div class="max-w-2xl">
-      <h1 class="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter mb-4">Academic <span class="text-brand">Structure</span></h1>
-      <p class="text-sm text-zinc-500 font-medium leading-relaxed">
-        Manage the foundational taxonomy of your institution. Define Institution Types, Faculties, Schools, and Departments to create a robust structural base for your courses.
-      </p>
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div class="max-w-2xl">
+        <h1 class="text-3xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter mb-4">Academic <span class="text-brand">Structure</span></h1>
+        <p class="text-sm text-zinc-500 font-medium leading-relaxed">
+          Manage the foundational taxonomy of your institution. Define Institution Types, Faculties, Schools, and Departments to create a robust structural base for your courses.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3 py-3 px-5 bg-brand/10 border-l-4 border-brand rounded-r-2xl w-fit shadow-sm shrink-0">
+        <ShieldCheck :size="18" class="text-brand" />
+        <div>
+          <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white block">Controlled Curriculum Mode</span>
+          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / ICT / CS / ND1</span>
+        </div>
+      </div>
     </div>
 
     <!-- Hierarchy Stepper Layout -->
@@ -64,7 +74,7 @@
 </template>
 
 <script setup>
-import { Settings2 } from 'lucide-vue-next';
+import { Settings2, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../../components/common/NeoCard.vue';
 import FacultyManager from '../../components/Admin/FacultyManager.vue';
 import DepartmentManager from '../../components/Admin/DepartmentManager.vue';

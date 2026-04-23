@@ -55,7 +55,13 @@
             <Building2 :size="18" :stroke-width="1.5" class="text-amber-500" />
           </div>
           <div>
-            <p class="text-[14px] font-bold text-zinc-900 dark:text-zinc-100">{{ fac.name }}</p>
+            <div class="flex items-center gap-2">
+              <p class="text-[14px] font-bold text-zinc-900 dark:text-zinc-100">{{ fac.name }}</p>
+              <div v-if="fac.name === 'School of ICT'" class="px-2 py-0.5 bg-brand/10 text-brand rounded-full text-[7px] font-black uppercase tracking-tighter flex items-center gap-1">
+                <ShieldCheck :size="8" />
+                <span>Standard Path</span>
+              </div>
+            </div>
             <p class="text-[10px] font-black text-zinc-400 uppercase tracking-widest">
               {{ fac.path === 'entrance' ? 'Exam Track' : fac.path }}
             </p>
@@ -74,7 +80,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Plus, Building2, Trash2 } from 'lucide-vue-next';
+import { Plus, Building2, Trash2, ShieldCheck } from 'lucide-vue-next';
 import api from '../../api/axios';
 import NeoCard from '../common/NeoCard.vue';
 
