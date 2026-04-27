@@ -14,9 +14,24 @@
           <p class="text-[15px] font-medium text-zinc-500 dark:text-zinc-500 mt-2">A high-fidelity breakdown of your performance and academic rationales.</p>
         </header>
 
-        <div v-if="loading && !result" class="flex-1 flex flex-col items-center justify-center py-20 gap-6">
-          <NeoLoader color="currentColor" size="large" />
-          <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Syncing Intelligence Data...</p>
+        <div v-if="loading && !result" class="flex flex-col xl:flex-row gap-12 lg:gap-16 mt-8">
+            <div class="flex-[1.2] min-w-0 flex flex-col gap-14">
+                <BaseSkeleton height="280px" customClass="!rounded-[28px]" />
+                <div class="flex flex-col gap-6">
+                    <BaseSkeleton height="24px" width="120px" />
+                    <div class="flex gap-8 border-b border-zinc-800 pb-[10px]">
+                        <BaseSkeleton height="14px" width="80px" />
+                        <BaseSkeleton height="14px" width="80px" />
+                    </div>
+                    <div class="space-y-4">
+                        <BaseSkeleton height="120px" customClass="!rounded-[24px]" v-for="i in 3" :key="i" />
+                    </div>
+                </div>
+            </div>
+            <div class="flex-[0.8] min-w-0 flex flex-col gap-8">
+                <BaseSkeleton height="24px" width="100px" />
+                <BaseSkeleton height="400px" customClass="!rounded-[32px]" />
+            </div>
         </div>
 
         <template v-else>
@@ -225,7 +240,7 @@ import { useQuizStore } from '../store/quiz';
 import { AlertCircle, Zap } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 
 const route = useRoute();
 const router = useRouter();

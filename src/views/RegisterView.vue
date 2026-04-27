@@ -81,6 +81,28 @@
       </div>
     </div>
 
+    <!-- SESSION ACTIVE OVERLAY -->
+    <div v-if="authStore.isAuthenticated" class="fixed inset-0 z-[220] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
+      <div class="absolute inset-0 bg-white/80 dark:bg-zinc-950/80 backdrop-blur-xl"></div>
+      <div class="relative bg-white dark:bg-zinc-900 w-full max-w-md rounded-[40px] p-12 border border-zinc-100 dark:border-zinc-800 shadow-2xl text-center">
+        <div class="w-24 h-24 rounded-full bg-brand/10 flex items-center justify-center mx-auto mb-8 border border-brand/20">
+          <User :size="48" class="text-brand" />
+        </div>
+        <h3 class="text-3xl font-black text-zinc-900 dark:text-white tracking-tighter mb-4">Account Active</h3>
+        <p class="text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed">
+          You are currently signed in as <span class="font-bold text-zinc-900 dark:text-white">{{ authStore.user?.fullName }}</span>.
+        </p>
+        <div class="flex flex-col gap-4">
+          <button @click="router.push('/dashboard')" class="w-full py-4 bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-2xl hover:scale-[1.02] active:scale-95 transition-all shadow-xl">
+            Continue to Dashboard
+          </button>
+          <button @click="handleSignOut" class="w-full py-4 border border-zinc-200 dark:border-zinc-800 text-zinc-500 font-bold uppercase tracking-widest text-[10px] rounded-2xl hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all">
+            Sign out and create new account
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- MAIN INTERFACE -->
     <div class="flex-grow flex">
       <!-- Left panel - Branding -->
@@ -221,7 +243,8 @@ import {
   ArrowRight, 
   AlertCircle,
   X,
-  Fingerprint
+  Fingerprint,
+  User
 } from 'lucide-vue-next';
 import { useAuthStore } from '../store/auth';
 import { useRouter } from 'vue-router';
@@ -268,6 +291,11 @@ const handleDigitInput = (e, index) => {
 };
 const handleDigitDelete = (e, index) => {
   if (!otpInputs.value[index] && index > 0) nextTick(() => digitRefs.value[index - 1].focus());
+};
+
+const handleSignOut = async () => {
+  await authStore.logout();
+  router.push('/register');
 };
 
 const handleRegister = async () => {

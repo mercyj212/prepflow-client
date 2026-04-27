@@ -7,7 +7,11 @@
           <p class="text-[15px] font-normal text-zinc-500 dark:text-zinc-500">Analyze your historical performance matrices.</p>
         </header>
 
-        <NeoLoader v-if="quizStore.loading && !metrics" label="Loading analytics..." />
+        <!-- Loading Skeleton -->
+        <div v-if="quizStore.loading && !metrics" class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <BaseSkeleton height="320px" customClass="!rounded-[28px]" v-for="i in 2" :key="i" />
+            <BaseSkeleton height="150px" customClass="md:col-span-2 !rounded-[28px]" />
+        </div>
 
         <div v-else-if="metrics" class="grid grid-cols-1 md:grid-cols-2 gap-8">
            <!-- Chart 1: Performance Over Time -->
@@ -66,9 +70,9 @@
 <script setup>
 import { computed, onMounted } from 'vue';
 import { LineChart as LineChartIcon, Target, Microscope } from 'lucide-vue-next';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
 import { useQuizStore } from '../store/quiz';
 
 import {

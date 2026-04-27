@@ -216,13 +216,14 @@ router.beforeEach((to, from) => {
     return to.path.startsWith('/games') ? '/games' : '/dashboard';
   }
   
-  if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
-    if (authStore.user && authStore.user.role === 'admin') {
-      return '/admin';
-    } else {
-      return '/dashboard';
-    }
-  }
+  // Handled inside components for better UX
+  // if ((to.path === '/login' || to.path === '/register') && authStore.isAuthenticated) {
+  //   if (authStore.user && authStore.user.role === 'admin') {
+  //     return '/admin';
+  //   } else {
+  //     return '/dashboard';
+  //   }
+  // }
   
   return true; // proceed
 });

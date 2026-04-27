@@ -38,7 +38,18 @@
       </div>
 
       <!-- Loading -->
-      <NeoLoader v-if="loadingCourses" :label="path === 'entrance' ? 'Loading subjects...' : 'Loading courses...'" />
+      <!-- Loading Skeleton -->
+      <div v-if="loadingCourses" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+        <div v-for="i in 6" :key="i" class="p-8 h-64 rounded-[32px] border border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50">
+            <div class="flex justify-between mb-8">
+                <BaseSkeleton width="56px" height="56px" customClass="!rounded-[22px]" />
+                <BaseSkeleton width="80px" height="32px" customClass="rounded-full" />
+            </div>
+            <BaseSkeleton width="75%" height="24px" customClass="mb-4" />
+            <BaseSkeleton width="100%" height="16px" customClass="mb-2" />
+            <BaseSkeleton width="66%" height="16px" />
+        </div>
+      </div>
 
       <!-- Empty State -->
       <div v-else-if="courses.length === 0" class="py-32 text-center">
@@ -102,9 +113,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { ArrowRight, Book } from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import api from '../api/axios';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const router = useRouter();

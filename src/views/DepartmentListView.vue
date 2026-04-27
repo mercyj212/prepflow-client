@@ -20,8 +20,14 @@
         </p>
       </header>
 
-      <!-- Loading -->
-      <NeoLoader v-if="loading" :label="path === 'entrance' ? 'Loading years...' : 'Loading departments...'" />
+      <!-- Loading Skeleton -->
+      <div v-if="loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div v-for="i in 6" :key="i" class="p-8 h-48 rounded-[32px] border border-zinc-100 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-900/50">
+            <BaseSkeleton width="56px" height="56px" customClass="!rounded-[22px] mb-8" />
+            <BaseSkeleton width="75%" height="24px" customClass="mb-3" />
+            <BaseSkeleton width="50%" height="16px" />
+        </div>
+      </div>
 
       <!-- Empty State -->
       <div v-else-if="departments.length === 0" class="py-32 text-center">
@@ -74,9 +80,9 @@ import { useRoute, useRouter } from 'vue-router';
 import { ArrowRight, Layers } from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import api from '../api/axios';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
 
 const route = useRoute();
 const router = useRouter();

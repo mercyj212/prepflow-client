@@ -14,9 +14,23 @@
       </header>
 
       <!-- FEATURED GRID -->
-      <div v-if="quizStore.loading" class="flex flex-col items-center justify-center py-20 gap-6">
-        <NeoLoader color="#14b8a6" size="large" />
-        <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Loading your lessons...</p>
+      <!-- Loading Skeleton -->
+      <div v-if="quizStore.loading" class="space-y-16">
+        <section>
+          <BaseSkeleton width="120px" height="16px" customClass="mb-8" />
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <BaseSkeleton height="180px" customClass="!rounded-[28px]" v-for="i in 3" :key="i" />
+          </div>
+        </section>
+        <section>
+          <div class="flex justify-between mb-8">
+            <BaseSkeleton width="150px" height="16px" />
+            <BaseSkeleton width="100px" height="16px" />
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <BaseSkeleton height="280px" customClass="!rounded-[32px]" v-for="i in 3" :key="i" />
+          </div>
+        </section>
       </div>
 
       <div v-else class="space-y-16">
@@ -118,7 +132,7 @@ import {
 import { useQuizStore } from '../store/quiz';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 
 const router = useRouter();
 const quizStore = useQuizStore();

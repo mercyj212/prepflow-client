@@ -11,7 +11,33 @@
           <p class="text-[15px] font-medium text-zinc-500 dark:text-zinc-500">A summary of your recent study history and progress.</p>
         </header>
 
-        <NeoLoader v-if="quizStore.loading" label="Loading dashboard..." />
+        <div v-if="loading" class="flex flex-col lg:flex-row gap-12 lg:gap-16">
+            <!-- Left Side / Stats Skeleton -->
+            <div class="flex-[1.2] min-w-0 flex flex-col gap-14">
+                <div>
+                    <BaseSkeleton height="24px" width="120px" customClass="mb-4" />
+                    <BaseSkeleton height="280px" customClass="!rounded-[28px]" />
+                </div>
+                <div class="flex flex-col gap-6">
+                    <BaseSkeleton height="24px" width="100px" />
+                    <div class="flex gap-8 border-b border-zinc-800 pb-[10px]">
+                        <BaseSkeleton height="14px" width="60px" />
+                        <BaseSkeleton height="14px" width="60px" />
+                        <BaseSkeleton height="14px" width="60px" />
+                    </div>
+                    <div class="flex gap-6 mt-4">
+                        <BaseSkeleton height="100px" customClass="flex-1 !rounded-[18px]" />
+                        <BaseSkeleton height="100px" customClass="flex-1 !rounded-[18px]" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side Skeleton -->
+            <div class="flex-[1] min-w-0 flex flex-col gap-4">
+                <BaseSkeleton height="45px" customClass="!rounded-[18px]" />
+                <BaseSkeleton height="400px" customClass="!rounded-[32px]" />
+            </div>
+        </div>
 
         <template v-else>
           <div class="flex flex-col lg:flex-row gap-12 lg:gap-16">
@@ -73,6 +99,8 @@
                      </NeoCard>
                    </div>
                    
+
+
                    <div class="flex-1 flex flex-col gap-2 w-full">
                      <span class="text-[12px] font-bold uppercase tracking-widest text-zinc-400 px-2">Learning Streak</span>
                      <NeoCard variant="depressed" class="!rounded-[18px] flex flex-col p-5 border-[0.5px] border-black/5 dark:border-white/5">
@@ -189,13 +217,14 @@ import { useAuthStore } from '../store/auth';
 import { useQuizStore } from '../store/quiz';
 import { useRouter } from 'vue-router';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
-import NeoLoader from '../components/common/NeoLoader.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 
 const authStore = useAuthStore();
 const quizStore = useQuizStore();
 const router = useRouter();
 
+const loading = ref(true);
 const currentTab = ref('progress');
 
 const user = computed(() => authStore.user);
@@ -252,9 +281,14 @@ const subjects = computed(() => {
   });
 });
 
-onMounted(() => {
-  quizStore.fetchQuizzes();
-  quizStore.fetchMySubmissions();
+onMounted(async () => {
+  loading.value = true;
+  await Promise.all([
+    quizStore.fetchQuizzes(),
+    quizStore.fetchMySubmissions(),
+    new Promise(resolve => setTimeout(resolve, 400)) // Artificial delay for visual stability
+  ]);
+  loading.value = false;
 });
 
 const formatDate = (value) => {

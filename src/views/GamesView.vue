@@ -112,6 +112,48 @@
               </div>
             </div>
           </NeoCard>
+          <!-- End of Game Cards Grid -->
+        </div>
+
+        <!-- Leaderboard Section (Moved Below) -->
+        <div class="mt-12 mb-8">
+          <div class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-[12px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner">
+                <Trophy class="w-5 h-5 text-zinc-800 dark:text-zinc-100" />
+              </div>
+              <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">Top Drivers</h2>
+            </div>
+          </div>
+          
+          <NeoCard variant="extruded" class="!rounded-[32px] p-6 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
+            <div v-if="loadingLeaderboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-for="i in 3" :key="i" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-100 dark:border-white/5 animate-pulse">
+                <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"></div>
+                <div class="flex-1 space-y-2">
+                    <div class="h-4 bg-zinc-200 dark:bg-zinc-800 w-2/3 rounded"></div>
+                    <div class="h-3 bg-zinc-200 dark:bg-zinc-800 w-1/3 rounded"></div>
+                </div>
+              </div>
+            </div>
+            <div v-else-if="leaderboard.length === 0" class="text-sm text-zinc-500 text-center py-10">
+              No scores recorded yet. Be the first!
+            </div>
+            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div v-for="(player, idx) in leaderboard" :key="idx" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-colors hover:border-zinc-200 dark:hover:border-zinc-600">
+                <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-600 dark:text-zinc-400">
+                  {{ idx + 1 }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-base font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ player.firstName }} {{ player.lastName }}</p>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span class="text-sm text-emerald-500 dark:text-emerald-400 font-mono">{{ player.prepDriveScore?.toLocaleString() || 0 }} pts</span>
+                    <span class="text-[11px] text-zinc-400 dark:text-zinc-500">• {{ player.prepDriveAwards || 0 }} awards</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </NeoCard>
         </div>
       </section>
 
@@ -135,24 +177,24 @@
             <h4 class="text-sm font-black uppercase tracking-[0.2em] text-zinc-400 mb-5">How to play</h4>
             <ul class="space-y-4 mb-8">
               <li class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 mt-0.5">1</span>
-                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Read the question carefully.</p>
+                <span class="w-6 h-6 rounded-full bg-zinc-900 dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-zinc-900 shrink-0 mt-0.5 shadow-md">1</span>
+                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Tap <strong class="text-zinc-800 dark:text-zinc-100">Start Game</strong> to launch the simulation.</p>
               </li>
               <li class="flex items-start gap-4">
                 <span class="w-6 h-6 rounded-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 mt-0.5">2</span>
-                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Memorize the correct option.</p>
+                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Steer left or right to dodge traffic and obstacles.</p>
               </li>
               <li class="flex items-start gap-4">
-                <span class="w-6 h-6 rounded-full bg-zinc-900 dark:bg-white flex items-center justify-center text-[10px] font-bold text-white dark:text-zinc-900 shrink-0 mt-0.5 shadow-md">3</span>
-                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Tap <strong class="text-zinc-800 dark:text-zinc-100">Start Game</strong>.</p>
+                <span class="w-6 h-6 rounded-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 mt-0.5">3</span>
+                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Reach a glowing checkpoint gateway to trigger a question.</p>
               </li>
               <li class="flex items-start gap-4">
                 <span class="w-6 h-6 rounded-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 mt-0.5">4</span>
-                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Drive into lane A, B, C, or D.</p>
+                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Answer correctly to boost speed and earn shield charges.</p>
               </li>
               <li class="flex items-start gap-4">
                 <span class="w-6 h-6 rounded-full bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-[10px] font-bold text-zinc-500 shrink-0 mt-0.5">5</span>
-                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Pick the correct lane to score points.</p>
+                <p class="text-[13px] text-zinc-600 dark:text-zinc-300 pt-0.5 font-medium">Avoid collisions to keep your lives and momentum.</p>
               </li>
             </ul>
 
@@ -204,7 +246,8 @@ import {
   Lock, 
   ArrowRight,
   Gamepad2,
-  X
+  X,
+  Trophy
 } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
@@ -218,4 +261,28 @@ const showComingSoonToast = ref(false);
 const handlePrepDriveClick = () => {
   showPrepDriveModal.value = true;
 };
+
+// Leaderboard state and fetch
+const leaderboard = ref([]);
+const loadingLeaderboard = ref(true);
+
+import api from '../api/axios';
+
+const fetchLeaderboard = async () => {
+  try {
+    const res = await api.get('/game/leaderboard');
+    if (res.data.success) {
+      leaderboard.value = res.data.data;
+    }
+  } catch (err) {
+    console.error('Failed to fetch leaderboard:', err);
+  } finally {
+    loadingLeaderboard.value = false;
+  }
+};
+
+import { onMounted } from 'vue';
+onMounted(() => {
+  fetchLeaderboard();
+});
 </script>
