@@ -127,7 +127,7 @@
           </div>
           
           <NeoCard variant="extruded" class="!rounded-[32px] p-6 bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800">
-            <div v-if="loadingLeaderboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-if="loadingLeaderboard" class="flex flex-col gap-4">
               <div v-for="i in 3" :key="i" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/20 border border-zinc-100 dark:border-white/5 animate-pulse">
                 <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 shrink-0"></div>
                 <div class="flex-1 space-y-2">
@@ -139,13 +139,13 @@
             <div v-else-if="leaderboard.length === 0" class="text-sm text-zinc-500 text-center py-10">
               No scores recorded yet. Be the first!
             </div>
-            <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div v-else class="flex flex-col gap-4">
               <div v-for="(player, idx) in leaderboard" :key="idx" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-colors hover:border-zinc-200 dark:hover:border-zinc-600">
                 <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-600 dark:text-zinc-400">
                   {{ idx + 1 }}
                 </div>
                 <div class="flex-1 min-w-0">
-                  <p class="text-base font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ player.firstName }} {{ player.lastName }}</p>
+                  <p class="text-base font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ player.fullName }}</p>
                   <div class="flex items-center gap-2 mt-1">
                     <span class="text-sm text-emerald-500 dark:text-emerald-400 font-mono">{{ player.prepDriveScore?.toLocaleString() || 0 }} pts</span>
                     <span class="text-[11px] text-zinc-400 dark:text-zinc-500">• {{ player.prepDriveAwards || 0 }} awards</span>

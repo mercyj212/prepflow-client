@@ -112,13 +112,26 @@
             <p class="text-zinc-500 uppercase text-[10px] tracking-[0.5em] font-bold mb-12">CHOOSE YOUR STARTING DIFFICULTY</p>
             
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
-                <div v-for="lvl in 5" :key="lvl" 
-                     @click="startAtLevel(lvl)"
-                     class="group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl hover:border-white hover:bg-zinc-800 transition-all duration-300">
-                    <div class="text-4xl font-black mb-2 group-hover:scale-110 transition-transform" :class="lvl === 1 ? 'text-white' : 'text-zinc-600 group-hover:text-white'">
+                <div v-for="lvl in 5" :key="lvl"
+                     @click="lvl <= maxUnlockedLevel ? startAtLevel(lvl) : null"
+                     :class="[
+                       'border rounded-3xl p-8 transition-all duration-300 relative',
+                       lvl <= maxUnlockedLevel
+                         ? 'group cursor-pointer border-zinc-800 bg-zinc-900/30 hover:border-white hover:bg-zinc-800'
+                         : 'cursor-not-allowed border-zinc-900 bg-zinc-950 opacity-50'
+                     ]">
+                    <!-- Lock icon for locked levels -->
+                    <div v-if="lvl > maxUnlockedLevel" class="absolute top-3 right-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-700"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    </div>
+                    <div class="text-4xl font-black mb-2 transition-transform"
+                         :class="lvl <= maxUnlockedLevel ? 'text-white group-hover:scale-110' : 'text-zinc-700'">
                         {{ lvl }}
                     </div>
-                    <div class="text-[9px] font-black uppercase tracking-widest text-zinc-500 group-hover:text-zinc-300">Level</div>
+                    <div class="text-[9px] font-black uppercase tracking-widest"
+                         :class="lvl <= maxUnlockedLevel ? 'text-zinc-500 group-hover:text-zinc-300' : 'text-zinc-800'">
+                        {{ lvl <= maxUnlockedLevel ? 'Level' : 'Locked' }}
+                    </div>
                 </div>
             </div>
 
@@ -178,6 +191,7 @@ const loadingCourses = ref(true);
 const courses = ref([]);
 const activeCourseId = ref(null);
 const selectedStartLevel = ref(null);
+const maxUnlockedLevel = ref(1);
 
 const groupedCourses = computed(() => {
   const groups = {
@@ -247,6 +261,15 @@ const selectCourse = async (courseId) => {
   activeCourseId.value = courseId;
   selectingCourse.value = false;
   showLevelSelect.value = true; // Show level selector
+
+  // Test mission bypasses locking — all levels open for diagnostics
+  if (courseId === 'test') {
+    maxUnlockedLevel.value = 5;
+  } else {
+    const storageKey = `prepdrive_progression_${courseId || 'default'}`;
+    const saved = parseInt(localStorage.getItem(storageKey));
+    maxUnlockedLevel.value = isNaN(saved) ? 1 : saved;
+  }
   
   loading.value = true;
   if (courseId === 'test') {
