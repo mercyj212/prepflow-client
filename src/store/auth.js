@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
 import api from '../api/axios';
+import { getStoredUser } from '../utils/storage';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: JSON.parse(localStorage.getItem('user')) || null,
+    user: getStoredUser(),
     loading: false,
     error: null,
   }),

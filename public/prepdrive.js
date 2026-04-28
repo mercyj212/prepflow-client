@@ -799,6 +799,7 @@ const envTexture = new THREE.CubeTextureLoader()
   });
 
 // Realistic Game State
+let zenMode = false;
 const keys = { w: false, a: false, s: false, d: false, space: false };
 let carSpeed = 0;
 const maxNormalSpeed = 0.72; // Reduced for better reaction time
@@ -1020,7 +1021,9 @@ function spawnTraffic(zPos) {
   let type = 'sedan';
   
   // Hybrid Pool: 50% GLTF Model, 50% Procedural for guaranteed variety
-  if (trafficTemplates.length > 0 && Math.random() > 0.5) {
+    
+
+    if (questions && questions.length > 0 && Math.random() > 0.5) {
     const template = trafficTemplates[Math.floor(Math.random() * trafficTemplates.length)];
     vehicle = template.clone();
     type = template.userData.type || 'sedan';
@@ -1574,6 +1577,22 @@ function onCheckpointPassed(idx) {
     const pool = useAdvanced ? questionPool.advanced : questionPool.basic;
     const qData = pool[Math.floor(Math.random() * pool.length)];
     
+    if (zenMode) {
+        // In Zen Mode, just pass the checkpoint and progress
+        currentScore += 1500;
+        levelAnswers++;
+        checkpointNotify.textContent = "CHECKPOINT REACHED // ZEN FLOW ACTIVE";
+        checkpointNotify.style.color = "#43E8B1";
+        checkpointNotify.style.display = 'block';
+        setTimeout(() => checkpointNotify.style.display = 'none', 2000);
+
+        if (levelAnswers >= questionsPerLevel[currentLevel - 1]) {
+            spawnFinishZone(carGroup.position.z - 150);
+            checkpointNotify.textContent = "DESTINATION LOCKED // PROCEED TO ARRIVAL ZONE";
+        }
+        return;
+    }
+    
     showQuestionModal(idx, qData);
 }
 
@@ -1828,4 +1847,33 @@ window.addEventListener('resize', () => {
 });
 
 // Start Animation Loop
-renderer.setAnimationLoop(animate);
+renderer.setAnimationLoop(animate);// Message Handling for Platform Integration
+window.addEventListener('message', (e) => {
+    const data = e.data;
+    if (data.type === 'INIT_GAME') {
+        console.log(" ENGINE: Received INIT_GAME payload\, data);
+ if (data.questions) {
+ // Update question pool if provided
+ if (typeof questionPool !== 'undefined') {
+ questionPool.basic = data.questions;
+ questionPool.advanced = data.questions;
+ }
+ }
+ if (data.startLevel) {
+ currentLevel = data.startLevel;
+ if (typeof statLevel !== 'undefined' && statLevel) statLevel.textContent = currentLevel;
+ // Reset state for new starting level
+ levelAnswers = 0;
+ levelMistakes = 0;
+ currentScore = 0;
+ }
+ if (data.zenMode !== undefined) {
+ zenMode = data.zenMode;
+ if (zenMode) {
+ console.log(\ENGINE: ZEN MODE ENABLED via INIT_GAME\);
+ const statusEl = document.getElementById('loading-status');
+ if (statusEl) statusEl.textContent = \ZEN MODE: FREE DRIVE ACTIVE\;
+ }
+ }
+ }
+});

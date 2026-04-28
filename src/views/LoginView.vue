@@ -339,7 +339,7 @@ const handleLogin = async () => {
       return;
     }
 
-    console.error('Login failed:', error);
+    console.error('Login failed:', error.response?.data || error);
     setTimeout(() => {
       authStore.error = null;
     }, 4000);
@@ -366,6 +366,7 @@ const handleGoogleLogin = async (response) => {
 onMounted(() => {
   /* global google */
   if (typeof google !== 'undefined' && !window.googleInitialized) {
+    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
     google.accounts.id.initialize({
       client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE',
       callback: handleGoogleLogin,
@@ -373,7 +374,9 @@ onMounted(() => {
     });
 
     // 🛡️ Enable One-Tap
-    google.accounts.id.prompt(); 
+    if (!isLocalhost) {
+      google.accounts.id.prompt();
+    }
 
     google.accounts.id.renderButton(
       document.getElementById("googleBtn"),

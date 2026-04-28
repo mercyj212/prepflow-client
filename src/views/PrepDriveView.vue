@@ -75,6 +75,24 @@
                     </h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <!-- Standard Mode Card -->
+                        <div @click="selectCourse('zen')" 
+                             class="group relative overflow-hidden bg-[#27272a]/40 border border-zinc-800/50 p-8 rounded-[2rem] hover:border-emerald-500/50 transition-all duration-500 cursor-pointer">
+                            <div class="flex items-start justify-between mb-8">
+                                <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                                </div>
+                                <div class="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
+                                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Recreational</span>
+                                </div>
+                            </div>
+                            <h3 class="text-white font-black text-2xl uppercase tracking-tight mb-2">Standard Drive</h3>
+                            <p class="text-zinc-500 text-sm leading-relaxed mb-6">Experience pure simulation without interruptions. Practice vehicle control and tactical evasion.</p>
+                            <div class="flex items-center gap-2 text-emerald-500 font-black text-[10px] uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
+                                Initialize Core Drive <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                            </div>
+                        </div>
+
                         <div v-for="course in groupCourses" :key="course._id" @click="selectCourse(course._id)" class="group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl hover:border-white hover:bg-zinc-900/50 transition-all duration-300">
                             <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:text-black transition-all duration-300">
                                 <span class="font-black text-sm">{{ course.title.substring(0, 3) }}</span>
@@ -96,8 +114,9 @@
 
     <!-- The actual game — full-screen iframe -->
     <iframe
+      v-if="gameStarted"
       ref="gameFrame"
-      src="/prepdrive/index.html"
+      :src="activeCourseId === 'zen' ? '/prepdrive/standard.html' : '/prepdrive/index.html'"
       class="w-full h-full border-0"
       :class="loading || showLevelSelect ? 'opacity-0' : 'opacity-100'"
       style="transition: opacity 0.4s ease;"
@@ -108,8 +127,16 @@
     <!-- Level Selector Modal -->
     <div v-if="showLevelSelect" class="absolute inset-0 bg-black z-50 flex flex-col items-center justify-center p-6">
         <div class="max-w-4xl w-full text-center">
-            <h1 class="text-4xl md:text-6xl font-black text-white mb-4 uppercase tracking-tighter">SELECT MISSION TIER</h1>
-            <p class="text-zinc-500 uppercase text-[10px] tracking-[0.5em] font-bold mb-12">CHOOSE YOUR STARTING DIFFICULTY</p>
+            <div class="flex items-center gap-6 mb-12 text-left">
+                <button @click="showLevelSelect = false; selectingCourse = true" 
+                        class="group w-14 h-14 bg-zinc-900 border border-zinc-800 rounded-2xl flex items-center justify-center text-zinc-500 hover:text-white hover:border-white transition-all duration-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                </button>
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">SELECT MISSION TIER</h1>
+                    <p class="text-zinc-500 uppercase text-[10px] tracking-[0.3em] font-bold">CHOOSE YOUR STARTING DIFFICULTY</p>
+                </div>
+            </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-5 gap-4">
                 <div v-for="lvl in 5" :key="lvl"
@@ -182,6 +209,7 @@ import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 const router = useRouter();
 const loading = ref(true);
 const iframeLoaded = ref(false);
+const gameStarted = ref(false);
 const gameFrame = ref(null);
 const questions = ref([]);
 const missionReport = ref(null);
@@ -221,26 +249,36 @@ const pathLabel = (path) => {
 };
 
 const tryInitGame = () => {
-  console.log('Attempting Init:', { iframeLoaded: iframeLoaded.value, hasQuestions: questions.value.length > 0, selecting: selectingCourse.value });
-  
-  if (iframeLoaded.value && gameFrame.value && !selectingCourse.value) {
-    // If no questions found for a specific course, provide a tactical fallback set
-    const finalQuestions = questions.value.length > 0 ? questions.value : [
-      { q: "RECONNAISSANCE: Are you ready to proceed with the mission?", a: ["AFFIRMATIVE", "NEGATIVE", "STANDBY", "RETRY"], c: 0, expl: "Tactical initialization sequence active." },
-      { q: "SYSTEM CHECK: Engines primed and ready?", a: ["READY", "NOT READY", "CHECKING", "ABORT"], c: 0, expl: "Engine calibration complete." }
-    ];
+    console.log("PrepDriveView: Initializing game sequence...");
+    if (!gameFrame.value || !gameFrame.value.contentWindow) {
+        console.warn("PrepDriveView: Frame not ready for initialization");
+        return;
+    }
 
-    gameFrame.value.contentWindow.postMessage({
-      type: 'INIT_GAME',
-      questions: JSON.parse(JSON.stringify(finalQuestions)),
-      courseId: activeCourseId.value,
-      startLevel: selectedStartLevel.value
-    }, '*');
-    
-    // Ensure loading screen is cleared
+    const payload = {
+        type: 'INIT_GAME',
+        questions: questions.value || [],
+        courseId: activeCourseId.value,
+        zenMode: activeCourseId.value === 'zen',
+        maxUnlockedLevel: maxUnlockedLevel.value,
+        startLevel: selectedStartLevel.value || 1
+    };
+
+    console.log("PrepDriveView: Initializing game with payload:", payload);
+    gameFrame.value.contentWindow.postMessage(payload, '*');
     loading.value = false;
-    selectedStartLevel.value = null; // Clear for next use
-  }
+};
+
+const closeReport = () => {
+    missionReport.value = null;
+    selectingCourse.value = true;
+    selectedStartLevel.value = null; // Reset here instead
+    if (selectionContainer.value) selectionContainer.value.scrollTop = 0;
+    loading.value = true;
+    iframeLoaded.value = false;
+    if (gameFrame.value) {
+        gameFrame.value.src = activeCourseId.value === 'zen' ? "/prepdrive/standard.html" : "/prepdrive/index.html";
+    }
 };
 
 const fetchCourses = async () => {
@@ -260,9 +298,17 @@ const fetchCourses = async () => {
 const selectCourse = async (courseId) => {
   activeCourseId.value = courseId;
   selectingCourse.value = false;
-  showLevelSelect.value = true; // Show level selector
+  showLevelSelect.value = true;
+  gameStarted.value = false; // Reset game state when selecting new course
 
-  // Test mission bypasses locking — all levels open for diagnostics
+  if (courseId === 'zen') {
+      const storageKey = `prepdrive_progression_zen`;
+      const saved = parseInt(localStorage.getItem(storageKey));
+      maxUnlockedLevel.value = isNaN(saved) ? 1 : saved;
+      questions.value = [];
+      return;
+  }
+  
   if (courseId === 'test') {
     maxUnlockedLevel.value = 5;
   } else {
@@ -292,7 +338,9 @@ const selectCourse = async (courseId) => {
 const startAtLevel = (lvl) => {
   selectedStartLevel.value = lvl;
   showLevelSelect.value = false;
-  tryInitGame();
+  gameStarted.value = true; // This will trigger iframe mounting
+  loading.value = true;
+  // tryInitGame() will be called by @load on iframe
 };
 
 const fetchQuestions = async (courseId = null) => {
@@ -327,6 +375,18 @@ const handleMessage = async (event) => {
       failedQuestions: event.data.failedQuestions
     };
     
+    // Update local progression
+    const currentCourseId = activeCourseId.value || 'default';
+    const storageKey = `prepdrive_progression_${currentCourseId}`;
+    const currentSaved = parseInt(localStorage.getItem(storageKey)) || 1;
+    
+    // If they were playing a level equal to their current max, unlock the next one
+    if (selectedStartLevel.value === currentSaved && currentSaved < 5) {
+      const newMax = currentSaved + 1;
+      localStorage.setItem(storageKey, newMax.toString());
+      maxUnlockedLevel.value = newMax;
+    }
+
     // Submit score to backend
     try {
       await api.post('/game/score', {
@@ -340,18 +400,6 @@ const handleMessage = async (event) => {
 };
 
 const selectionContainer = ref(null);
-
-const closeReport = () => {
-  missionReport.value = null;
-  selectingCourse.value = true;
-  if (selectionContainer.value) selectionContainer.value.scrollTop = 0;
-  loading.value = true;
-  iframeLoaded.value = false;
-  // Reload the iframe to ensure a clean state for the next run
-  if (gameFrame.value) {
-    gameFrame.value.src = "/prepdrive/index.html";
-  }
-};
 
 onMounted(async () => {
   await fetchCourses();

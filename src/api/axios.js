@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getStoredUser } from '../utils/storage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -8,7 +9,7 @@ const api = axios.create({
 
 // 🛡️ REQUEST INTERCEPTOR: Attach token from localStorage
 api.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = getStoredUser();
   if (user?.token) {
     config.headers.Authorization = `Bearer ${user.token}`;
   }
@@ -52,7 +53,7 @@ api.interceptors.response.use(
         });
 
         // Update local storage user token
-        const user = JSON.parse(localStorage.getItem('user')) || {};
+        const user = getStoredUser() || {};
         user.token = data.token;
         localStorage.setItem('user', JSON.stringify(user));
 
