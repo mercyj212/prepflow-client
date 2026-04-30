@@ -665,9 +665,16 @@ const sendMessage = async () => {
     }
     playSendSound();
   } catch (error) {
-    if (error.response?.status === 429) systemError.value = error.response.data.message || 'Rate limit reached.';
-    else systemError.value = 'Failed to deliver message.';
-    messages.value = messages.value.filter(m => m._id !== tempId);
+    const savedUserMessage = error.response?.data?.userMessage;
+    const index = messages.value.findIndex(m => m._id === tempId);
+
+    if (savedUserMessage && index !== -1) {
+      messages.value[index] = savedUserMessage;
+    } else {
+      messages.value = messages.value.filter(m => m._id !== tempId);
+    }
+
+    systemError.value = error.response?.data?.message || 'Failed to deliver message.';
   } finally {
     isLoading.value = false;
     scrollToBottom();
