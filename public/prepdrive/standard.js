@@ -109,16 +109,37 @@ scene.add(dirLight);
 let isGameActive = false;
 let carSpeed = 0;
 let sideVelocity = 0;
-let currentLevel = 1;
+const urlStartLevel = Number(new URLSearchParams(window.location.search).get('level'));
+let currentLevel = Number.isInteger(urlStartLevel) && urlStartLevel >= 1 ? Math.min(urlStartLevel, 5) : 1;
 let currentScore = 0;
 let levelAnswers = 0;
 let lives = 3;
 let zenMode = true; // Default to true for this standalone mode
 const questionsPerLevel = [10, 10, 10, 10, 10];
+const levelThemes = [
+    { sky: 0x87b8d8, fog: 0xc8dde8, ground: 0x6b7a5a, road: 0x222222, car: 0x43E8B1 },
+    { sky: 0xff7f54, fog: 0xffd0a3, ground: 0x2d5a3d, road: 0x242326, car: 0xffc857 },
+    { sky: 0x0a1028, fog: 0x1b2a4a, ground: 0x141820, road: 0x111116, car: 0x6c63ff },
+    { sky: 0xb9f6ff, fog: 0xe0fbff, ground: 0xb7c7a3, road: 0x3b3a36, car: 0x2f6690 },
+    { sky: 0x160f29, fog: 0x302b63, ground: 0x0b132b, road: 0x09090b, car: 0xf72585 }
+];
 
 const carGroup = new THREE.Group();
 carGroup.position.set(0, 0, 10);
 scene.add(carGroup);
+
+function applyLevelTheme(level) {
+    const theme = levelThemes[(Math.max(1, level) - 1) % levelThemes.length];
+    scene.background = new THREE.Color(theme.sky);
+    if (scene.fog) scene.fog.color.setHex(theme.fog);
+    roadMaterial.color.setHex(theme.road);
+    grassMaterial.color.setHex(theme.ground);
+    carGroup.traverse((node) => {
+        if (node.isMesh && node.material && node.geometry?.type === 'BoxGeometry') {
+            node.material.color.setHex(theme.car);
+        }
+    });
+}
 
 // HUD Elements
 const statScore = document.getElementById('stat-score');
@@ -251,6 +272,7 @@ function createFallbackCar() {
     carGroup.add(group);
 }
 createFallbackCar();
+applyLevelTheme(currentLevel);
 
 // Start
 startBtn.onclick = () => {
@@ -266,6 +288,7 @@ window.addEventListener('message', (e) => {
     if (e.data.type === 'INIT_GAME') {
         console.log("ZEN ENGINE: Received INIT_GAME", e.data);
         currentLevel = e.data.startLevel || 1;
+        applyLevelTheme(currentLevel);
         
         // Update HUD
         if (statLevel) statLevel.textContent = currentLevel;

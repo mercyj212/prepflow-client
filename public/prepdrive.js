@@ -581,6 +581,97 @@ const modelPaths = [
   'prepdrive-assets/models/jeep wrangler adventure rubicon001.glb'
 ];
 
+const levelThemes = [
+  {
+    sky: 0x87b8d8,
+    fog: 0xc8dde8,
+    ground: 0x6b7a5a,
+    road: 0x2a2a2d,
+    sign: 0x004d26,
+    trafficColors: [0x0a0a0a, 0x8a8d8f, 0xffffff, 0x0a1c3b],
+    trafficTypes: ['sedan', 'hatchback', 'premium'],
+    buildings: [0xc8c4bc, 0x9ab0c4, 0xddd8d0]
+  },
+  {
+    sky: 0xff7f54,
+    fog: 0xffd0a3,
+    ground: 0x2d5a3d,
+    road: 0x242326,
+    sign: 0x763400,
+    trafficColors: [0xffc857, 0xff6b35, 0x2ec4b6, 0xf7fff7],
+    trafficTypes: ['hatchback', 'sedan', 'premium'],
+    buildings: [0xd9a066, 0xffc857, 0x8d6e63]
+  },
+  {
+    sky: 0x0a1028,
+    fog: 0x1b2a4a,
+    ground: 0x141820,
+    road: 0x111116,
+    sign: 0x1e3a8a,
+    trafficColors: [0x6c63ff, 0x43e8b1, 0xff2e63, 0xeef2ff],
+    trafficTypes: ['premium', 'suv', 'sedan'],
+    buildings: [0x1e293b, 0x334155, 0x0f766e]
+  },
+  {
+    sky: 0xb9f6ff,
+    fog: 0xe0fbff,
+    ground: 0xb7c7a3,
+    road: 0x3b3a36,
+    sign: 0x26532b,
+    trafficColors: [0x2f6690, 0xf2c14e, 0xf78154, 0x4f772d],
+    trafficTypes: ['suv', 'hatchback', 'sedan'],
+    buildings: [0x8ecae6, 0x219ebc, 0xffb703]
+  },
+  {
+    sky: 0x160f29,
+    fog: 0x302b63,
+    ground: 0x0b132b,
+    road: 0x09090b,
+    sign: 0x3a0ca3,
+    trafficColors: [0xf72585, 0x7209b7, 0x4cc9f0, 0xffffff],
+    trafficTypes: ['premium', 'premium', 'suv'],
+    buildings: [0x240046, 0x5a189a, 0x4cc9f0]
+  }
+];
+
+let levelCityGroup = null;
+let activeTrafficColors = null;
+let activeTrafficTypes = null;
+
+function applyLevelTheme(level) {
+  const theme = levelThemes[(level - 1) % levelThemes.length];
+  activeTrafficColors = theme.trafficColors;
+  activeTrafficTypes = theme.trafficTypes;
+
+  scene.background = new THREE.Color(theme.sky);
+  if (scene.fog) scene.fog.color.setHex(theme.fog);
+  roadMaterial.color.setHex(theme.road);
+  grassMaterial.color.setHex(theme.ground);
+  signMat.color.setHex(theme.sign);
+
+  if (levelCityGroup) scene.remove(levelCityGroup);
+  levelCityGroup = new THREE.Group();
+  levelCityGroup.name = `level-city-${level}`;
+
+  const buildingGeo = new THREE.BoxGeometry(1, 1, 1);
+  for (let i = 0; i < 36; i++) {
+    const side = i % 2 === 0 ? -1 : 1;
+    const height = 18 + ((i + level) % 7) * 8;
+    const width = 10 + ((i + level) % 4) * 4;
+    const depth = 10 + ((i + level) % 3) * 6;
+    const color = theme.buildings[i % theme.buildings.length];
+    const building = new THREE.Mesh(
+      buildingGeo,
+      new THREE.MeshStandardMaterial({ color, roughness: 0.55, metalness: level >= 3 ? 0.35 : 0.1 })
+    );
+    building.position.set(side * (55 + (i % 5) * 12), height / 2, -80 - i * 45);
+    building.scale.set(width, height, depth);
+    levelCityGroup.add(building);
+  }
+
+  scene.add(levelCityGroup);
+}
+
 function setPlayerCar(level) {
     // Remove existing model
     carGroup.children.forEach(child => {
@@ -588,7 +679,7 @@ function setPlayerCar(level) {
     });
 
     let playerMesh;
-    const colors = [0xaa0000, 0x8a8d8f, 0x0a0a0a, 0x0a1c3b, 0x3a3d40];
+    const colors = activeTrafficColors || [0xaa0000, 0x8a8d8f, 0x0a0a0a, 0x0a1c3b, 0x3a3d40];
     const types = ['premium', 'sedan', 'suv', 'premium', 'hatchback'];
     
     if (level === 1 && carModel) {
@@ -653,6 +744,7 @@ function resetGame(keepScore = false) {
     carGroup.rotation.set(0, 0, 0);
     checkpointCount = 1;
 
+    applyLevelTheme(currentLevel);
     // Swap Vehicle for Level Variety
     setPlayerCar(currentLevel);
     
@@ -958,7 +1050,8 @@ function createTrafficVehicle(type = 'sedan') {
   else if (type === 'suv') { w = 2.2; h = 1.1; l = 4.8; cabinH = 0.7; cabinL = 2.6; cabinZ = 0.2; slope = 0.2; }
   else if (type === 'hatchback') { w = 1.9; h = 0.9; l = 3.6; cabinH = 0.6; cabinL = 2.0; cabinZ = 0.4; slope = 0.3; }
 
-  const color = carColorPool[Math.floor(Math.random() * carColorPool.length)];
+  const colorPool = activeTrafficColors || carColorPool;
+  const color = colorPool[Math.floor(Math.random() * colorPool.length)];
   const bodyMat = new THREE.MeshStandardMaterial({ 
       color: color, 
       metalness: 0.9, 
@@ -1029,7 +1122,7 @@ function spawnTraffic(zPos) {
     type = template.userData.type || 'sedan';
     vehicle.rotation.y = Math.PI;
   } else {
-    const types = ['sedan', 'suv', 'hatchback', 'premium'];
+    const types = activeTrafficTypes || ['sedan', 'suv', 'hatchback', 'premium'];
     type = types[Math.floor(Math.random() * types.length)];
     vehicle = createTrafficVehicle(type);
   }

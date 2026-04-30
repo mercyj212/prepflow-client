@@ -12,6 +12,23 @@ const quizStore = useQuizStore();
 const isBooting = ref(true);
 const bootProgress = ref(0);
 
+// --- Digital Audio Synthesis ---
+const playBlip = (freq = 800) => {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.1, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.1);
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.1);
+  } catch (e) { /* Audio blocked or not supported */ }
+};
+
 const startBoot = async () => {
   const steps = 40;
   for (let i = 0; i <= steps; i++) {
@@ -25,6 +42,7 @@ const startBoot = async () => {
     await new Promise(r => setTimeout(r, delay));
   }
   await new Promise(r => setTimeout(r, 800));
+  playBlip(1000);
   isBooting.value = false;
 };
 
@@ -371,28 +389,54 @@ onMounted(async () => {
     >
       <div v-if="isBooting" class="fixed inset-0 z-[1000] bg-black flex flex-col items-center justify-center p-6 sm:p-12 overflow-hidden pointer-events-none">
         <div class="relative flex flex-col items-center transition-all duration-1000">
-           <!-- Centered Premium Identity -->
-           <div class="relative group">
-             <div class="absolute inset-0 blur-[80px] bg-brand/30 animate-pulse transition-all duration-1000"
-                  :style="{ transform: `scale(${1 + bootProgress / 100})`, opacity: bootProgress / 100 }"></div>
-             <BrandLogo size="lg" class="relative z-10 transition-transform duration-1000"
-                        :style="{ transform: `scale(${0.9 + (bootProgress / 100) * 0.1})` }" />
+             <!-- New Tactical Focus Branding -->
+             <div class="relative flex items-center gap-0 mb-12">
+               <!-- The Focused 'P' -->
+               <div class="relative px-6 py-4 animate-letter-flow" style="animation-delay: 0s;">
+                  <!-- Corner Brackets -->
+                  <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-white/80 animate-bracket-tl"></div>
+                  <div class="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-white/80 animate-bracket-tr"></div>
+                  <div class="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-white/80 animate-bracket-bl"></div>
+                  <div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-white/80 animate-bracket-br"></div>
+                  
+                  <span class="text-[clamp(60px,12vw,120px)] font-black leading-none select-none tracking-tighter">P</span>
+               </div>
+               
+               <!-- The Rest of the Branding -->
+               <div class="flex items-baseline -ml-2">
+                  <span class="text-[clamp(40px,8vw,80px)] font-black tracking-tighter select-none animate-letter-flow" style="animation-delay: 0.1s;">r</span>
+                  <span class="text-[clamp(40px,8vw,80px)] font-black tracking-tighter select-none animate-letter-flow" style="animation-delay: 0.2s;">e</span>
+                  <span class="text-[clamp(40px,8vw,80px)] font-black tracking-tighter select-none animate-letter-flow" style="animation-delay: 0.3s;">p</span>
+                  <span class="text-[clamp(40px,8vw,80px)] font-black tracking-tighter select-none ml-1 animate-letter-flow-blurred" style="animation-delay: 0.4s;">U</span>
+                  <span class="text-[clamp(40px,8vw,80px)] font-black tracking-tighter select-none animate-letter-flow-blurred" style="animation-delay: 0.5s;">p</span>
+               </div>
+
+             <!-- Pulse Glow behind P -->
+             <div class="absolute -inset-4 blur-[60px] bg-white/10 rounded-full -z-10 animate-pulse"></div>
            </div>
            
-           <!-- Large Elegant Counter -->
-           <div class="mt-20 flex flex-col items-center gap-2">
-             <div class="flex items-baseline gap-1">
-               <span class="text-[clamp(64px,12vw,140px)] font-black tracking-tighter tabular-nums leading-none">
-                 {{ Math.round(bootProgress) }}
-               </span>
-               <span class="text-zinc-700 font-bold text-[clamp(24px,5vw,48px)]">%</span>
+           <!-- Progress Bar and Indicator -->
+           <div class="flex flex-col items-center gap-6 w-full max-w-[200px]">
+             <div class="w-full h-[2px] bg-white/10 relative overflow-hidden">
+                <div 
+                  class="absolute inset-y-0 left-0 bg-white transition-all duration-300"
+                  :style="{ width: `${bootProgress}%` }"
+                ></div>
              </div>
              
-            <div class="flex items-center gap-4">
-              <span class="text-[10px] font-black uppercase tracking-[0.4em] text-zinc-500 animate-pulse">
-                Preparing your practice environment...
-              </span>
-            </div>
+             <div class="flex items-baseline gap-2">
+                <span class="text-[14px] font-black tracking-[0.4em] tabular-nums">
+                  {{ Math.round(bootProgress) }}
+                </span>
+                <span class="text-white/30 text-[10px] font-bold tracking-widest">%</span>
+             </div>
+             
+             <div class="flex items-center gap-2">
+               <div class="w-1.5 h-1.5 bg-white/40 animate-pulse"></div>
+               <span class="text-[9px] font-bold uppercase tracking-[0.5em] text-white/30">
+                 Getting ready...
+               </span>
+             </div>
            </div>
         </div>
       </div>
@@ -751,6 +795,30 @@ onMounted(async () => {
 
 @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
 .animate-marquee { display: inline-block; animation: marquee 30s linear infinite; }
+
+@keyframes bracket-tl { 0%, 100% { transform: translate(0, 0); opacity: 0.5; } 50% { transform: translate(-6px, -6px); opacity: 1; } }
+@keyframes bracket-tr { 0%, 100% { transform: translate(0, 0); opacity: 0.5; } 50% { transform: translate(6px, -6px); opacity: 1; } }
+@keyframes bracket-bl { 0%, 100% { transform: translate(0, 0); opacity: 0.5; } 50% { transform: translate(-6px, 6px); opacity: 1; } }
+@keyframes bracket-br { 0%, 100% { transform: translate(0, 0); opacity: 0.5; } 50% { transform: translate(6px, 6px); opacity: 1; } }
+
+.animate-bracket-tl { animation: bracket-tl 2s ease-in-out infinite; }
+.animate-bracket-tr { animation: bracket-tr 2s ease-in-out infinite; }
+.animate-bracket-bl { animation: bracket-bl 2s ease-in-out infinite; }
+.animate-bracket-br { animation: bracket-br 2s ease-in-out infinite; }
+
+@keyframes letter-flow {
+  0%, 100% { opacity: 0.2; transform: translateY(0); filter: blur(2px); }
+  50% { opacity: 1; transform: translateY(-4px); filter: blur(0); }
+}
+@keyframes letter-flow-blurred {
+  0%, 100% { opacity: 0.1; transform: translateY(0); filter: blur(6px); }
+  50% { opacity: 0.4; transform: translateY(-4px); filter: blur(4px); }
+}
+
+.animate-letter-flow { animation: letter-flow 1.8s ease-in-out infinite; }
+.animate-letter-flow-blurred { animation: letter-flow-blurred 1.8s ease-in-out infinite; }
+
+@media (max-width: 640px) { @keyframes aperture { 0%, 100% { height: 16rem; } 50% { height: 6rem; } } }
 
 @media (max-width: 640px) { @keyframes aperture { 0%, 100% { height: 16rem; } 50% { height: 6rem; } } }
 </style>

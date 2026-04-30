@@ -115,8 +115,9 @@
     <!-- The actual game — full-screen iframe -->
     <iframe
       v-if="gameStarted"
+      :key="gameFrameKey"
       ref="gameFrame"
-      :src="activeCourseId === 'zen' ? '/prepdrive/standard.html' : '/prepdrive/index.html'"
+      :src="gameFrameSrc"
       class="w-full h-full border-0"
       :class="loading || showLevelSelect ? 'opacity-0' : 'opacity-100'"
       style="transition: opacity 0.4s ease;"
@@ -219,7 +220,15 @@ const loadingCourses = ref(true);
 const courses = ref([]);
 const activeCourseId = ref(null);
 const selectedStartLevel = ref(null);
+const gameFrameKey = ref(0);
 const maxUnlockedLevel = ref(1);
+
+const gameFrameSrc = computed(() => {
+  const path = activeCourseId.value === 'zen' ? '/prepdrive/standard.html' : '/prepdrive/index.html';
+  const level = selectedStartLevel.value || 1;
+  const mode = activeCourseId.value === 'zen' ? 'zen' : 'mission';
+  return `${path}?level=${level}&mode=${mode}&frame=${gameFrameKey.value}`;
+});
 
 const groupedCourses = computed(() => {
   const groups = {
@@ -255,9 +264,11 @@ const tryInitGame = () => {
         return;
     }
 
+    const plainQuestions = JSON.parse(JSON.stringify(questions.value || []));
+
     const payload = {
         type: 'INIT_GAME',
-        questions: questions.value || [],
+        questions: plainQuestions,
         courseId: activeCourseId.value,
         zenMode: activeCourseId.value === 'zen',
         maxUnlockedLevel: maxUnlockedLevel.value,
@@ -336,8 +347,10 @@ const selectCourse = async (courseId) => {
 };
 
 const startAtLevel = (lvl) => {
-  selectedStartLevel.value = lvl;
+  selectedStartLevel.value = Number(lvl) || 1;
   showLevelSelect.value = false;
+  iframeLoaded.value = false;
+  gameFrameKey.value += 1;
   gameStarted.value = true; // This will trigger iframe mounting
   loading.value = true;
   // tryInitGame() will be called by @load on iframe
