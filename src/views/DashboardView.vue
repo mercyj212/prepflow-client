@@ -52,9 +52,9 @@
                    
                    <!-- The "+204%" glowing pill -->
                    <div class="absolute right-8 top-[4.5rem]">
-                      <div class="px-2.5 py-1.5 rounded-lg border border-zinc-900/10 dark:border-white/20 shadow-neo-inner bg-zinc-900/5 dark:bg-zinc-800/10 flex items-center justify-center">
-                       <span class="text-[12px] font-bold text-zinc-900 dark:text-zinc-100 tracking-wide">
-                         ↑ 12%
+                      <div class="px-2.5 py-1.5 rounded-lg border shadow-neo-inner flex items-center justify-center" :class="progressDeltaClass">
+                       <span class="text-[12px] font-bold tracking-wide">
+                         {{ progressDeltaLabel }}
                        </span>
                      </div>
                    </div>
@@ -231,6 +231,35 @@ const user = computed(() => authStore.user);
 
 const totalQuestionsDone = computed(() => {
   return quizStore.mySubmissions.reduce((acc, sub) => acc + (sub.totalQuestions || 0), 0);
+});
+
+const sortedSubmissions = computed(() => {
+  return [...quizStore.mySubmissions].sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+});
+
+const getSubmissionPercent = (submission) => {
+  if (!submission?.totalQuestions) return 0;
+  return Math.round((submission.score / submission.totalQuestions) * 100);
+};
+
+const progressDelta = computed(() => {
+  if (sortedSubmissions.value.length < 2) return 0;
+  const latest = sortedSubmissions.value[sortedSubmissions.value.length - 1];
+  const previous = sortedSubmissions.value[sortedSubmissions.value.length - 2];
+  return getSubmissionPercent(latest) - getSubmissionPercent(previous);
+});
+
+const progressDeltaLabel = computed(() => {
+  if (sortedSubmissions.value.length < 2) return '0%';
+  if (progressDelta.value > 0) return `↑ ${progressDelta.value}%`;
+  if (progressDelta.value < 0) return `↓ ${Math.abs(progressDelta.value)}%`;
+  return '0%';
+});
+
+const progressDeltaClass = computed(() => {
+  if (progressDelta.value > 0) return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+  if (progressDelta.value < 0) return 'border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400';
+  return 'border-zinc-300 bg-zinc-100 text-zinc-700 dark:border-white/10 dark:bg-zinc-800 dark:text-zinc-200';
 });
 
 const averageScore = computed(() => {
