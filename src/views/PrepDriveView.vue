@@ -18,6 +18,10 @@
         <div class="max-w-5xl w-full">
             <div class="flex items-end justify-between mb-12">
                 <div>
+                    <button @click="router.push('/games')" class="mb-8 inline-flex items-center gap-3 text-zinc-500 hover:text-white transition-colors text-[10px] font-black uppercase tracking-[0.3em]">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+                        Back to Games
+                    </button>
                     <h1 class="text-4xl md:text-6xl font-black text-white mb-2 uppercase tracking-tighter">SELECT MISSION</h1>
                     <p class="text-zinc-500 uppercase text-[10px] tracking-[0.5em] font-bold">CHOOSE YOUR SUBJECT FOCUS</p>
                 </div>
@@ -27,34 +31,14 @@
                 </div>
             </div>
 
-            <!-- TEST MISSION (FOR DEBUGGING) -->
-            <div class="mb-12">
-                <h2 class="text-amber-500 font-black text-[10px] uppercase tracking-[0.4em] mb-4 flex items-center gap-4">
-                    SYSTEM DIAGNOSTICS
-                    <div class="h-[1px] bg-amber-900/30 flex-1"></div>
-                </h2>
-                <div @click="selectCourse('test')" class="max-w-md group cursor-pointer border border-amber-900/30 bg-amber-900/5 p-8 rounded-3xl hover:border-amber-500 hover:bg-amber-900/20 transition-all duration-300">
-                    <div class="w-14 h-14 bg-amber-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-amber-500 group-hover:text-black transition-all duration-300 text-amber-500">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-                    </div>
-                    <h3 class="text-amber-500 font-bold text-xl uppercase tracking-tight">Test Mission</h3>
-                    <p class="text-amber-700/60 text-sm mt-2 leading-relaxed">Rapid diagnostics mode with simplified calculations for verifying level stability.</p>
-                </div>
-            </div>
-
-            <!-- Always show Mixed Mode at the top -->
             <div class="mb-12">
                 <h2 class="text-zinc-500 font-black text-[10px] uppercase tracking-[0.4em] mb-4 flex items-center gap-4">
-                    GENERAL OPERATIONS
+                    COURSE ACCESS REQUIRED
                     <div class="h-[1px] bg-zinc-800 flex-1"></div>
                 </h2>
-                <div @click="selectCourse(null)" class="max-w-md group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl hover:border-white hover:bg-zinc-900/50 transition-all duration-300">
-                    <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-                    </div>
-                    <h3 class="text-white font-bold text-xl uppercase tracking-tight">Mixed Mode</h3>
-                    <p class="text-zinc-500 text-sm mt-2 leading-relaxed">Cross-departmental assessment covering all available topics in the database.</p>
-                </div>
+                <p class="max-w-2xl text-zinc-500 text-sm leading-relaxed">
+                    PrepDrive missions unlock per course. Pay for a course anywhere on PrepUp CBT, then return here to play that course game.
+                </p>
             </div>
 
             <!-- Loading Skeletons -->
@@ -75,30 +59,21 @@
                     </h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <!-- Standard Mode Card -->
-                        <div @click="selectCourse('zen')" 
-                             class="group relative overflow-hidden bg-[#27272a]/40 border border-zinc-800/50 p-8 rounded-[2rem] hover:border-emerald-500/50 transition-all duration-500 cursor-pointer">
-                            <div class="flex items-start justify-between mb-8">
-                                <div class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-500 group-hover:bg-emerald-500 group-hover:text-black transition-all duration-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
-                                </div>
-                                <div class="px-3 py-1 bg-emerald-500/10 rounded-full border border-emerald-500/20">
-                                    <span class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Recreational</span>
-                                </div>
-                            </div>
-                            <h3 class="text-white font-black text-2xl uppercase tracking-tight mb-2">Standard Drive</h3>
-                            <p class="text-zinc-500 text-sm leading-relaxed mb-6">Experience pure simulation without interruptions. Practice vehicle control and tactical evasion.</p>
-                            <div class="flex items-center gap-2 text-emerald-500 font-black text-[10px] uppercase tracking-widest group-hover:translate-x-2 transition-transform duration-300">
-                                Initialize Core Drive <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-                            </div>
-                        </div>
-
-                        <div v-for="course in groupCourses" :key="course._id" @click="selectCourse(course._id)" class="group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl hover:border-white hover:bg-zinc-900/50 transition-all duration-300">
+                        <div v-for="course in groupCourses" :key="course._id" @click="handleCourseClick(course)" class="group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl transition-all duration-300" :class="course.hasGameAccess ? 'hover:border-white hover:bg-zinc-900/50' : 'opacity-80 hover:border-amber-500/50'">
                             <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:text-black transition-all duration-300">
-                                <span class="font-black text-sm">{{ course.title.substring(0, 3) }}</span>
+                                <span v-if="course.hasGameAccess" class="font-black text-sm">{{ course.title.substring(0, 3) }}</span>
+                                <svg v-else xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </div>
-                            <h3 class="text-white font-bold text-xl uppercase tracking-tight">{{ course.title }}</h3>
+                            <div class="flex items-start justify-between gap-4">
+                                <h3 class="text-white font-bold text-xl uppercase tracking-tight">{{ course.title }}</h3>
+                                <span class="px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shrink-0" :class="course.hasGameAccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'">
+                                  {{ course.hasGameAccess ? 'Unlocked' : 'Pay to Play' }}
+                                </span>
+                            </div>
                             <p class="text-zinc-500 text-sm mt-2 leading-relaxed line-clamp-2">{{ course.description || 'Specialized focus on ' + course.title + ' curriculum.' }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-widest mt-5" :class="course.hasGameAccess ? 'text-emerald-400' : 'text-amber-400'">
+                              {{ course.hasGameAccess ? 'Start Course Mission' : 'Unlock Course Game' }}
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -304,6 +279,15 @@ const fetchCourses = async () => {
   } finally {
     loadingCourses.value = false;
   }
+};
+
+const handleCourseClick = (course) => {
+  if (!course.hasGameAccess) {
+    router.push(`/checkout/${course._id}`);
+    return;
+  }
+
+  selectCourse(course._id);
 };
 
 const selectCourse = async (courseId) => {

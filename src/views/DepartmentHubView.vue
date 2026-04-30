@@ -22,7 +22,7 @@
       <NeoLoader v-if="loading" label="Loading faculties..." />
 
       <!-- Empty State -->
-      <div v-else-if="faculties.length === 0" class="py-32 text-center">
+      <div v-else-if="visibleFaculties.length === 0" class="py-32 text-center">
         <div class="w-16 h-16 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center mx-auto mb-6 shadow-neo-inner">
           <Building2 :size="32" :stroke-width="1.2" class="text-zinc-300" />
         </div>
@@ -33,7 +33,7 @@
       <!-- Faculty Grid -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         <div
-          v-for="faculty in faculties"
+          v-for="faculty in visibleFaculties"
           :key="faculty._id"
           @click="selectFaculty(faculty._id)"
           class="group cursor-pointer relative"
@@ -79,6 +79,12 @@ const loading = ref(true);
 const faculties = ref([]);
 
 const path = computed(() => route.params.path || quizStore.educationPath || 'university');
+
+const visibleFaculties = computed(() => {
+  const hasSchoolOfIct = faculties.value.some(f => f.name?.trim().toLowerCase() === 'school of ict');
+  if (!hasSchoolOfIct) return faculties.value;
+  return faculties.value.filter(f => f.name?.trim().toLowerCase() !== 'ict');
+});
 
 const pathTitle = computed(() => {
   const titles = { 'university': 'University', 'polytechnic': 'Polytechnic', 'entrance': 'Entrance Exams' };

@@ -24,7 +24,7 @@
           class="w-full h-12 px-4 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
         >
           <option value="" disabled>Choose Faculty/Exam</option>
-          <option v-for="fac in faculties" :key="fac._id" :value="fac._id">
+          <option v-for="fac in visibleFaculties" :key="fac._id" :value="fac._id">
             {{ fac.name }}
           </option>
         </select>
@@ -38,6 +38,35 @@
         Add {{ isEntrancePath ? 'Year' : 'Dept' }}
       </button>
     </form>
+
+    <div v-if="schoolOfIctFaculty" class="mb-8 rounded-2xl border border-brand/10 bg-brand/5 p-5">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+        <div>
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-2">School of ICT Setup</p>
+          <p class="text-[12px] font-semibold text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            Required departments: Computer Science for ND1/ND2, plus four HND specialization departments.
+          </p>
+        </div>
+        <button
+          type="button"
+          @click="ensureIctDepartments"
+          :disabled="missingIctDepartments.length === 0 || loading"
+          class="h-11 px-5 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 rounded-xl text-[10px] font-black uppercase tracking-widest disabled:opacity-30 hover:scale-[1.02] active:scale-95 transition-all shrink-0"
+        >
+          {{ missingIctDepartments.length === 0 ? 'Structure Ready' : 'Create Missing' }}
+        </button>
+      </div>
+      <div class="mt-4 flex flex-wrap gap-2">
+        <span
+          v-for="dept in requiredIctDepartments"
+          :key="dept"
+          class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase tracking-widest"
+          :class="hasIctDepartment(dept) ? 'bg-emerald-500/10 text-emerald-500' : 'bg-zinc-100 dark:bg-zinc-900 text-zinc-400'"
+        >
+          {{ dept }}
+        </span>
+      </div>
+    </div>
 
     <!-- Department List -->
     <div v-if="departments.length === 0" class="py-12 text-center">
@@ -84,12 +113,39 @@ import { ref, computed, onMounted } from 'vue';
 import { Plus, Layers, Trash2, Calendar, ShieldCheck } from 'lucide-vue-next';
 import api from '../../api/axios';
 import NeoCard from '../common/NeoCard.vue';
+import { ICT_DEPARTMENT_GROUPS, normalizeName, visibleFaculties as getVisibleFaculties } from '../../utils/ictStructure';
 
 const departments = ref([]);
 const faculties = ref([]);
 const newName = ref('');
 const selectedFaculty = ref('');
 const loading = ref(false);
+
+const requiredIctDepartments = [
+  ...ICT_DEPARTMENT_GROUPS.nd.departments,
+  ...ICT_DEPARTMENT_GROUPS.hnd.departments
+];
+
+const visibleFaculties = computed(() => getVisibleFaculties(faculties.value));
+
+const schoolOfIctFaculty = computed(() => {
+  return faculties.value.find(f => normalizeName(f.name) === 'school of ict');
+});
+
+const schoolOfIctDepartments = computed(() => {
+  const facultyId = schoolOfIctFaculty.value?._id;
+  if (!facultyId) return [];
+  return departments.value.filter(dept => (dept.faculty?._id || dept.faculty) === facultyId);
+});
+
+const hasIctDepartment = (name) => {
+  const target = normalizeName(name);
+  return schoolOfIctDepartments.value.some(dept => normalizeName(dept.name) === target);
+};
+
+const missingIctDepartments = computed(() => {
+  return requiredIctDepartments.filter(name => !hasIctDepartment(name));
+});
 
 const isEntrancePath = computed(() => {
   if (!selectedFaculty.value) return false;
@@ -119,6 +175,21 @@ const handleCreate = async () => {
     await fetchAll();
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to create department');
+  } finally {
+    loading.value = false;
+  }
+};
+
+const ensureIctDepartments = async () => {
+  if (!schoolOfIctFaculty.value || missingIctDepartments.value.length === 0) return;
+  loading.value = true;
+  try {
+    for (const name of missingIctDepartments.value) {
+      await api.post('/departments', { name, faculty: schoolOfIctFaculty.value._id });
+    }
+    await fetchAll();
+  } catch (err) {
+    alert(err.response?.data?.message || 'Failed to create ICT departments');
   } finally {
     loading.value = false;
   }

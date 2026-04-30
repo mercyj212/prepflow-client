@@ -33,6 +33,7 @@ import PrepDriveView from '../views/PrepDriveView.vue';
 import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
 import DepartmentHubView from '../views/DepartmentHubView.vue';
 import DepartmentListView from '../views/DepartmentListView.vue';
+import PaymentView from '../views/PaymentView.vue';
 
 const routes = [
   {
@@ -40,6 +41,12 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/checkout/:courseId',
+    name: 'checkout',
+    component: PaymentView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/verify-email/:token',

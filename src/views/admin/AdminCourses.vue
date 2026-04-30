@@ -8,10 +8,10 @@
         </h1>
         <div class="flex items-center gap-3 py-2 px-4 bg-brand/5 border border-brand/10 rounded-2xl w-fit mb-4">
           <ShieldCheck :size="16" class="text-brand" />
-          <span class="text-[10px] font-black uppercase tracking-widest text-brand">Standardized Path: Polytechnic / School of ICT / Computer Science / ND1</span>
+          <span class="text-[10px] font-black uppercase tracking-widest text-brand">School of ICT: ND1/ND2 Computer Science · HND1/HND2 Specializations</span>
         </div>
         <p class="text-sm text-zinc-500 font-medium leading-relaxed">
-          Manage academic materials for the standardized Computer Science ND1 curriculum. Dashboard is currently optimized for this controlled path.
+          Manage academic materials by level and department, so questions can be attached to the correct ICT course bucket.
         </p>
       </div>
       
@@ -48,24 +48,27 @@
             <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Faculty / School</label>
             <select v-model="filters.faculty" @change="onFacultyChange" :disabled="!filters.path" class="w-full h-11 md:h-12 px-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 outline-none disabled:opacity-40">
               <option value="">All Faculties</option>
-              <option v-for="f in faculties" :key="f._id" :value="f._id">{{ f.name }}</option>
+              <option v-for="f in visibleFaculties" :key="f._id" :value="f._id">{{ f.name }}</option>
             </select>
           </div>
           <div class="space-y-2">
             <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Department</label>
-            <select v-model="filters.department" :disabled="!filters.faculty" class="w-full h-11 md:h-12 px-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 outline-none disabled:opacity-40">
+            <select v-model="filters.department" :disabled="!filters.faculty || !filters.level" class="w-full h-11 md:h-12 px-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 outline-none disabled:opacity-40">
               <option value="">All Departments</option>
-              <option v-for="d in departments" :key="d._id" :value="d._id">{{ d.name }}</option>
+              <option v-for="d in filteredDepartments" :key="d._id" :value="d._id">{{ d.name }}</option>
             </select>
           </div>
           <div class="space-y-2">
             <label class="text-[9px] font-black uppercase tracking-widest text-zinc-400 ml-1">Academic Level</label>
-            <select v-model="filters.level" :disabled="!filters.path" class="w-full h-11 md:h-12 px-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 outline-none disabled:opacity-40">
+            <select v-model="filters.level" @change="onLevelChange" :disabled="!filters.path" class="w-full h-11 md:h-12 px-4 bg-white dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-xl text-sm focus:ring-2 focus:ring-brand/20 outline-none disabled:opacity-40">
               <option value="">All Levels</option>
               <option v-for="l in availableLevels" :key="l" :value="l">{{ l }}</option>
             </select>
           </div>
         </div>
+        <p v-if="levelHint" class="mt-4 text-[10px] font-black uppercase tracking-widest text-brand">
+          {{ levelHint }}
+        </p>
       </div>
 
       <!-- Course List Table -->
@@ -94,8 +97,9 @@
               </td>
               <td class="px-6 md:px-8 py-6">
                 <div class="flex flex-col gap-1">
-                  <span class="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 truncate max-w-[120px] md:max-w-none">{{ course.faculty?.name || 'No Faculty' }}</span>
+                  <span class="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 truncate max-w-[160px] md:max-w-none">{{ course.department?.name || 'No Department' }}</span>
                   <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 dark:bg-white/5 rounded text-zinc-500">{{ courseFaculty(course)?.name || 'No School' }}</span>
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 dark:bg-white/5 rounded text-zinc-500">{{ course.path }}</span>
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-brand/10 rounded text-brand">{{ course.level }}</span>
                   </div>
@@ -138,11 +142,17 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Plus, Book, Edit3, Trash2, Search, Filter, ShieldCheck } from 'lucide-vue-next';
+import { Plus, Book, Edit3, Trash2, Search, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../../components/common/NeoCard.vue';
 import CourseCreator from '../../components/Admin/CourseCreator.vue';
 import { useAdminStore } from '../../store/admin';
 import api from '../../api/axios';
+import {
+  filterDepartmentsForIctLevel,
+  findSchoolOfIct,
+  getIctLevelHint,
+  visibleFaculties as getVisibleFaculties
+} from '../../utils/ictStructure';
 
 const adminStore = useAdminStore();
 const showCreator = ref(false);
@@ -158,16 +168,26 @@ const filters = ref({
 const faculties = ref([]);
 const departments = ref([]);
 
+const visibleFaculties = computed(() => getVisibleFaculties(faculties.value));
+const filteredDepartments = computed(() => filterDepartmentsForIctLevel(departments.value, filters.value.level));
+const levelHint = computed(() => getIctLevelHint(filters.value.level));
+
 const filteredCourses = computed(() => {
   return adminStore.courses.filter(c => {
     if (c.path === 'entrance') return false; // Hide entrance exams in academic view
     if (filters.value.path && c.path !== filters.value.path) return false;
-    if (filters.value.faculty && c.faculty?._id !== filters.value.faculty) return false;
+    if (filters.value.faculty && courseFaculty(c)?._id !== filters.value.faculty) return false;
     if (filters.value.department && c.department?._id !== filters.value.department) return false;
     if (filters.value.level && c.level !== filters.value.level) return false;
     return true;
   });
 });
+
+const courseFaculty = (course) => {
+  const faculty = course.faculty || course.department?.faculty;
+  if (!faculty) return null;
+  return typeof faculty === 'string' ? { _id: faculty } : faculty;
+};
 
 const availableLevels = computed(() => {
   if (filters.value.path === 'university') return ['100L', '200L', '300L', '400L', '500L'];
@@ -182,7 +202,7 @@ const onPathChange = async () => {
       faculties.value = data;
       
       // Auto-select School of ICT if it exists
-      const ict = data.find(f => f.name.toLowerCase().includes('ict'));
+      const ict = findSchoolOfIct(data);
       if (ict) {
         filters.value.faculty = ict._id;
         await onFacultyChange();
@@ -198,15 +218,21 @@ const onFacultyChange = async () => {
     try {
       const { data } = await api.get(`/departments?faculty=${filters.value.faculty}`);
       departments.value = data;
-      
-      // Auto-select Computer Science if it exists
-      const cs = data.find(d => d.name.toLowerCase().includes('computer science'));
-      if (cs) {
-        filters.value.department = cs._id;
-      }
+      filters.value.department = filteredDepartments.value[0]?._id || '';
     } catch (err) { departments.value = []; }
   } else {
     departments.value = [];
+  }
+};
+
+const onLevelChange = () => {
+  if (!filters.value.department) {
+    filters.value.department = filteredDepartments.value[0]?._id || '';
+    return;
+  }
+
+  if (!filteredDepartments.value.some(d => d._id === filters.value.department)) {
+    filters.value.department = filteredDepartments.value[0]?._id || '';
   }
 };
 

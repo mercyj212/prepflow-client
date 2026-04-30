@@ -167,7 +167,8 @@ export const useQuizStore = defineStore('quiz', {
     },
     async fetchDepartments(facultyId) {
       try {
-        const query = facultyId ? `?faculty=${facultyId}` : '';
+        const id = (facultyId && typeof facultyId === 'object') ? (facultyId._id || facultyId.id) : facultyId;
+        const query = id ? `?faculty=${id}` : '';
         const { data } = await api.get(`/departments${query}`);
         this.departments = data;
         return data;

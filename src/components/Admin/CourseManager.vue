@@ -20,7 +20,7 @@
           class="h-12 px-4 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white"
         >
           <option value="" disabled>Choose {{ isEntrancePath ? 'Exam Title' : 'Faculty' }}</option>
-          <option v-for="fac in faculties" :key="fac._id" :value="fac._id">
+          <option v-for="fac in visibleFaculties" :key="fac._id" :value="fac._id">
             {{ fac.name }}
           </option>
         </select>
@@ -28,11 +28,11 @@
         <select
           v-model="selectedDepartment"
           @change="fetchCourses"
-          :disabled="!selectedFaculty"
+          :disabled="!selectedFaculty || !newLevel"
           class="h-12 px-4 text-sm bg-zinc-50 dark:bg-zinc-950 border border-zinc-100 dark:border-zinc-800 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand/20 text-zinc-900 dark:text-white disabled:opacity-40"
         >
           <option value="" disabled>Choose {{ isEntrancePath ? 'Year' : 'Department' }}</option>
-          <option v-for="dept in departments" :key="dept._id" :value="dept._id">
+          <option v-for="dept in filteredDepartments" :key="dept._id" :value="dept._id">
             {{ dept.name }}
           </option>
         </select>
@@ -63,6 +63,9 @@
             Add
           </button>
         </div>
+        <p v-if="levelHint" class="text-[9px] font-black text-brand uppercase tracking-widest ml-2">
+          {{ levelHint }}
+        </p>
         <p v-if="detectedLevelNote" class="text-[9px] font-black text-brand uppercase tracking-widest ml-2 animate-pulse">
           Auto-detected: {{ detectedLevelNote }}
         </p>
@@ -114,6 +117,11 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { Plus, Trash2, Book, GraduationCap } from 'lucide-vue-next';
 import api from '../../api/axios';
 import NeoCard from '../common/NeoCard.vue';
+import {
+  filterDepartmentsForIctLevel,
+  getIctLevelHint,
+  visibleFaculties as getVisibleFaculties
+} from '../../utils/ictStructure';
 
 const faculties = ref([]);
 const departments = ref([]);
@@ -131,6 +139,10 @@ const availableLevels = computed(() => {
   if (fac?.path === 'polytechnic') return ['ND1', 'ND2', 'HND1', 'HND2'];
   return ['100L', '200L', '300L', '400L', '500L'];
 });
+
+const visibleFaculties = computed(() => getVisibleFaculties(faculties.value));
+const filteredDepartments = computed(() => filterDepartmentsForIctLevel(departments.value, newLevel.value));
+const levelHint = computed(() => getIctLevelHint(newLevel.value));
 
 // Intelligent Level Detection
 watch(newName, (val) => {
@@ -176,6 +188,17 @@ watch(selectedDepartment, (val) => {
   }
 });
 
+watch(newLevel, () => {
+  if (!selectedFaculty.value) return;
+
+  const currentDepartment = departments.value.find(d => d._id === selectedDepartment.value);
+  if (!currentDepartment || !filteredDepartments.value.some(d => d._id === currentDepartment._id)) {
+    selectedDepartment.value = filteredDepartments.value[0]?._id || '';
+    courses.value = [];
+    if (selectedDepartment.value) fetchCourses();
+  }
+});
+
 const isEntrancePath = computed(() => {
   if (!selectedFaculty.value) return false;
   const fac = faculties.value.find(f => f._id === selectedFaculty.value);
@@ -199,6 +222,8 @@ const onFacultyChange = async () => {
   try {
     const { data } = await api.get(`/departments?faculty=${selectedFaculty.value}`);
     departments.value = data;
+    selectedDepartment.value = filteredDepartments.value[0]?._id || '';
+    if (selectedDepartment.value) await fetchCourses();
   } catch (err) {
     console.error('[DEPT_FETCH_ERR]:', err);
   }
@@ -207,7 +232,8 @@ const onFacultyChange = async () => {
 const fetchCourses = async () => {
   if (!selectedDepartment.value) return;
   try {
-    const { data } = await api.get(`/courses?department=${selectedDepartment.value}`);
+    const levelQuery = newLevel.value ? `&level=${newLevel.value}` : '';
+    const { data } = await api.get(`/courses?department=${selectedDepartment.value}${levelQuery}`);
     courses.value = data;
   } catch (err) {
     console.error('[COURSE_FETCH_ERR]:', err);
@@ -226,7 +252,6 @@ const handleCreate = async () => {
       path: fac?.path || 'university'
     });
     newName.value = '';
-    newLevel.value = '';
     detectedLevelNote.value = '';
     await fetchCourses();
   } catch (err) {

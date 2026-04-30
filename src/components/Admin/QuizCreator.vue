@@ -31,7 +31,7 @@
           <div class="relative">
             <select v-model="form.course" required class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all shadow-neo-inner outline-none appearance-none cursor-pointer">
               <option value="" disabled>Select a course...</option>
-              <option v-for="c in filteredCourses" :key="c._id" :value="c._id">{{ c.title }}</option>
+              <option v-for="c in filteredCourses" :key="c._id" :value="c._id">{{ formatCourseOption(c) }}</option>
             </select>
             <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
               <ChevronDown :size="14" />
@@ -39,6 +39,9 @@
           </div>
         </div>
       </div>
+      <p v-if="levelHint" class="text-[10px] font-black uppercase tracking-widest text-brand">
+        {{ levelHint }}
+      </p>
       <div>
         <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2 px-1">Test Title</label>
         <input v-model="form.title" required type="text" class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-brand/20 transition-all shadow-neo-inner outline-none" placeholder="e.g. Mid-Term Assessment">
@@ -59,6 +62,7 @@
 import { ref, computed } from 'vue';
 import { ClipboardList, ArrowRight, ChevronDown, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
+import { getIctLevelHint } from '../../utils/ictStructure';
 
 const props = defineProps({
   loading: Boolean,
@@ -77,9 +81,21 @@ const form = ref({
 });
 
 const filteredCourses = computed(() => {
-  if (!form.value.level) return props.courses;
-  return props.courses.filter(c => c.level === form.value.level);
+  const courses = form.value.level ? props.courses.filter(c => c.level === form.value.level) : props.courses;
+  return [...courses].sort((a, b) => {
+    const left = `${a.department?.name || ''} ${a.title || ''}`;
+    const right = `${b.department?.name || ''} ${b.title || ''}`;
+    return left.localeCompare(right);
+  });
 });
+
+const levelHint = computed(() => getIctLevelHint(form.value.level));
+
+const formatCourseOption = (course) => {
+  const department = course.department?.name || 'No Department';
+  const level = course.level || 'No Level';
+  return `${level} - ${department} - ${course.title}`;
+};
 
 const handleSubmit = () => {
   emit('create', { ...form.value });

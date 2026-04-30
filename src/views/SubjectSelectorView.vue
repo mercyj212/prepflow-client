@@ -65,12 +65,13 @@
           v-for="quiz in quizzes"
           :key="quiz._id"
           class="group cursor-pointer relative"
-          @click="startQuiz(quiz._id)"
+          @click="handleQuizClick(quiz)"
         >
-          <NeoCard variant="hoverable" class="p-8 h-full flex flex-col">
+          <NeoCard variant="hoverable" class="p-8 h-full flex flex-col" :class="{ 'opacity-80': quiz.isLocked }">
             <div class="flex items-start justify-between mb-8">
               <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
-                <Book :size="24" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400 transition-colors" />
+                <Lock v-if="quiz.isLocked" :size="24" :stroke-width="1.5" class="text-zinc-400" />
+                <Book v-else :size="24" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400 transition-colors" />
               </div>
               <div class="flex flex-col items-end">
                 <span class="px-3 py-1.5 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em] mb-2">
@@ -93,7 +94,7 @@
 
             <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
               <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                Start Practice
+                {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
               </span>
               <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
                 <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
@@ -110,12 +111,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { ArrowRight, Book } from 'lucide-vue-next';
+import { ArrowRight, Book, Lock } from 'lucide-vue-next';
 import { useQuizStore } from '../store/quiz';
 import api from '../api/axios';
 import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import { getIctDepartmentLevels, isSchoolOfIct } from '../utils/ictStructure';
 
 const route = useRoute();
 const router = useRouter();
@@ -127,6 +129,8 @@ const quizzes = ref([]);
 const selectedLevel = ref('All');
 const facultyName = ref('');
 const departmentName = ref('');
+const currentFaculty = ref(null);
+const currentDepartment = ref(null);
 
 const path = computed(() => route.params.path || 'university');
 const facultyId = computed(() => route.params.facultyId);
@@ -138,6 +142,8 @@ const pathName = computed(() => {
 });
 
 const availableLevels = computed(() => {
+  const ictLevels = isSchoolOfIct(currentFaculty.value) ? getIctDepartmentLevels(currentDepartment.value) : [];
+  if (ictLevels.length) return ['All', ...ictLevels];
   if (path.value === 'university') return ['All', '100L', '200L', '300L', '400L', '500L'];
   if (path.value === 'polytechnic') return ['All', 'ND1', 'ND2', 'HND1', 'HND2'];
   return ['All'];
@@ -149,11 +155,17 @@ const fetchData = async () => {
     // Fetch faculty & department names for breadcrumb
     const faculties = await quizStore.fetchFaculties(path.value);
     const fac = faculties.find(f => f._id === facultyId.value);
+    currentFaculty.value = fac || null;
     facultyName.value = fac?.name || 'Faculty';
 
     const depts = await quizStore.fetchDepartments(facultyId.value);
     const dept = depts.find(d => d._id === departmentId.value);
+    currentDepartment.value = dept || null;
     departmentName.value = dept?.name || 'Department';
+
+    if (!availableLevels.value.includes(selectedLevel.value)) {
+      selectedLevel.value = 'All';
+    }
 
     // Fetch courses for this department (with optional level filter)
     const levelFilter = selectedLevel.value !== 'All' ? selectedLevel.value : undefined;
@@ -162,7 +174,18 @@ const fetchData = async () => {
     // Fetch all quizzes and filter by matched course IDs
     await quizStore.fetchQuizzes();
     const courseIds = courses.value.map(c => c._id);
-    quizzes.value = quizStore.quizzes.filter(q => courseIds.includes(q.course?._id || q.course));
+    
+    quizzes.value = quizStore.quizzes
+      .filter(q => courseIds.includes(q.course?._id || q.course))
+      .map(q => {
+        const course = courses.value.find(c => c._id === (q.course?._id || q.course));
+        return {
+          ...q,
+          isLocked: course ? !course.hasAccess : false,
+          coursePrice: course?.price || 0,
+          fullCourse: course
+        };
+      });
 
     // Fetch submissions for score display
     await quizStore.fetchMySubmissions();
@@ -188,8 +211,12 @@ const getLastScore = (id) => {
   return Math.round((last.score / last.totalQuestions) * 100);
 };
 
-const startQuiz = (id) => {
-  router.push(`/quiz/${id}`);
+const handleQuizClick = (quiz) => {
+  if (quiz.isLocked) {
+    router.push(`/checkout/${quiz.fullCourse?._id || quiz.course?._id || quiz.course}`);
+  } else {
+    router.push(`/quiz/${quiz._id}`);
+  }
 };
 </script>
 

@@ -35,25 +35,36 @@
           <div class="space-y-2 opacity-60">
             <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">School / Faculty (Locked)</label>
             <select v-model="form.faculty" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
-              <option v-for="f in faculties" :key="f._id" :value="f._id">{{ f.name }}</option>
-            </select>
-          </div>
-
-          <!-- Department -->
-          <div class="space-y-2 opacity-60">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Department (Locked)</label>
-            <select v-model="form.department" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
-              <option v-for="d in departments" :key="d._id" :value="d._id">{{ d.name }}</option>
+              <option v-for="f in visibleFaculties" :key="f._id" :value="f._id">{{ f.name }}</option>
             </select>
           </div>
 
           <!-- Level -->
-          <div class="space-y-2 opacity-60">
-            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Academic Level (Locked)</label>
-            <select v-model="form.level" required disabled class="w-full bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none appearance-none cursor-not-allowed">
-              <option value="ND1">ND1</option>
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Academic Level</label>
+            <select v-model="form.level" required class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none">
+              <option v-for="l in availableLevels" :key="l" :value="l">{{ l }}</option>
             </select>
           </div>
+
+          <!-- Department -->
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Department / Specialization</label>
+            <select v-model="form.department" required :disabled="!form.level" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none disabled:opacity-40">
+              <option value="" disabled>Select department</option>
+              <option v-for="d in filteredDepartments" :key="d._id" :value="d._id">{{ d.name }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="rounded-2xl border border-brand/10 bg-brand/5 px-5 py-4">
+          <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand mb-1">School of ICT Structure</p>
+          <p class="text-[12px] font-semibold text-zinc-500 dark:text-zinc-400 leading-relaxed">
+            ND1/ND2 courses are filed under Computer Science. HND1/HND2 courses are filed under Software and Web Development, Artificial Intelligence, Networking and Cloud Computing, or Cyber Security.
+          </p>
+          <p v-if="levelHint" class="mt-2 text-[11px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">
+            Current level: {{ levelHint }}
+          </p>
         </div>
       </section>
 
@@ -106,6 +117,12 @@ import { ref, computed, watch, onMounted } from 'vue';
 import { BookPlus, ArrowRight } from 'lucide-vue-next';
 import NeoCard from '../common/NeoCard.vue';
 import api from '../../api/axios';
+import {
+  filterDepartmentsForIctLevel,
+  findSchoolOfIct,
+  getIctLevelHint,
+  visibleFaculties as getVisibleFaculties
+} from '../../utils/ictStructure';
 
 const props = defineProps({
   loading: Boolean
@@ -132,6 +149,10 @@ const availableLevels = computed(() => {
   if (form.value.path === 'polytechnic') return ['ND1', 'ND2', 'HND1', 'HND2'];
   return [];
 });
+
+const visibleFaculties = computed(() => getVisibleFaculties(faculties.value));
+const filteredDepartments = computed(() => filterDepartmentsForIctLevel(departments.value, form.value.level));
+const levelHint = computed(() => getIctLevelHint(form.value.level));
 
 const onPathChange = async () => {
   form.value.faculty = '';
@@ -166,6 +187,13 @@ const onFacultyChange = async () => {
   }
 };
 
+watch(() => form.value.level, () => {
+  const currentDepartment = departments.value.find(d => d._id === form.value.department);
+  if (!currentDepartment || !filteredDepartments.value.some(d => d._id === currentDepartment._id)) {
+    form.value.department = filteredDepartments.value[0]?._id || '';
+  }
+});
+
 // Automatic level detection from course title/code
 onMounted(async () => {
   if (form.value.path) {
@@ -173,16 +201,13 @@ onMounted(async () => {
       const { data } = await api.get(`/faculties?path=${form.value.path}`);
       faculties.value = data;
       
-      const ict = data.find(f => f.name.toLowerCase().includes('ict'));
+      const ict = findSchoolOfIct(data);
       if (ict) {
         form.value.faculty = ict._id;
         // Fetch departments
         const { data: dData } = await api.get(`/departments?faculty=${ict._id}`);
         departments.value = dData;
-        const cs = dData.find(d => d.name.toLowerCase().includes('computer science'));
-        if (cs) {
-          form.value.department = cs._id;
-        }
+        form.value.department = filteredDepartments.value[0]?._id || '';
       }
     } catch (err) { console.error('Creator Setup Error:', err); }
   }

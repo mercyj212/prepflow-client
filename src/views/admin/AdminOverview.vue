@@ -10,7 +10,7 @@
         <ShieldCheck :size="18" class="text-brand" />
         <div>
           <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white block">Controlled Curriculum Mode</span>
-          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / ICT / CS / ND1</span>
+          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / School of ICT / Computer Science / ND1</span>
         </div>
       </div>
       <AnalyticsGrid 

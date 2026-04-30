@@ -42,7 +42,7 @@
           <div class="relative">
             <select v-model="form.quizId" required class="w-full bg-[var(--neo-bg)] border border-zinc-200 dark:border-zinc-800 rounded-2xl px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-4 focus:ring-brand/10 transition-all shadow-neo-inner appearance-none cursor-pointer">
               <option value="" disabled>Select a practice test...</option>
-              <option v-for="q in filteredQuizzes" :key="q._id" :value="q._id">{{ q.title }} ({{ q.course?.level || 'N/A' }})</option>
+              <option v-for="q in filteredQuizzes" :key="q._id" :value="q._id">{{ formatQuizOption(q) }}</option>
             </select>
             <div class="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-zinc-400">
               <ChevronDown :size="16" />
@@ -154,12 +154,23 @@ const form = ref({
 });
 
 const filteredQuizzes = computed(() => {
-  if (!form.value.level) return props.quizzes;
-  return props.quizzes.filter(q => {
+  const quizzes = form.value.level ? props.quizzes.filter(q => {
     const courseLevel = q.course?.level || '';
     return courseLevel === form.value.level;
+  }) : props.quizzes;
+
+  return [...quizzes].sort((a, b) => {
+    const left = `${a.course?.department?.name || ''} ${a.title || ''}`;
+    const right = `${b.course?.department?.name || ''} ${b.title || ''}`;
+    return left.localeCompare(right);
   });
 });
+
+const formatQuizOption = (quiz) => {
+  const level = quiz.course?.level || 'N/A';
+  const department = quiz.course?.department?.name || 'No Department';
+  return `${level} - ${department} - ${quiz.title}`;
+};
 
 const files = ref([]);
 

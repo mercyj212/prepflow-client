@@ -46,7 +46,7 @@
 
     <div v-else class="space-y-3">
       <div
-        v-for="fac in faculties"
+        v-for="fac in visibleFaculties"
         :key="fac._id"
         class="flex items-center justify-between p-4 bg-zinc-50 dark:bg-zinc-950 rounded-2xl border border-zinc-100 dark:border-zinc-800 group"
       >
@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { Plus, Building2, Trash2, ShieldCheck } from 'lucide-vue-next';
 import api from '../../api/axios';
 import NeoCard from '../common/NeoCard.vue';
@@ -88,6 +88,12 @@ const faculties = ref([]);
 const newName = ref('');
 const newPath = ref('');
 const loading = ref(false);
+
+const visibleFaculties = computed(() => {
+  const hasSchoolOfIct = faculties.value.some(f => f.name?.trim().toLowerCase() === 'school of ict');
+  if (!hasSchoolOfIct) return faculties.value;
+  return faculties.value.filter(f => f.name?.trim().toLowerCase() !== 'ict');
+});
 
 const fetchFaculties = async () => {
   try {

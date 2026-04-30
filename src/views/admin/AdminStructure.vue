@@ -13,7 +13,7 @@
         <ShieldCheck :size="18" class="text-brand" />
         <div>
           <span class="text-[11px] font-black uppercase tracking-[0.2em] text-zinc-900 dark:text-white block">Controlled Curriculum Mode</span>
-          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / ICT / CS / ND1</span>
+          <span class="text-[9px] font-black uppercase tracking-widest text-brand mt-0.5 block">Polytechnic / School of ICT / Computer Science / ND1</span>
         </div>
       </div>
     </div>
@@ -60,6 +60,24 @@
         </div>
         
         <div class="space-y-6">
+           <NeoCard variant="depressed" class="p-8 border-brand/10">
+              <div class="w-16 h-16 bg-brand/10 rounded-3xl flex items-center justify-center mb-6">
+                 <Network :size="24" class="text-brand" />
+              </div>
+              <h4 class="text-[11px] font-black text-zinc-900 dark:text-white uppercase tracking-[0.2em] mb-4">School of ICT Map</h4>
+              <div class="space-y-4 text-left">
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-widest text-brand mb-1">ND1 / ND2</p>
+                  <p class="text-xs font-semibold text-zinc-500">Computer Science</p>
+                </div>
+                <div>
+                  <p class="text-[10px] font-black uppercase tracking-widest text-brand mb-1">HND1 / HND2</p>
+                  <p class="text-xs font-semibold text-zinc-500 leading-6">
+                    Software and Web Development · Artificial Intelligence · Networking and Cloud Computing · Cyber Security
+                  </p>
+                </div>
+              </div>
+           </NeoCard>
            <NeoCard variant="depressed" class="p-8 border-dashed flex flex-col items-center text-center justify-center min-h-[240px]">
               <div class="w-16 h-16 bg-zinc-100 dark:bg-zinc-800 rounded-3xl flex items-center justify-center mb-6">
                  <Settings2 :size="24" class="text-zinc-400" />
@@ -74,7 +92,7 @@
 </template>
 
 <script setup>
-import { Settings2, ShieldCheck } from 'lucide-vue-next';
+import { Network, Settings2, ShieldCheck } from 'lucide-vue-next';
 import NeoCard from '../../components/common/NeoCard.vue';
 import FacultyManager from '../../components/Admin/FacultyManager.vue';
 import DepartmentManager from '../../components/Admin/DepartmentManager.vue';
