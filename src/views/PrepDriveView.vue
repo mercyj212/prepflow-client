@@ -67,12 +67,12 @@
                             <div class="flex items-start justify-between gap-4">
                                 <h3 class="text-white font-bold text-xl uppercase tracking-tight">{{ course.title }}</h3>
                                 <span class="px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shrink-0" :class="course.hasGameAccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'">
-                                  {{ course.hasGameAccess ? 'Unlocked' : 'Pay to Play' }}
+                                  {{ accessLabel(course) }}
                                 </span>
                             </div>
                             <p class="text-zinc-500 text-sm mt-2 leading-relaxed line-clamp-2">{{ course.description || 'Specialized focus on ' + course.title + ' curriculum.' }}</p>
                             <p class="text-[10px] font-black uppercase tracking-widest mt-5" :class="course.hasGameAccess ? 'text-emerald-400' : 'text-amber-400'">
-                              {{ course.hasGameAccess ? 'Start Course Mission' : 'Unlock Course Game' }}
+                              {{ course.hasGameAccess ? accessActionLabel(course) : 'Unlock Course Game' }}
                             </p>
                         </div>
                     </div>
@@ -288,6 +288,17 @@ const handleCourseClick = (course) => {
   }
 
   selectCourse(course._id);
+};
+
+const accessLabel = (course) => {
+  if (course.gameAccessReason === 'admin') return 'Admin Access';
+  if (course.hasGameAccess) return 'Unlocked';
+  return 'Pay to Play';
+};
+
+const accessActionLabel = (course) => {
+  if (course.gameAccessReason === 'admin') return 'Start Admin Preview';
+  return 'Start Course Mission';
 };
 
 const selectCourse = async (courseId) => {

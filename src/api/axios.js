@@ -3,11 +3,26 @@ import { getStoredUser } from '../utils/storage';
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
-  timeout: 60000, 
-  withCredentials: true, // Crucial for sending HttpOnly cookies
+  timeout: 60000,
+  withCredentials: true,
 });
 
-// 🛡️ REQUEST INTERCEPTOR: Attach token from localStorage
+const COLD_START_RETRY_DELAYS = [1200, 2500, 4500];
+const RETRYABLE_METHODS = new Set(['get', 'head', 'options']);
+const RETRYABLE_STATUSES = new Set([408, 425, 429, 502, 503, 504]);
+
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
+const isRetryableColdStartError = (error) => {
+  const config = error.config || {};
+  const method = (config.method || 'get').toLowerCase();
+  const status = error.response?.status;
+
+  if (config.skipColdStartRetry || !RETRYABLE_METHODS.has(method)) return false;
+  if (!error.response) return true;
+  return RETRYABLE_STATUSES.has(status);
+};
+
 api.interceptors.request.use((config) => {
   const user = getStoredUser();
   if (user?.token) {
@@ -27,13 +42,24 @@ function addRefreshSubscriber(cb) {
   refreshSubscribers.push(cb);
 }
 
-// 🛡️ RESPONSE INTERCEPTOR: Silent Refresh Flow on 401
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
+    const isRefreshRequest = originalRequest?.url?.includes('/auth/refresh');
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (originalRequest && isRetryableColdStartError(error)) {
+      originalRequest._coldStartRetryCount = originalRequest._coldStartRetryCount || 0;
+      const delay = COLD_START_RETRY_DELAYS[originalRequest._coldStartRetryCount];
+
+      if (delay) {
+        originalRequest._coldStartRetryCount += 1;
+        await sleep(delay);
+        return api(originalRequest);
+      }
+    }
+
+    if (error.response?.status === 401 && !originalRequest?._retry && !isRefreshRequest) {
       if (isRefreshing) {
         return new Promise(resolve => {
           addRefreshSubscriber(token => {
@@ -47,30 +73,24 @@ api.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        // Attempt silent refresh via cookie
         const { data } = await axios.get(`${api.defaults.baseURL}/auth/refresh`, {
           withCredentials: true
         });
 
-        // Update local storage user token
         const user = getStoredUser() || {};
         user.token = data.token;
         localStorage.setItem('user', JSON.stringify(user));
 
-        // Let the rest of the application know token is refreshed
         onRefreshed(data.token);
-        
-        // Reset subcribers array
         refreshSubscribers = [];
 
         originalRequest.headers.Authorization = `Bearer ${data.token}`;
         return api(originalRequest);
-
       } catch (refreshError) {
         console.warn('[SESSION EXPIRED]: Silent refresh failed, clearing local state.');
         localStorage.removeItem('user');
+        window.dispatchEvent(new CustomEvent('prepflow:session-expired'));
         refreshSubscribers = [];
-        // window.location.href = '/login'; // Remove hard redirect to allow public access
         return Promise.reject(refreshError);
       } finally {
         isRefreshing = false;
@@ -79,5 +99,14 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+export const warmUpApi = () => {
+  return api.get('/health', {
+    timeout: 15000,
+    skipColdStartRetry: false
+  }).catch((error) => {
+    console.info('[API WARMUP]: Backend is still waking up.', error.message);
+  });
+};
 
 export default api;

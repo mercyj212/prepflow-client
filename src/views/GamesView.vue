@@ -50,8 +50,12 @@
             </div>
           </NeoCard>
 
-          <!-- Game Card 1 -->
-          <NeoCard variant="extruded" class="group !rounded-[32px] p-8 flex flex-col cursor-pointer hover:border-zinc-300 dark:hover:border-white/20 transition-all border border-zinc-100 dark:border-white/5 relative overflow-hidden h-[360px]">
+          <!-- Speed Recall Game Card -->
+          <NeoCard 
+            @click="$router.push('/games/speed-recall')"
+            variant="extruded" 
+            class="group !rounded-[32px] p-8 flex flex-col cursor-pointer hover:border-zinc-300 dark:hover:border-white/20 transition-all border border-zinc-100 dark:border-white/5 relative overflow-hidden h-[360px]"
+          >
             <div class="absolute top-0 right-0 w-32 h-32 bg-zinc-900/5 dark:bg-white/5 blur-3xl rounded-full translate-x-12 -translate-y-12"></div>
             
             <div class="w-16 h-16 rounded-[24px] bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:rotate-6 transition-transform duration-500 mb-auto">
@@ -73,8 +77,12 @@
             </div>
           </NeoCard>
 
-          <!-- Game Card 2 -->
-          <NeoCard variant="extruded" class="group !rounded-[32px] p-8 flex flex-col cursor-pointer hover:border-zinc-300 dark:hover:border-white/20 transition-all border border-zinc-100 dark:border-white/5 relative overflow-hidden h-[360px]">
+          <!-- Concept Mapping Game Card -->
+          <NeoCard
+            @click="$router.push('/games/concept-mapping')"
+            variant="extruded"
+            class="group !rounded-[32px] p-8 flex flex-col cursor-pointer hover:border-zinc-300 dark:hover:border-white/20 transition-all border border-zinc-100 dark:border-white/5 relative overflow-hidden h-[360px]"
+          >
              <div class="absolute top-0 right-0 w-32 h-32 bg-zinc-900/5 dark:bg-white/5 blur-3xl rounded-full translate-x-12 -translate-y-12"></div>
              
              <div class="w-16 h-16 rounded-[24px] bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 mb-auto">
@@ -88,7 +96,7 @@
                </p>
                
                <div class="flex items-center justify-between">
-                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Cognitive Level 2</span>
+                 <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Paid Courses Only</span>
                  <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
                    <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
                  </div>
@@ -96,19 +104,35 @@
              </div>
           </NeoCard>
 
-          <!-- Game Card 3 -->
-          <NeoCard variant="extruded" class="group !rounded-[32px] p-8 flex flex-col cursor-not-allowed bg-zinc-50/50 dark:bg-zinc-800/40 border border-dashed border-zinc-200 dark:border-white/10 h-[360px]">
-            <div class="w-16 h-16 rounded-[24px] bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center shadow-neo-inner opacity-40 mb-auto">
-              <Lock :size="32" :stroke-width="1.2" class="text-zinc-400" />
+          <!-- Social Duels Game Card -->
+          <NeoCard
+            @click="$router.push('/games/social-duels')"
+            variant="extruded"
+            class="group !rounded-[32px] p-8 flex flex-col cursor-pointer hover:border-zinc-300 dark:hover:border-white/20 transition-all border border-zinc-100 dark:border-white/5 relative overflow-hidden h-[360px]"
+          >
+            <div class="absolute top-0 right-0 w-32 h-32 bg-rose-500/10 dark:bg-rose-400/10 blur-3xl rounded-full translate-x-12 -translate-y-12"></div>
+
+            <div class="w-16 h-16 rounded-[24px] bg-zinc-50 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-500 mb-auto relative z-10">
+              <Swords :size="32" :stroke-width="1.2" class="text-zinc-600 dark:text-zinc-400" />
+            </div>
+
+            <div class="absolute top-6 right-6 z-20">
+              <div class="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] tracking-widest uppercase flex items-center gap-2 shadow-sm">
+                Live
+              </div>
             </div>
             
-            <div class="mt-8">
-              <h3 class="text-xl font-medium text-zinc-400 mb-2">Social Duels</h3>
-              <p class="text-[13px] text-zinc-400 mb-6 leading-relaxed">
-                Locked. Complete 5 Practice sessions to unlock competitive multiplayer duels.
+            <div class="mt-8 relative z-10">
+              <h3 class="text-xl font-medium text-zinc-800 dark:text-zinc-100 mb-2">Social Duels</h3>
+              <p class="text-[13px] text-zinc-500 dark:text-zinc-400 mb-6 leading-relaxed">
+                Pick a paid course and battle a rival through timed quiz rounds.
               </p>
-              <div class="w-full h-1 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
-                <div class="w-[40%] h-full bg-zinc-400"></div>
+              
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400">Paid Courses Only</span>
+                <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all">
+                  <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </div>
             </div>
           </NeoCard>
@@ -122,7 +146,35 @@
               <div class="w-10 h-10 rounded-[12px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner">
                 <Trophy class="w-5 h-5 text-zinc-800 dark:text-zinc-100" />
               </div>
-              <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">Top Drivers</h2>
+              <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">
+                {{ activeLeaderboard === 'prepDrive' ? 'Top Drivers' : 'Top Recalls' }}
+              </h2>
+            </div>
+
+            <!-- Game Toggle -->
+            <div class="flex bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-xl border border-zinc-200 dark:border-white/5">
+              <button 
+                @click="setActiveLeaderboard('prepDrive')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+                  activeLeaderboard === 'prepDrive' 
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                ]"
+              >
+                PrepDrive
+              </button>
+              <button 
+                @click="setActiveLeaderboard('speedRecall')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+                  activeLeaderboard === 'speedRecall' 
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                ]"
+              >
+                Recall
+              </button>
             </div>
           </div>
           
@@ -137,7 +189,7 @@
               </div>
             </div>
             <div v-else-if="leaderboard.length === 0" class="text-sm text-zinc-500 text-center py-10">
-              No scores recorded yet. Be the first!
+              No scores recorded yet for {{ activeLeaderboard === 'prepDrive' ? 'PrepDrive' : 'Speed Recall' }}.
             </div>
             <div v-else class="flex flex-col gap-4">
               <div v-for="(player, idx) in leaderboard" :key="idx" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-colors hover:border-zinc-200 dark:hover:border-zinc-600">
@@ -147,8 +199,12 @@
                 <div class="flex-1 min-w-0">
                   <p class="text-base font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ player.fullName }}</p>
                   <div class="flex items-center gap-2 mt-1">
-                    <span class="text-sm text-emerald-500 dark:text-emerald-400 font-mono">{{ player.prepDriveScore?.toLocaleString() || 0 }} pts</span>
-                    <span class="text-[11px] text-zinc-400 dark:text-zinc-500">• {{ player.prepDriveAwards || 0 }} awards</span>
+                    <span class="text-sm text-emerald-500 dark:text-emerald-400 font-mono">
+                      {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveScore : player.speedRecallScore)?.toLocaleString() || 0 }} pts
+                    </span>
+                    <span class="text-[11px] text-zinc-400 dark:text-zinc-500">
+                      • {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveAwards : player.speedRecallAwards) || 0 }} awards
+                    </span>
                   </div>
                 </div>
               </div>
@@ -237,7 +293,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '../store/auth';
 import { 
   Dices, 
@@ -247,10 +303,12 @@ import {
   ArrowRight,
   Gamepad2,
   X,
-  Trophy
+  Trophy,
+  Swords
 } from 'lucide-vue-next';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import api from '../api/axios';
 
 const authStore = useAuthStore();
 const isAdmin = computed(() => authStore.user?.role === 'admin');
@@ -265,12 +323,12 @@ const handlePrepDriveClick = () => {
 // Leaderboard state and fetch
 const leaderboard = ref([]);
 const loadingLeaderboard = ref(true);
+const activeLeaderboard = ref('prepDrive');
 
-import api from '../api/axios';
-
-const fetchLeaderboard = async () => {
+const fetchLeaderboard = async (game = 'prepDrive') => {
+  loadingLeaderboard.value = true;
   try {
-    const res = await api.get('/game/leaderboard');
+    const res = await api.get(`/game/leaderboard?game=${game}`);
     if (res.data.success) {
       leaderboard.value = res.data.data;
     }
@@ -281,8 +339,25 @@ const fetchLeaderboard = async () => {
   }
 };
 
-import { onMounted } from 'vue';
+const setActiveLeaderboard = (game) => {
+  activeLeaderboard.value = game;
+  fetchLeaderboard(game);
+};
+
 onMounted(() => {
   fetchLeaderboard();
 });
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+</style>

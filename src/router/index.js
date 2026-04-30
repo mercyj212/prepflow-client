@@ -30,10 +30,13 @@ import SettingsView from '../views/SettingsView.vue';
 import ChatView from '../views/ChatView.vue';
 import GamesView from '../views/GamesView.vue';
 import PrepDriveView from '../views/PrepDriveView.vue';
+import SocialDuelsView from '../views/SocialDuelsView.vue';
+import ConceptMappingView from '../views/ConceptMappingView.vue';
 import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
 import DepartmentHubView from '../views/DepartmentHubView.vue';
 import DepartmentListView from '../views/DepartmentListView.vue';
 import PaymentView from '../views/PaymentView.vue';
+import SpeedRecallView from '../views/SpeedRecallView.vue';
 
 const routes = [
   {
@@ -41,6 +44,12 @@ const routes = [
     name: 'home',
     component: HomeView,
     meta: { requiresAuth: false }
+  },
+  {
+    path: '/games/speed-recall',
+    name: 'speed-recall',
+    component: SpeedRecallView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/checkout/:courseId',
@@ -197,6 +206,18 @@ const routes = [
     name: 'prepdrive',
     component: PrepDriveView,
     meta: { requiresAuth: true, requiresAdmin: false }
+  },
+  {
+    path: '/games/social-duels',
+    name: 'social-duels',
+    component: SocialDuelsView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/games/concept-mapping',
+    name: 'concept-mapping',
+    component: ConceptMappingView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/:pathMatch(.*)*',
