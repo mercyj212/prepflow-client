@@ -1,6 +1,11 @@
 <template>
   <NeoAppShell>
-    <div class="min-h-full bg-zinc-100 dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100">
+    <div
+      class="min-h-full text-zinc-900 transition-colors duration-500 dark:text-zinc-100"
+      :class="phase === 'select'
+        ? 'bg-zinc-100 dark:bg-zinc-950'
+        : 'bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.22),transparent_34%),linear-gradient(180deg,#ecfdf5_0%,#f4f4f5_46%,#f4f4f5_100%)] dark:bg-[radial-gradient(circle_at_top_left,rgba(16,185,129,0.22),transparent_34%),linear-gradient(180deg,#052e24_0%,#09090b_48%,#09090b_100%)]'"
+    >
       <section class="mx-auto flex w-full max-w-6xl flex-col px-4 py-6 sm:px-6 lg:px-8">
         <header class="mb-8 flex flex-col gap-5 border-b border-zinc-200 pb-6 dark:border-white/10 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -170,8 +175,8 @@
               <div class="mb-7 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p class="text-[10px] font-black uppercase tracking-[0.28em] text-zinc-400">Question {{ currentIndex + 1 }} of {{ duelQuestions.length }}</p>
-                  <div class="mt-3 h-2 w-64 max-w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-                    <div class="h-full rounded-full bg-zinc-900 transition-all dark:bg-white" :style="{ width: `${progressPercent}%` }"></div>
+                  <div class="mt-3 h-2 w-64 max-w-full overflow-hidden rounded-full bg-emerald-100 dark:bg-emerald-950/50">
+                    <div class="h-full rounded-full bg-emerald-500 transition-all shadow-[0_0_16px_rgba(16,185,129,0.35)]" :style="{ width: `${progressPercent}%` }"></div>
                   </div>
                 </div>
                 <div class="flex items-center gap-3 rounded-2xl border border-zinc-200 px-4 py-3 dark:border-white/10">
