@@ -204,7 +204,15 @@
           Perfect Run! No incorrect answers recorded.
         </div>
 
-        <button @click="closeReport" class="mt-8 w-full bg-white text-black py-4 rounded-xl font-bold hover:bg-zinc-200 transition-colors">
+        <div v-if="activeCoursePreview" class="mt-6 p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-center">
+            <h3 class="text-emerald-500 font-bold mb-2">Preview Completed Successfully!</h3>
+            <p class="text-sm text-zinc-400 mb-4">You have reached the end of the free preview. To continue your journey to Level 2 and unlock the full driving simulation, secure your access now.</p>
+            <button @click="$router.push(`/checkout/${activeCourseId}`)" class="w-full bg-emerald-500 text-white py-3 rounded-lg font-bold hover:bg-emerald-600 transition-colors">
+                Pay to Continue
+            </button>
+        </div>
+
+        <button @click="closeReport" class="mt-4 w-full bg-white text-black py-4 rounded-xl font-bold hover:bg-zinc-200 transition-colors">
           Return to Hub
         </button>
       </div>
@@ -233,6 +241,7 @@ const activeCourseId = ref(null);
 const selectedStartLevel = ref(null);
 const gameFrameKey = ref(0);
 const maxUnlockedLevel = ref(1);
+const activeCoursePreview = ref(false);
 
 const gameFrameSrc = computed(() => {
   const path = activeCourseId.value === 'zen' ? '/prepdrive/standard.html' : '/prepdrive/index.html';
@@ -323,18 +332,20 @@ const handleCourseClick = (course) => {
   if (!course.hasGameAccess) {
     if (course.gameAccessReason === 'admin') {
         console.log("Admin Bypass: Allowing mission preview...");
-        selectCourse(course._id);
+        selectCourse(course._id, course);
         return;
     }
     router.push(`/checkout/${course._id}`);
     return;
   }
 
-  selectCourse(course._id);
+  selectCourse(course._id, course);
 };
 
 const accessLabel = (course) => {
-  if (course.hasGameAccess) return 'Unlocked';
+  if (course.hasGameAccess) {
+    return course.gameAccessReason === 'preview' ? 'Free Preview' : 'Unlocked';
+  }
   return 'Pay to Play';
 };
 
@@ -342,11 +353,13 @@ const accessActionLabel = (course) => {
   return 'Start Course Mission';
 };
 
-const selectCourse = async (courseId) => {
+const selectCourse = async (courseId, courseObj = null) => {
   activeCourseId.value = courseId;
   selectingCourse.value = false;
   showLevelSelect.value = true;
   gameStarted.value = false; // Reset game state when selecting new course
+  
+  activeCoursePreview.value = courseObj?.gameAccessReason === 'preview';
 
   if (courseId === 'zen') {
       const storageKey = `prepdrive_progression_zen`;
@@ -358,6 +371,8 @@ const selectCourse = async (courseId) => {
   
   if (courseId === 'test') {
     maxUnlockedLevel.value = 5;
+  } else if (activeCoursePreview.value) {
+    maxUnlockedLevel.value = 1; // Force preview to Level 1 only
   } else {
     const storageKey = `prepdrive_progression_${courseId || 'default'}`;
     const saved = parseInt(localStorage.getItem(storageKey));
@@ -433,7 +448,7 @@ const handleMessage = async (event) => {
     const isSuccess = event.data.success === true || (event.data.success === undefined && (event.data.awards || 0) > 0);
     
     // If they were playing a level equal to their current max AND they passed, unlock the next one
-    if (isSuccess && selectedStartLevel.value === currentSaved && currentSaved < 5) {
+    if (isSuccess && selectedStartLevel.value === currentSaved && currentSaved < 5 && !activeCoursePreview.value) {
       const newMax = currentSaved + 1;
       localStorage.setItem(storageKey, newMax.toString());
       maxUnlockedLevel.value = newMax;
