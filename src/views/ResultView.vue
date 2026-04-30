@@ -314,9 +314,11 @@ async function loadResult() {
 }
 
 function retryQuiz() {
-  const quizId = route.query.quizId;
+  const quizId = route.query.quizId || result.value?.quizId;
   if (quizId) {
     router.push(`/quiz/${quizId}`);
+  } else {
+    router.push('/subjects');
   }
 }
 

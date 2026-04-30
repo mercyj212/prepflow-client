@@ -59,19 +59,55 @@
                     </h2>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div v-for="course in groupCourses" :key="course._id" @click="handleCourseClick(course)" class="group cursor-pointer border border-zinc-800 bg-zinc-900/30 p-8 rounded-3xl transition-all duration-300" :class="course.hasGameAccess ? 'hover:border-white hover:bg-zinc-900/50' : 'opacity-80 hover:border-amber-500/50'">
-                            <div class="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-white group-hover:text-black transition-all duration-300">
+                        <div 
+                          v-for="course in groupCourses" 
+                          :key="course._id" 
+                          @click="handleCourseClick(course)" 
+                          class="group relative p-8 rounded-3xl border transition-all duration-500 overflow-hidden"
+                          :class="[
+                            course.hasGameAccess 
+                              ? 'cursor-pointer border-zinc-800 bg-zinc-900/30 hover:border-white hover:bg-zinc-900/50' 
+                              : 'cursor-pointer border-zinc-900 bg-zinc-950/20 grayscale opacity-60'
+                          ]"
+                        >
+                            <!-- Lock Overlay for unpaid courses -->
+                            <div v-if="!course.hasGameAccess" class="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="bg-amber-500 text-black px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transform -rotate-2">
+                                    Payment Required
+                                </div>
+                            </div>
+
+                            <div 
+                              class="w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-all duration-300"
+                              :class="[
+                                course.hasGameAccess 
+                                  ? 'bg-white/5 group-hover:bg-white group-hover:text-black' 
+                                  : 'bg-zinc-900 text-zinc-700'
+                              ]"
+                            >
                                 <span v-if="course.hasGameAccess" class="font-black text-sm">{{ course.title.substring(0, 3) }}</span>
                                 <svg v-else xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                             </div>
                             <div class="flex items-start justify-between gap-4">
                                 <h3 class="text-white font-bold text-xl uppercase tracking-tight">{{ course.title }}</h3>
-                                <span class="px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shrink-0" :class="course.hasGameAccess ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'">
+                                <span 
+                                  class="px-2 py-1 rounded-full text-[8px] font-black uppercase tracking-widest shrink-0" 
+                                  :class="[
+                                    course.hasGameAccess ? 'bg-emerald-500/10 text-emerald-400' : 
+                                    'bg-amber-500/10 text-amber-400'
+                                  ]"
+                                >
                                   {{ accessLabel(course) }}
                                 </span>
                             </div>
                             <p class="text-zinc-500 text-sm mt-2 leading-relaxed line-clamp-2">{{ course.description || 'Specialized focus on ' + course.title + ' curriculum.' }}</p>
-                            <p class="text-[10px] font-black uppercase tracking-widest mt-5" :class="course.hasGameAccess ? 'text-emerald-400' : 'text-amber-400'">
+                            <p 
+                              class="text-[10px] font-black uppercase tracking-widest mt-5" 
+                              :class="[
+                                course.hasGameAccess ? 'text-emerald-400' : 
+                                'text-amber-400'
+                              ]"
+                            >
                               {{ course.hasGameAccess ? accessActionLabel(course) : 'Unlock Course Game' }}
                             </p>
                         </div>
@@ -272,6 +308,7 @@ const fetchCourses = async () => {
   try {
     const res = await api.get('/game/courses');
     if (res.data.success) {
+      console.log("[DEBUG] PrepDrive Courses from API:", res.data.data);
       courses.value = res.data.data;
     }
   } catch (error) {
@@ -282,7 +319,13 @@ const fetchCourses = async () => {
 };
 
 const handleCourseClick = (course) => {
+  // Strict lock for everyone except admins who get a special preview
   if (!course.hasGameAccess) {
+    if (course.gameAccessReason === 'admin') {
+        console.log("Admin Bypass: Allowing mission preview...");
+        selectCourse(course._id);
+        return;
+    }
     router.push(`/checkout/${course._id}`);
     return;
   }
@@ -291,13 +334,11 @@ const handleCourseClick = (course) => {
 };
 
 const accessLabel = (course) => {
-  if (course.gameAccessReason === 'admin') return 'Admin Access';
   if (course.hasGameAccess) return 'Unlocked';
   return 'Pay to Play';
 };
 
 const accessActionLabel = (course) => {
-  if (course.gameAccessReason === 'admin') return 'Start Admin Preview';
   return 'Start Course Mission';
 };
 
@@ -388,8 +429,11 @@ const handleMessage = async (event) => {
     const storageKey = `prepdrive_progression_${currentCourseId}`;
     const currentSaved = parseInt(localStorage.getItem(storageKey)) || 1;
     
-    // If they were playing a level equal to their current max, unlock the next one
-    if (selectedStartLevel.value === currentSaved && currentSaved < 5) {
+    // Mission success check - if flag is missing (legacy), we assume success if awards > 0
+    const isSuccess = event.data.success === true || (event.data.success === undefined && (event.data.awards || 0) > 0);
+    
+    // If they were playing a level equal to their current max AND they passed, unlock the next one
+    if (isSuccess && selectedStartLevel.value === currentSaved && currentSaved < 5) {
       const newMax = currentSaved + 1;
       localStorage.setItem(storageKey, newMax.toString());
       maxUnlockedLevel.value = newMax;

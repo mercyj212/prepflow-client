@@ -115,20 +115,21 @@
     </div>
 
     <!-- Immersive Desktop Navigation Footer -->
-    <div v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-[60] bg-[rgba(10,10,10,0.8)] backdrop-blur-xl border-t border-white/10 px-8 py-6">
-       <div class="max-w-4xl mx-auto flex items-center justify-between gap-6">
-          <button @click="toggleFlag" class="flex items-center gap-3 px-6 h-12 rounded-2xl border transition-all text-[12px] font-black uppercase tracking-widest" :class="isFlagged ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-white/10 text-white/40 hover:text-white hover:border-white/30'">
+    <div v-if="quiz && !quizStore.loading" class="fixed bottom-0 left-0 right-0 z-[60] bg-[rgba(10,10,10,0.8)] backdrop-blur-xl border-t border-white/10 px-4 py-4 sm:px-8 sm:py-6">
+       <div class="max-w-4xl mx-auto grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 sm:flex sm:justify-between sm:gap-6">
+          <button @click="toggleFlag" class="order-2 flex h-12 items-center justify-center gap-2 rounded-2xl border px-4 text-[10px] font-black uppercase tracking-widest transition-all sm:order-1 sm:gap-3 sm:px-6 sm:text-[12px]" :class="isFlagged ? 'border-amber-500 bg-amber-500/10 text-amber-500' : 'border-white/10 text-white/40 hover:text-white hover:border-white/30'">
             <Flag :size="16" :class="{ 'fill-amber-500': isFlagged }" />
-            {{ isFlagged ? 'Review Flagged' : 'Flag Question' }}
+            <span class="hidden sm:inline">{{ isFlagged ? 'Review Flagged' : 'Flag Question' }}</span>
+            <span class="sm:hidden">{{ isFlagged ? 'Review' : 'Flag' }}</span>
           </button>
 
           <button
             @click="onNextClick"
             :disabled="!answered"
-            class="flex-1 md:flex-none md:min-w-[200px] h-12 rounded-2xl bg-brand text-white text-[12px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(20,184,166,0.2)] hover:-translate-y-1 transition-all active:translate-y-0 disabled:opacity-30 flex items-center justify-center gap-3"
+            class="order-1 flex h-12 w-full max-w-[210px] min-w-0 items-center justify-center gap-2 justify-self-end rounded-2xl bg-brand px-4 text-center text-[11px] font-black uppercase tracking-widest text-zinc-950 shadow-[0_0_20px_rgba(20,184,166,0.2)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 sm:order-2 sm:w-auto sm:max-w-none sm:gap-3 sm:px-6 sm:text-[12px] md:min-w-[220px]"
           >
-            {{ currentIndex === quiz.questions.length - 1 ? 'Finish and see results' : 'Next Question' }}
-            <ArrowRight :size="16" :stroke-width="3" />
+            <span class="whitespace-nowrap leading-none text-zinc-950">{{ currentIndex === quiz.questions.length - 1 ? 'Finish Results' : 'Next Question' }}</span>
+            <ArrowRight :size="16" :stroke-width="3" class="shrink-0 text-zinc-950" />
           </button>
        </div>
     </div>
@@ -254,9 +255,22 @@ function startTimer() {
 function selectAnswer(option) {
   if (answered.value) return;
   localAnswers.value[currentIndex.value] = { selectedOption: option };
+  studentAnswers.value = studentAnswers.value.filter(answer => answer.questionId !== currentQuestion.value._id);
   studentAnswers.value.push({ questionId: currentQuestion.value._id, selectedOptionId: option._id });
   answered.value = true;
 }
+
+const buildSubmissionAnswers = () => {
+  if (!quiz.value?.questions) return [];
+
+  return quiz.value.questions.map((question) => {
+    const savedAnswer = studentAnswers.value.find(answer => answer.questionId === question._id);
+    return {
+      questionId: question._id,
+      selectedOptionId: savedAnswer?.selectedOptionId || null
+    };
+  });
+};
 
 function toggleFlag() {
   if (!currentQuestion.value) return;
@@ -284,15 +298,22 @@ const handleFinish = async () => {
   if (isSubmitting.value) return;
   const score = Object.values(localAnswers.value).filter(a => a.selectedOption.isCorrect).length;
   const total = quiz.value.questions.length;
+  const submissionAnswers = buildSubmissionAnswers();
   resultModal.value = { show: true, score, total };
   isSubmitting.value = true;
   try {
-    const response = await quizStore.submitQuiz(quiz.value._id, studentAnswers.value, (quiz.value.timeLimit * 60) - timeLeft.value, total);
+    const response = await quizStore.submitQuiz(quiz.value._id, submissionAnswers, (quiz.value.timeLimit * 60) - timeLeft.value, total);
     if (response && response._id) {
       currentSubmissionId.value = response._id;
     }
   } catch (err) { console.error(err); }
   finally { isSubmitting.value = false; }
+};
+
+const submitQuizFinal = async () => {
+  showFlagReview.value = false;
+  clearInterval(timer);
+  await handleFinish();
 };
 
 const handleConfirm = () => { if (confirmModal.value.onConfirm) confirmModal.value.onConfirm(); confirmModal.value.show = false; };

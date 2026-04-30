@@ -192,19 +192,53 @@
               No scores recorded yet for {{ activeLeaderboard === 'prepDrive' ? 'PrepDrive' : 'Speed Recall' }}.
             </div>
             <div v-else class="flex flex-col gap-4">
-              <div v-for="(player, idx) in leaderboard" :key="idx" class="flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-colors hover:border-zinc-200 dark:hover:border-zinc-600">
-                <div class="w-10 h-10 rounded-full bg-zinc-200 dark:bg-zinc-800 flex items-center justify-center text-sm font-bold text-zinc-600 dark:text-zinc-400">
-                  {{ idx + 1 }}
+              <div 
+                v-for="(player, idx) in leaderboard" 
+                :key="idx" 
+                :class="[
+                  'flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-all relative overflow-hidden',
+                  idx === 0 ? 'p-8 scale-[1.02] border-brand/30 dark:border-brand/40 shadow-xl shadow-brand/10 ring-1 ring-brand/20' : 'hover:border-zinc-200 dark:hover:border-zinc-600'
+                ]"
+              >
+                <!-- Rank Badge -->
+                <div 
+                  :class="[
+                    'w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black shrink-0 transition-transform',
+                    idx === 0 ? 'bg-brand text-white dark:text-zinc-900 scale-110 shadow-lg shadow-brand/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                  ]"
+                >
+                  {{ getRankLabel(idx) }}
                 </div>
+
                 <div class="flex-1 min-w-0">
-                  <p class="text-base font-semibold text-zinc-800 dark:text-zinc-200 truncate">{{ player.fullName }}</p>
+                  <p 
+                    :class="[
+                      'font-semibold truncate',
+                      idx === 0 ? 'text-xl text-zinc-900 dark:text-white' : 'text-base text-zinc-800 dark:text-zinc-200'
+                    ]"
+                  >
+                    {{ player.fullName }}
+                  </p>
                   <div class="flex items-center gap-2 mt-1">
-                    <span class="text-sm text-emerald-500 dark:text-emerald-400 font-mono">
+                    <span 
+                      :class="[
+                        'font-mono',
+                        idx === 0 ? 'text-lg text-brand font-bold' : 'text-sm text-emerald-500 dark:text-emerald-400'
+                      ]"
+                    >
                       {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveScore : player.speedRecallScore)?.toLocaleString() || 0 }} pts
                     </span>
                     <span class="text-[11px] text-zinc-400 dark:text-zinc-500">
                       • {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveAwards : player.speedRecallAwards) || 0 }} awards
                     </span>
+                  </div>
+                </div>
+
+                <!-- 1st Place Trophy -->
+                <div v-if="idx === 0" class="flex items-center justify-center pr-2">
+                  <div class="relative animate-trophy-shake">
+                    <div class="absolute inset-0 bg-yellow-500/20 blur-xl rounded-full animate-pulse"></div>
+                    <Trophy :size="48" class="text-yellow-500 relative z-10 filter drop-shadow-lg" />
                   </div>
                 </div>
               </div>
@@ -344,6 +378,14 @@ const setActiveLeaderboard = (game) => {
   fetchLeaderboard(game);
 };
 
+const getRankLabel = (idx) => {
+  const n = idx + 1;
+  if (n === 1) return '1st';
+  if (n === 2) return '2nd';
+  if (n === 3) return '3rd';
+  return n + 'th';
+};
+
 onMounted(() => {
   fetchLeaderboard();
 });
@@ -359,5 +401,18 @@ onMounted(() => {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: rgba(0, 0, 0, 0.1);
   border-radius: 10px;
+}
+
+@keyframes trophy-shake {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(-10deg) scale(1.1); }
+  50% { transform: rotate(10deg) scale(1.1); }
+  75% { transform: rotate(-10deg) scale(1.1); }
+  100% { transform: rotate(0deg) scale(1); }
+}
+
+.animate-trophy-shake {
+  animation: trophy-shake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
+  transform-origin: bottom center;
 }
 </style>

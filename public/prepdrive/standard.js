@@ -253,6 +253,7 @@ function completeLevel() {
     setTimeout(() => {
         window.parent.postMessage({
             type: 'GAME_OVER',
+            success: true,
             score: currentScore,
             awards: 5,
             failedQuestions: []
