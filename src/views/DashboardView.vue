@@ -300,6 +300,7 @@ const openSubmission = (submission) => {
   router.push({
     path: '/result',
     query: {
+      submissionId: submission._id || '',
       score: submission.score ?? 0,
       total: submission.totalQuestions ?? 0,
       quizId: submission.quiz?._id || submission.quizId || ''

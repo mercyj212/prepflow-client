@@ -126,10 +126,10 @@
           <button
             @click="onNextClick"
             :disabled="!answered"
-            class="order-1 flex h-12 w-full max-w-[210px] min-w-0 items-center justify-center gap-2 justify-self-end rounded-2xl bg-brand px-4 text-center text-[11px] font-black uppercase tracking-widest text-zinc-950 shadow-[0_0_20px_rgba(20,184,166,0.2)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 sm:order-2 sm:w-auto sm:max-w-none sm:gap-3 sm:px-6 sm:text-[12px] md:min-w-[220px]"
+            class="order-1 flex h-12 w-full max-w-[210px] min-w-0 items-center justify-center gap-2 justify-self-end rounded-2xl bg-black px-4 text-center text-[11px] font-black uppercase tracking-widest text-white shadow-[0_0_20px_rgba(24,24,27,0.18)] transition-all hover:-translate-y-1 active:translate-y-0 disabled:opacity-90 dark:bg-brand dark:text-zinc-950 dark:shadow-[0_0_20px_rgba(20,184,166,0.2)] sm:order-2 sm:w-auto sm:max-w-none sm:gap-3 sm:px-6 sm:text-[12px] md:min-w-[220px]"
           >
-            <span class="whitespace-nowrap leading-none text-zinc-950">{{ currentIndex === quiz.questions.length - 1 ? 'Finish Results' : 'Next Question' }}</span>
-            <ArrowRight :size="16" :stroke-width="3" class="shrink-0 text-zinc-950" />
+            <span class="whitespace-nowrap leading-none text-white drop-shadow-sm dark:text-zinc-950 dark:drop-shadow-none">{{ currentIndex === quiz.questions.length - 1 ? 'Finish Results' : 'Next Question' }}</span>
+            <ArrowRight :size="16" :stroke-width="3.2" class="shrink-0 text-white drop-shadow-sm dark:text-zinc-950 dark:drop-shadow-none" />
           </button>
        </div>
     </div>
@@ -221,17 +221,17 @@ onBeforeUnmount(() => {
 });
 
 const getOptionStyles = (option) => {
-  if (!answered.value) return { border: 'border-zinc-200 dark:border-zinc-800 bg-transparent', text: 'text-zinc-600 dark:text-zinc-400' };
-  if (option.isCorrect) return { border: 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-emerald-500/5', text: 'text-emerald-600 dark:text-emerald-400 font-bold' };
-  if (isSelected(option)) return { border: 'border-red-500 bg-red-500/5', text: 'text-red-600 dark:text-red-400' };
-  return { border: 'border-zinc-100 dark:border-zinc-900 opacity-40', text: 'text-zinc-400' };
+  if (!answered.value) return { border: 'border-zinc-300 bg-white dark:border-zinc-800 dark:bg-transparent', text: 'text-black dark:text-zinc-100 font-semibold' };
+  if (option.isCorrect) return { border: 'border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)] bg-emerald-500/5', text: 'text-emerald-700 dark:text-emerald-300 font-bold' };
+  if (isSelected(option)) return { border: 'border-red-500 bg-red-500/5', text: 'text-red-700 dark:text-red-300 font-bold' };
+  return { border: 'border-zinc-200 dark:border-zinc-900 opacity-100', text: 'text-black dark:text-zinc-200' };
 };
 
 const getBadgeStyles = (option) => {
-  if (!answered.value) return 'border-zinc-200 dark:border-zinc-800 text-zinc-400 group-hover:border-brand group-hover:text-brand';
+  if (!answered.value) return 'border-zinc-300 text-zinc-700 dark:border-zinc-800 dark:text-zinc-300 group-hover:border-brand group-hover:text-brand';
   if (option.isCorrect) return 'bg-emerald-500 text-white border-emerald-500 scale-110';
   if (isSelected(option)) return 'bg-red-500 text-white border-red-500';
-  return 'border-zinc-100 dark:border-zinc-800 text-zinc-300 opacity-30';
+  return 'border-zinc-300 text-zinc-800 bg-white dark:border-zinc-700 dark:text-zinc-200 dark:bg-zinc-900';
 };
 
 const isSelected = (opt) => localAnswers.value[currentIndex.value]?.selectedOption._id === opt._id;

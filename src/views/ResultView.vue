@@ -34,7 +34,7 @@
             </div>
         </div>
 
-        <template v-else>
+        <template v-else-if="hasResultSummary">
           <div class="flex flex-col xl:flex-row gap-12 lg:gap-16">
             
             <!-- Left Side: Hero Score & Metrics -->
@@ -228,6 +228,14 @@
             </div>
           </div>
         </template>
+
+        <div v-else class="py-20">
+          <NeoCard variant="depressed" class="p-10 text-center">
+            <h3 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Result not found</h3>
+            <p class="text-zinc-500 mb-8">This result link does not include a saved session. Open a completed attempt from your dashboard history.</p>
+            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Back to Dashboard</button>
+          </NeoCard>
+        </div>
       </section>
     </div>
   </NeoAppShell>
@@ -250,6 +258,7 @@ const result = ref(null);
 const loading = ref(true);
 const currentTab = ref('log');
 const CIRCUMFERENCE = 2 * Math.PI * 88;
+const LAST_RESULT_KEY = 'prepflow:last-result-submission-id';
 
 // Fallback Data from URL
 const urlScore = computed(() => Number(route.query.score || 0));
@@ -258,6 +267,7 @@ const urlTotal = computed(() => Number(route.query.total || 0));
 const displayScore = computed(() => result.value?.score ?? urlScore.value);
 const displayTotal = computed(() => result.value?.totalQuestions ?? urlTotal.value);
 const displayTime = computed(() => result.value ? formatTime(result.value.timeTaken) : "--");
+const hasResultSummary = computed(() => result.value || displayTotal.value > 0);
 const sessionDisplayId = computed(() => {
   if (route.query.submissionId) return route.query.submissionId.slice(-6);
   if (result.value?._id) return result.value._id.toString().slice(-6);
@@ -288,7 +298,7 @@ function formatTime(seconds) {
 }
 
 async function loadResult() {
-  const submissionId = route.query.submissionId;
+  const submissionId = route.query.submissionId || localStorage.getItem(LAST_RESULT_KEY);
   const quizId = route.query.quizId;
   
   if (!submissionId && !quizId) {
@@ -305,7 +315,10 @@ async function loadResult() {
       data = await quizStore.fetchLatestSubmission(quizId);
     }
     
-    if (data) result.value = data;
+    if (data) {
+      result.value = data;
+      if (data._id) localStorage.setItem(LAST_RESULT_KEY, data._id);
+    }
   } catch (err) {
     console.error('[RESULT_SYNC_ERR]:', err);
   } finally {

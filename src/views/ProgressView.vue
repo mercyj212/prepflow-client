@@ -112,10 +112,10 @@ const timelineChartData = computed(() => {
     datasets: [{
       label: 'Score %',
       data: data.map(d => d.score),
-      borderColor: '#3f3f46', // zinc-700
-      backgroundColor: 'rgba(63, 63, 70, 0.1)',
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.14)',
       borderWidth: 2,
-      pointBackgroundColor: '#18181b',
+      pointBackgroundColor: '#059669',
       fill: true,
       tension: 0.4
     }]
