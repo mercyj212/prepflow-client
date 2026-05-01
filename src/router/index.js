@@ -38,6 +38,8 @@ import DepartmentListView from '../views/DepartmentListView.vue';
 import PaymentView from '../views/PaymentView.vue';
 import PaymentVerifyView from '../views/PaymentVerifyView.vue';
 import SpeedRecallView from '../views/SpeedRecallView.vue';
+import PrivacyView from '../views/PrivacyView.vue';
+import TermsView from '../views/TermsView.vue';
 
 const routes = [
   {
@@ -164,6 +166,18 @@ const routes = [
     path: '/help',
     name: 'helpCenter',
     component: HelpCenterView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/privacy',
+    name: 'privacy',
+    component: PrivacyView,
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/terms',
+    name: 'terms',
+    component: TermsView,
     meta: { requiresAuth: false }
   },
   {

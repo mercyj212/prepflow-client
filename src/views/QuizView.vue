@@ -142,17 +142,35 @@
     <div v-if="resultModal.show" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
         <div class="absolute inset-0 bg-black/60 backdrop-blur-md"></div>
         <NeoCard variant="extruded" class="relative w-full max-w-sm p-10 text-center animate-in zoom-in duration-500 shadow-2xl">
-            <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
-                <CheckCircle2 :size="32" :stroke-width="3" />
+            <div v-if="submissionError">
+              <div class="w-20 h-20 bg-amber-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(245,158,11,0.3)]">
+                  <AlertTriangle :size="32" :stroke-width="3" />
+              </div>
+              <h3 class="text-2xl font-black uppercase tracking-tight text-zinc-800 dark:text-white mb-2">Sync Failed</h3>
+              <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
+                  We couldn't sync your results to the server. Your score is <span class="text-amber-500 font-black">{{ resultModal.score }}/{{ resultModal.total }}</span>.
+              </p>
+              <div class="flex flex-col gap-3">
+                <button @click="handleFinish" class="w-full py-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-3">
+                  <span v-if="isSubmitting">Syncing...</span>
+                  <span v-else>Retry Sync</span>
+                </button>
+                <button @click="goToResults" class="w-full py-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px]">Continue Anyway</button>
+              </div>
             </div>
-            <h3 class="text-2xl font-black uppercase tracking-tight text-zinc-800 dark:text-white mb-2">Test Finished</h3>
-            <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
-                You got <span class="text-emerald-500 font-black text-2xl mx-1">{{ resultModal.score }}/{{ resultModal.total }}</span> questions right.
-            </p>
-            
-            <div class="flex flex-col gap-3">
-              <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Try Again</button>
-              <button @click="goToResults" class="w-full py-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-200 transition-all">See Detailed Results</button>
+            <div v-else>
+              <div class="w-20 h-20 bg-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-[0_0_30px_rgba(16,185,129,0.3)]">
+                  <CheckCircle2 :size="32" :stroke-width="3" />
+              </div>
+              <h3 class="text-2xl font-black uppercase tracking-tight text-zinc-800 dark:text-white mb-2">Test Finished</h3>
+              <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mb-10 leading-relaxed font-medium">
+                  You got <span class="text-emerald-500 font-black text-2xl mx-1">{{ resultModal.score }}/{{ resultModal.total }}</span> questions right.
+              </p>
+              
+              <div class="flex flex-col gap-3">
+                <button @click="retakeQuiz" class="w-full py-4 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Try Again</button>
+                <button @click="goToResults" class="w-full py-4 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-200 transition-all">See Detailed Results</button>
+              </div>
             </div>
         </NeoCard>
     </div>
@@ -181,6 +199,7 @@ const studentAnswers = ref([]);
 const answered = ref(false);
 const resultModal = ref({ show: false, score: 0, total: 0 });
 const isSubmitting = ref(false);
+const submissionError = ref(false);
 const flaggedQuestions = ref(new Set());
 const showFlagReview = ref(false);
 const focusedOptionIndex = ref(0);
@@ -299,14 +318,21 @@ const handleFinish = async () => {
   const score = Object.values(localAnswers.value).filter(a => a.selectedOption.isCorrect).length;
   const total = quiz.value.questions.length;
   const submissionAnswers = buildSubmissionAnswers();
+  
   resultModal.value = { show: true, score, total };
   isSubmitting.value = true;
+  submissionError.value = false;
+
   try {
     const response = await quizStore.submitQuiz(quiz.value._id, submissionAnswers, (quiz.value.timeLimit * 60) - timeLeft.value, total);
     if (response && response._id) {
       currentSubmissionId.value = response._id;
+      submissionError.value = false;
     }
-  } catch (err) { console.error(err); }
+  } catch (err) { 
+    console.error('Quiz submission failed:', err);
+    submissionError.value = true;
+  }
   finally { isSubmitting.value = false; }
 };
 

@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 bg-black z-50 flex flex-col">
+  <div class="fixed inset-0 bg-black z-50 flex flex-col no-shake">
     <!-- Thin top bar shown only before game loads -->
     <div
       v-if="loading && !selectingCourse"
@@ -204,11 +204,18 @@
           Perfect Run! No incorrect answers recorded.
         </div>
 
-        <div v-if="activeCoursePreview" class="mt-6 p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-center">
+        <div v-if="activeCoursePreview && previewSuccess" class="mt-6 p-6 rounded-xl border border-emerald-500/30 bg-emerald-500/5 text-center">
             <h3 class="text-emerald-500 font-bold mb-2">Preview Completed Successfully!</h3>
             <p class="text-sm text-zinc-400 mb-4">You have reached the end of the free preview. To continue your journey to Level 2 and unlock the full driving simulation, secure your access now.</p>
             <button @click="$router.push(`/checkout/${activeCourseId}`)" class="w-full bg-emerald-500 text-white py-3 rounded-lg font-bold hover:bg-emerald-600 transition-colors">
                 Pay to Continue
+            </button>
+        </div>
+        <div v-else-if="activeCoursePreview && !previewSuccess" class="mt-6 p-6 rounded-xl border border-rose-500/30 bg-rose-500/5 text-center">
+            <h3 class="text-rose-500 font-bold mb-2">Mission Failed</h3>
+            <p class="text-sm text-zinc-400 mb-4">You didn't complete the mission objectives. Try again to experience the full potential of PrepDrive!</p>
+            <button @click="closeReport" class="w-full bg-zinc-800 text-white py-3 rounded-lg font-bold hover:bg-zinc-700 transition-colors">
+                Try Again
             </button>
         </div>
 
@@ -242,6 +249,7 @@ const selectedStartLevel = ref(null);
 const gameFrameKey = ref(0);
 const maxUnlockedLevel = ref(1);
 const activeCoursePreview = ref(false);
+const previewSuccess = ref(false);
 
 const gameFrameSrc = computed(() => {
   const path = activeCourseId.value === 'zen' ? '/prepdrive/standard.html' : '/prepdrive/index.html';
@@ -303,7 +311,8 @@ const tryInitGame = () => {
 const closeReport = () => {
     missionReport.value = null;
     selectingCourse.value = true;
-    selectedStartLevel.value = null; // Reset here instead
+    selectedStartLevel.value = null;
+    previewSuccess.value = false;
     if (selectionContainer.value) selectionContainer.value.scrollTop = 0;
     loading.value = true;
     iframeLoaded.value = false;
@@ -458,6 +467,10 @@ const handleMessage = async (event) => {
     // Mission success check - if flag is missing (legacy), we assume success if awards > 0
     const isSuccess = event.data.success === true || (event.data.success === undefined && (event.data.awards || 0) > 0);
     
+    if (activeCoursePreview.value && isSuccess) {
+      previewSuccess.value = true;
+    }
+
     // If they were playing a level equal to their current max AND they passed, unlock the next one
     if (isSuccess && selectedStartLevel.value === currentSaved && currentSaved < 5 && !activeCoursePreview.value) {
       const newMax = currentSaved + 1;
@@ -496,3 +509,22 @@ onUnmounted(() => {
   window.removeEventListener('message', handleMessage);
 });
 </script>
+
+<style scoped>
+.no-shake {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  overscroll-behavior: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Ensure child selection container still scrolls if needed */
+#selection-container {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+</style>

@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="h-full flex flex-col md:flex-row overflow-hidden bg-[var(--neo-surface)]">
+    <div class="h-full min-h-0 flex flex-col md:flex-row overflow-hidden bg-[var(--neo-surface)]">
       <!-- Chat List Sidebar -->
       <aside class="w-full md:w-80 border-r border-zinc-100 dark:border-white/5 flex flex-col bg-zinc-50/50 dark:bg-zinc-900/20" :class="activeConversation ? 'hidden md:flex' : 'flex'">
         <header class="p-6 border-b border-zinc-100 dark:border-white/5">
@@ -58,7 +58,7 @@
       </aside>
 
       <!-- Main Chat Area -->
-      <section class="flex-1 flex flex-col relative bg-white dark:bg-zinc-900/30" :class="!activeConversation ? 'hidden md:flex' : 'flex'">
+      <section class="flex-1 min-h-0 flex flex-col relative bg-white dark:bg-zinc-900/30" :class="!activeConversation ? 'hidden md:flex' : 'flex'">
         <!-- Ambient Glows -->
         <div class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-brand/5 dark:bg-brand/10 blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -103,9 +103,13 @@
           <p class="text-xs max-w-[240px] leading-relaxed text-zinc-400">Pick a room or click <strong>+</strong> to start a DM, or the <strong>group icon</strong> to create a group.</p>
         </div>
 
-        <div v-if="activeConversation" class="flex-1 flex overflow-hidden relative z-10">
+        <div v-if="activeConversation" class="flex-1 min-h-0 flex overflow-hidden relative z-10">
           <!-- Messages Column -->
-          <div class="flex-1 overflow-y-auto p-4 sm:p-8 flex flex-col gap-6 custom-scrollbar" ref="chatContainer">
+          <div
+            class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-8 flex flex-col gap-6 custom-scrollbar"
+            :style="{ paddingBottom: keyboardOffset ? `${keyboardOffset + 24}px` : undefined }"
+            ref="chatContainer"
+          >
             <!-- Chat Bubbles -->
             <div 
               v-for="(msg, index) in messages" 
@@ -262,7 +266,11 @@
           </aside>
         </div>
 
-        <footer v-if="activeConversation" class="p-4 sm:p-6 z-10">
+        <footer
+          v-if="activeConversation"
+          class="chat-composer sticky bottom-0 shrink-0 border-t border-zinc-100 bg-white/95 p-4 shadow-[0_-12px_30px_rgba(255,255,255,0.85)] backdrop-blur-xl dark:border-white/5 dark:bg-zinc-950/95 dark:shadow-[0_-12px_30px_rgba(9,9,11,0.55)] sm:p-6 z-20"
+          :style="{ transform: `translateY(-${keyboardOffset}px)` }"
+        >
           <form @submit.prevent="sendMessage">
             <NeoCard variant="depressed" class="!rounded-[28px] p-2 border-[0.5px] border-black/5 dark:border-white/5 bg-zinc-50/50 dark:bg-zinc-950/40">
               <div class="flex items-end gap-2 w-full h-full">
@@ -271,6 +279,8 @@
                   v-model="newMessage"
                   @keydown.enter.exact.prevent="sendMessage"
                   @input="adjustTextareaHeight"
+                  @focus="handleComposerFocus"
+                  @blur="handleComposerBlur"
                   :disabled="isLoading"
                   placeholder="Type a message..." 
                   rows="1"
@@ -440,6 +450,8 @@ const convoInterval = ref(null);
 const chatContainer = ref(null);
 const isLoading = ref(false);
 const messageInput = ref(null);
+const keyboardOffset = ref(0);
+const composerFocused = ref(false);
 
 // Audio Assets
 const typingAudio = new Audio('https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3');
@@ -468,6 +480,33 @@ const adjustTextareaHeight = () => {
   el.style.height = 'auto';
   el.style.height = (el.scrollHeight) + 'px';
   playTypingSound();
+  updateKeyboardOffset();
+};
+
+const updateKeyboardOffset = () => {
+  if (!composerFocused.value || !window.visualViewport) {
+    keyboardOffset.value = 0;
+    return;
+  }
+
+  const viewport = window.visualViewport;
+  const hiddenHeight = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+  keyboardOffset.value = window.innerWidth < 768 ? Math.max(0, hiddenHeight - 8) : 0;
+  scrollToBottom();
+};
+
+const handleComposerFocus = () => {
+  composerFocused.value = true;
+  updateKeyboardOffset();
+  window.setTimeout(updateKeyboardOffset, 80);
+  window.setTimeout(updateKeyboardOffset, 260);
+};
+
+const handleComposerBlur = () => {
+  composerFocused.value = false;
+  window.setTimeout(() => {
+    keyboardOffset.value = 0;
+  }, 120);
 };
 
 // Markdown setup
@@ -832,6 +871,8 @@ const startPolling = () => {
 };
 
 onMounted(async () => {
+  window.visualViewport?.addEventListener('resize', updateKeyboardOffset);
+  window.visualViewport?.addEventListener('scroll', updateKeyboardOffset);
   const userData = localStorage.getItem('user');
   if (userData) {
     try { const p = JSON.parse(userData); currentUserId.value = p._id || p.id; } catch { /* */ }
@@ -846,6 +887,8 @@ onMounted(async () => {
 onUnmounted(() => {
   if (messageInterval.value) clearInterval(messageInterval.value);
   if (convoInterval.value) clearInterval(convoInterval.value);
+  window.visualViewport?.removeEventListener('resize', updateKeyboardOffset);
+  window.visualViewport?.removeEventListener('scroll', updateKeyboardOffset);
 });
 </script>
 
@@ -882,5 +925,10 @@ onUnmounted(() => {
 }
 .markdown-body p:last-child {
   margin-bottom: 0;
+}
+
+.chat-composer {
+  transition: transform 180ms ease;
+  will-change: transform;
 }
 </style>

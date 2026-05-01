@@ -12,9 +12,9 @@
               PREPUP BETTER STUDYING <br/> SYSTEM: ONLINE READY
             </p>
             <nav class="flex gap-6 mt-4">
-              <a href="#" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Privacy</a>
-              <a href="#" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Terms</a>
-              <a href="#" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Contact</a>
+              <router-link to="/privacy" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Privacy</router-link>
+              <router-link to="/terms" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Terms</router-link>
+              <router-link to="/help" class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 hover:text-white transition-colors">Contact</router-link>
             </nav>
           </div>
         </div>
