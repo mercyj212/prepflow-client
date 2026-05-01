@@ -91,7 +91,7 @@
 
                 <div class="h-6 w-px bg-zinc-300 dark:bg-zinc-700"></div>
 
-                <!-- Paystack Inline -->
+                <!-- Paystack -->
                 <svg width="175" height="31" viewBox="0 0 175 31" class="h-6" xmlns="http://www.w3.org/2000/svg">
                   <g fill="none" fill-rule="evenodd">
                     <g transform="translate(0 .928)" fill="#09A5DB">
@@ -126,13 +126,11 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { CreditCard, Check, ArrowRight, ArrowLeft, Loader2 } from 'lucide-vue-next';
 import api from '../api/axios';
-import { useAuthStore } from '../store/auth';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
 
 const route = useRoute();
 const router = useRouter();
-const authStore = useAuthStore();
 
 const loading = ref(true);
 const isProcessing = ref(false);
@@ -168,72 +166,30 @@ const fetchCourseDetails = async () => {
   }
 };
 
-const loadPaystack = () => {
-  return new Promise((resolve) => {
-    if (window.PaystackPop) return resolve();
-    const script = document.createElement('script');
-    script.src = 'https://js.paystack.co/v1/inline.js';
-    script.async = true;
-    script.onload = resolve;
-    document.body.appendChild(script);
-  });
-};
-
 const initiatePayment = async () => {
   if (isProcessing.value) return;
-  
-  if (!import.meta.env.VITE_PAYSTACK_PUBLIC_KEY) {
-    alert('Payment system configuration missing. Please contact support.');
-    console.error('[PAYMENT_ERROR]: VITE_PAYSTACK_PUBLIC_KEY is not defined.');
-    return;
-  }
 
   isProcessing.value = true;
   
   try {
-    await loadPaystack();
-    
+    if (!course.value?.price || course.value.price <= 0) {
+      alert('This course does not have a price set. Please contact support.');
+      isProcessing.value = false;
+      return;
+    }
+
     const { data } = await api.post('/payments/initialize', {
       courseId: course.value._id
     });
-    
-    const handler = window.PaystackPop.setup({
-      key: import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
-      email: authStore.user.email,
-      amount: course.value.price * 100,
-      ref: data.reference,
-      onClose: () => {
-        isProcessing.value = false;
-      },
-      callback: (response) => {
-        handlePaymentSuccess(response);
-      }
-    });
-    
-    handler.openIframe();
+
+    if (!data.authorization_url) {
+      throw new Error('Payment authorization URL was not returned.');
+    }
+
+    window.location.href = data.authorization_url;
   } catch (err) {
     console.error('[PAYMENT_INIT_ERR]:', err);
     alert(err.response?.data?.message || 'Payment initiation failed.');
-    isProcessing.value = false;
-  }
-};
-
-const handlePaymentSuccess = async (response) => {
-  try {
-    await api.get(`/payments/verify/${response.reference}`);
-    // Success! Redirect to success or back to course
-    router.push({
-      name: 'subjects',
-      params: {
-        path: course.value.path || 'university',
-        facultyId: course.value.department?.faculty?._id || course.value.department?.faculty || 'unknown',
-        departmentId: course.value.department?._id || course.value.department || 'unknown'
-      }
-    });
-  } catch (err) {
-    console.error('[PAYMENT_VERIFY_ERR]:', err);
-    alert('Payment verification failed.');
-  } finally {
     isProcessing.value = false;
   }
 };

@@ -31,6 +31,21 @@ root.appendChild(renderer.domElement);
 // Procedural Audio System
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let engineOsc, windNoise, masterGain;
+const GAME_AUDIO_LEVEL = 0.16;
+
+function setGameAudioActive(active) {
+  if (!masterGain || audioCtx.state === 'closed') return;
+  const target = active ? GAME_AUDIO_LEVEL : 0.0001;
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  masterGain.gain.setTargetAtTime(target, audioCtx.currentTime, active ? 0.12 : 0.03);
+}
+
+function stopGameAudioNow() {
+  if (!masterGain || audioCtx.state === 'closed') return;
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+}
+window.stopGameAudioNow = stopGameAudioNow;
 
 function initAudio() {
   if (masterGain) return;
@@ -43,7 +58,7 @@ function initAudio() {
   compressor.release.value = 0.18;
   masterGain.connect(compressor);
   compressor.connect(audioCtx.destination);
-  masterGain.gain.value = 0.16;
+  masterGain.gain.value = 0.0001;
 
   // Soft engine bed
   engineOsc = audioCtx.createOscillator();
@@ -752,6 +767,7 @@ startBtn.onclick = () => {
     enableTiltControls();
     startOverlay.style.display = 'none';
     isGameActive = true;
+    setGameAudioActive(true);
     startTime = Date.now();
 };
 
@@ -1193,7 +1209,7 @@ function spawnTraffic(zPos) {
   // Hybrid Pool: 50% GLTF Model, 50% Procedural for guaranteed variety
     
 
-    if (questions && questions.length > 0 && Math.random() > 0.5) {
+  if (trafficTemplates.length > 0 && Math.random() > 0.5) {
     const template = trafficTemplates[Math.floor(Math.random() * trafficTemplates.length)];
     vehicle = template.clone();
     type = template.userData.type || 'sedan';
@@ -1207,9 +1223,9 @@ function spawnTraffic(zPos) {
   vehicle.position.set(lane, 0, zPos);
   scene.add(vehicle);
 
-  let speed = 0.12 + Math.random() * 0.1;
-  if (type === 'suv') speed *= 0.7;
-  if (type === 'premium') speed *= 1.2;
+  let speed = 0.42 + Math.random() * 0.24;
+  if (type === 'suv') speed *= 0.82;
+  if (type === 'premium') speed *= 1.25;
 
   trafficCars.push({ mesh: vehicle, speed, isStatic: false, type });
 }
@@ -1250,7 +1266,12 @@ checkpointNotify.style.display = 'none';
 document.body.appendChild(checkpointNotify);
 
 function animate() {
-  if (!isGameActive) return;
+  if (!isGameActive) {
+    setGameAudioActive(false);
+    composer.render();
+    return;
+  }
+  setGameAudioActive(true);
   time += 0.016;
 
   // Car Physics (Nitro Enhanced)
@@ -1400,7 +1421,7 @@ function animate() {
     
     // Wheel spin only (no body bounce for performance)
     if (car.mesh.userData.wheels && car.speed > 0) {
-      const ws = car.speed * 2;
+      const ws = car.speed * 4;
       for (let i = 0; i < car.mesh.userData.wheels.length; i++) {
         car.mesh.userData.wheels[i].children[0].rotation.x += ws;
       }
@@ -1432,7 +1453,7 @@ function animate() {
       lives--;
       updateLivesHUD();
       if (lives <= 0) {
-        showGameOver();
+        showMissionFailedCinematic();
       } else {
         crashOverlay.style.display = 'flex';
         setTimeout(() => {
@@ -1856,8 +1877,8 @@ function showQuestionModal(idx, qData) {
             checkpointNotify.style.display = 'block';
             setTimeout(() => {
                 modal.remove();
-                if (lives <= 0) {
-                    showGameOver();
+                if (lives <= 0 || levelMistakes >= 3) {
+                    showMissionFailedCinematic();
                 } else {
                     isGameActive = true;
                 }
@@ -1992,8 +2013,41 @@ function updateMasteryBadges() {
     });
 }
 
+let missionFailedCinematicActive = false;
+
+function showMissionFailedCinematic(reason = "MISSION FAILED") {
+    if (missionFailedCinematicActive) return;
+    missionFailedCinematicActive = true;
+    isGameActive = false;
+    setGameAudioActive(false);
+
+    const existingQuestionModal = document.getElementById('question-modal');
+    if (existingQuestionModal) existingQuestionModal.remove();
+
+    const failMsg = document.createElement('div');
+    failMsg.id = 'mission-failed-cinematic';
+    failMsg.style.cssText = 'position:fixed; top:40%; left:50%; transform:translate(-50%, -50%); color:#ff0033; font-weight:900; font-size:4rem; letter-spacing:10px; text-transform:uppercase; z-index:3000; animation:pulse 1.1s infinite; text-shadow:0 0 30px rgba(255,0,51,0.85); pointer-events:none; opacity:0; transition:opacity 0.6s;';
+    failMsg.textContent = reason;
+    document.body.appendChild(failMsg);
+
+    requestAnimationFrame(() => {
+        failMsg.style.opacity = '1';
+    });
+
+    setTimeout(() => {
+        failMsg.style.opacity = '0';
+        setTimeout(() => {
+            failMsg.remove();
+            missionFailedCinematicActive = false;
+            showGameOver();
+        }, 800);
+    }, 1800);
+}
+
 function showGameOver() {
     isGameActive = false;
+    const existingOverlay = document.getElementById('game-over-overlay');
+    if (existingOverlay) existingOverlay.remove();
     const overlay = document.createElement('div');
     overlay.id = 'game-over-overlay';
     overlay.className = 'overlay-active';
@@ -2017,6 +2071,12 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 });
+
+window.addEventListener('visibilitychange', () => {
+  if (document.hidden) stopGameAudioNow();
+});
+window.addEventListener('pagehide', stopGameAudioNow);
+window.addEventListener('beforeunload', stopGameAudioNow);
 
 // Start Animation Loop
 renderer.setAnimationLoop(animate);

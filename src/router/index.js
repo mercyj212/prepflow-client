@@ -36,6 +36,7 @@ import EducationPathSelectorView from '../views/EducationPathSelectorView.vue';
 import DepartmentHubView from '../views/DepartmentHubView.vue';
 import DepartmentListView from '../views/DepartmentListView.vue';
 import PaymentView from '../views/PaymentView.vue';
+import PaymentVerifyView from '../views/PaymentVerifyView.vue';
 import SpeedRecallView from '../views/SpeedRecallView.vue';
 
 const routes = [
@@ -55,6 +56,12 @@ const routes = [
     path: '/checkout/:courseId',
     name: 'checkout',
     component: PaymentView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/payment/verify',
+    name: 'payment-verify',
+    component: PaymentVerifyView,
     meta: { requiresAuth: true }
   },
   {

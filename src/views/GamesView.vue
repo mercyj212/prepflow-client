@@ -143,7 +143,7 @@
         <div class="mt-12 mb-8">
           <div class="flex items-center justify-between mb-6">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-[12px] bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center shadow-neo-inner">
+              <div class="w-10 h-10 flex items-center justify-center">
                 <Trophy class="w-5 h-5 text-zinc-800 dark:text-zinc-100" />
               </div>
               <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">
@@ -259,7 +259,6 @@
                 <!-- 1st Place Trophy -->
                 <div v-if="idx === 0" class="flex items-center justify-center pr-2">
                   <div class="relative animate-trophy-shake">
-                    <div class="absolute inset-0 bg-yellow-400/30 blur-2xl rounded-full animate-pulse"></div>
                     <img src="/gold_trophy.png" alt="1st Place Trophy" class="w-16 h-16 object-contain relative z-10 drop-shadow-2xl" />
                   </div>
                 </div>

@@ -78,6 +78,7 @@
             <tr class="bg-zinc-50/50 dark:bg-zinc-900/50">
               <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-white/5">Course Information</th>
               <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-white/5">Hierarchy</th>
+              <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-white/5">Price (₦)</th>
               <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-white/5">Status</th>
               <th class="px-6 md:px-8 py-5 text-[10px] font-black uppercase tracking-widest text-zinc-400 border-b border-zinc-100 dark:border-white/5 text-right">Actions</th>
             </tr>
@@ -104,6 +105,10 @@
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-brand/10 rounded text-brand">{{ course.level }}</span>
                   </div>
                 </div>
+              </td>
+              <td class="px-6 md:px-8 py-6">
+                <span v-if="course.price > 0" class="text-sm font-bold text-zinc-900 dark:text-zinc-100">₦{{ course.price?.toLocaleString() }}</span>
+                <span v-else class="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 bg-red-50 dark:bg-red-900/20 text-red-500 rounded">No Price</span>
               </td>
               <td class="px-6 md:px-8 py-6">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 text-[10px] font-black uppercase tracking-widest">
@@ -137,12 +142,45 @@
         </table>
       </div>
     </NeoCard>
+
+    <!-- Edit Modal -->
+    <div v-if="editForm.show" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-md">
+      <NeoCard class="w-full max-w-md !rounded-[32px] p-8 shadow-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-white/5">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-black text-zinc-900 dark:text-white uppercase tracking-tight">Edit Course</h3>
+          <button @click="editForm.show = false" class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-400 transition-colors">
+            <X :size="18" />
+          </button>
+        </div>
+        <p class="text-xs font-bold text-zinc-400 uppercase tracking-widest mb-6">{{ editForm.title }}</p>
+
+        <div class="space-y-4 mb-8">
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Course Price (₦)</label>
+            <input
+              v-model.number="editForm.price"
+              type="number"
+              min="0"
+              placeholder="e.g. 2000"
+              class="w-full h-12 px-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand/20 outline-none"
+            />
+          </div>
+        </div>
+
+        <div class="flex gap-3">
+          <button @click="editForm.show = false" class="flex-1 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-widest hover:bg-zinc-200 transition-colors">Cancel</button>
+          <button @click="saveEdit" :disabled="editForm.saving" class="flex-1 h-12 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-bold text-xs uppercase tracking-widest hover:opacity-90 transition-all shadow-lg disabled:opacity-50">
+            {{ editForm.saving ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </NeoCard>
+    </div>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue';
-import { Plus, Book, Edit3, Trash2, Search, ShieldCheck } from 'lucide-vue-next';
+import { Plus, Book, Edit3, Trash2, Search, ShieldCheck, X } from 'lucide-vue-next';
 import NeoCard from '../../components/common/NeoCard.vue';
 import CourseCreator from '../../components/Admin/CourseCreator.vue';
 import { useAdminStore } from '../../store/admin';
@@ -259,9 +297,23 @@ const handleDelete = async (id) => {
   }
 };
 
+const editForm = ref({ show: false, id: null, title: '', price: 0, saving: false });
+
 const handleEdit = (course) => {
-  // Logic for opening edit modal/drawer
-  alert('Edit logic coming soon');
+  editForm.value = { show: true, id: course._id, title: course.title, price: course.price || 0, saving: false };
+};
+
+const saveEdit = async () => {
+  editForm.value.saving = true;
+  try {
+    await api.put(`/courses/${editForm.value.id}`, { price: editForm.value.price });
+    await adminStore.fetchCoreData();
+    editForm.value.show = false;
+  } catch (err) {
+    alert(err.response?.data?.message || 'Failed to update course');
+  } finally {
+    editForm.value.saving = false;
+  }
 };
 
 onMounted(async () => {

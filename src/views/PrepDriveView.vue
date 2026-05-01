@@ -312,6 +312,17 @@ const closeReport = () => {
     }
 };
 
+const returnToMissionSelect = () => {
+  missionReport.value = null;
+  showLevelSelect.value = false;
+  selectingCourse.value = true;
+  gameStarted.value = false;
+  loading.value = false;
+  iframeLoaded.value = false;
+  selectedStartLevel.value = null;
+  if (selectionContainer.value) selectionContainer.value.scrollTop = 0;
+};
+
 const fetchCourses = async () => {
   loadingCourses.value = true;
   try {
@@ -430,7 +441,7 @@ const onFrameLoad = () => {
 
 const handleMessage = async (event) => {
   if (event.data === 'EXIT_PREPDRIVE') {
-    router.push('/games');
+    returnToMissionSelect();
   } else if (event.data && event.data.type === 'GAME_OVER') {
     // Show report
     missionReport.value = {

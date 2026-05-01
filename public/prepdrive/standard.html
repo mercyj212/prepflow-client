@@ -23,6 +23,29 @@
       text-transform: uppercase;
     }
 
+    #exit-game-btn {
+      position: fixed;
+      top: max(14px, env(safe-area-inset-top));
+      right: max(14px, env(safe-area-inset-right));
+      z-index: 9999;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,0.18);
+      background: rgba(24,24,27,0.88);
+      color: #f4f4f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.35);
+      transition: transform 0.12s ease, background 0.12s ease, color 0.12s ease;
+    }
+    #exit-game-btn:hover { background: #f4f4f5; color: #18181b; }
+    #exit-game-btn:active { transform: scale(0.94); }
+    #exit-game-btn svg { width: 20px; height: 20px; stroke-width: 2.5; }
+
     .brutalist-panel {
       background: rgba(24, 24, 27, 0.95); /* zinc-900 */
       border: 1px solid rgba(255, 255, 255, 0.1);
@@ -56,7 +79,7 @@
     .cp-subtext { font-size: 9px; font-weight: 600; letter-spacing: 1px; color: #a1a1aa; }
 
     .top-right-hud {
-      position: absolute; top: 20px; right: 20px;
+      position: absolute; top: 20px; right: 78px;
       display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
     }
     .time-value { font-size: 22px; font-weight: 600; font-family: 'Inter', sans-serif; color: #f4f4f5; letter-spacing: -1px; }
@@ -137,35 +160,53 @@
     }
     .steering-hand {
       position: absolute;
-      top: 48px;
-      width: 34px;
-      height: 24px;
-      border-radius: 14px 14px 12px 12px;
-      background: linear-gradient(180deg, #f1c7a3, #b87953);
+      top: 39px;
+      width: 32px;
+      height: 42px;
+      border-radius: 16px 16px 13px 13px;
+      background:
+        radial-gradient(circle at 50% 18%, rgba(255,255,255,0.26), transparent 28%),
+        linear-gradient(180deg, #f5c9a4 0%, #d89566 58%, #a95f3f 100%);
       border: 1px solid rgba(0,0,0,0.22);
-      box-shadow: inset 0 3px 3px rgba(255,255,255,0.22), 0 4px 8px rgba(0,0,0,0.35);
-      z-index: 3;
+      box-shadow: inset 0 4px 4px rgba(255,255,255,0.2), inset 0 -5px 7px rgba(90,40,24,0.24), 0 5px 10px rgba(0,0,0,0.38);
+      z-index: 5;
     }
+    .steering-hand::before,
     .steering-hand::after {
       content: "";
       position: absolute;
-      top: 5px;
-      width: 9px;
-      height: 18px;
+      background: linear-gradient(180deg, #f8d2b1, #bd744d);
+      border: 1px solid rgba(0,0,0,0.14);
+      box-shadow: inset 0 2px 2px rgba(255,255,255,0.2);
+    }
+    .steering-hand::before {
+      top: -12px;
+      left: 4px;
+      width: 6px;
+      height: 19px;
       border-radius: 999px;
-      background: linear-gradient(180deg, #f6d3b4, #b87953);
-      border: 1px solid rgba(0,0,0,0.12);
+      box-shadow:
+        7px -1px 0 #efbd99,
+        14px 0 0 #e8ae86,
+        21px 3px 0 #d99a72,
+        inset 0 2px 2px rgba(255,255,255,0.2);
+    }
+    .steering-hand::after {
+      top: 17px;
+      width: 12px;
+      height: 23px;
+      border-radius: 999px;
     }
     .steering-hand-left {
-      left: 4px;
-      transform: rotate(24deg);
+      left: 7px;
+      transform: rotate(34deg);
     }
-    .steering-hand-left::after { right: -5px; transform: rotate(-18deg); }
+    .steering-hand-left::after { right: -7px; transform: rotate(-39deg); }
     .steering-hand-right {
-      right: 4px;
-      transform: rotate(-24deg);
+      right: 7px;
+      transform: rotate(-34deg);
     }
-    .steering-hand-right::after { left: -5px; transform: rotate(18deg); }
+    .steering-hand-right::after { left: -7px; transform: rotate(39deg); }
     #joystick-knob {
       width: 34px;
       height: 34px;
@@ -215,8 +256,9 @@
 
     @media (max-width: 768px) {
       .brutalist-panel { border-radius: 18px; padding: 10px 12px; }
+      #exit-game-btn { width: 40px; height: 40px; border-radius: 14px; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); }
       .top-left-hud { top: max(10px, env(safe-area-inset-top)); left: 10px; min-width: 150px; max-width: 44vw; }
-      .top-right-hud { top: max(10px, env(safe-area-inset-top)); right: 10px; max-width: 38vw; gap: 6px; }
+      .top-right-hud { top: max(58px, calc(env(safe-area-inset-top) + 52px)); right: 10px; max-width: 38vw; gap: 6px; }
       .top-center-hud { top: max(86px, calc(env(safe-area-inset-top) + 76px)); padding: 6px 14px; border-radius: 18px; max-width: calc(100vw - 24px); }
       .score-label { font-size: 7px; letter-spacing: 1.2px; }
       .score-value { font-size: 20px; letter-spacing: -0.5px; }
@@ -231,8 +273,11 @@
       .steering-backplate { border-radius: 30px; }
       #steering-wheel-icon, .steering-wheel-svg { width: 88px !important; height: 88px !important; }
       #joystick-knob { width: 28px !important; height: 28px !important; }
-      .steering-hand { top: 35px; width: 26px; height: 19px; }
-      .steering-hand::after { width: 7px; height: 14px; }
+      .steering-hand { top: 30px; width: 24px; height: 32px; border-radius: 13px 13px 10px 10px; }
+      .steering-hand::before { top: -9px; left: 3px; width: 5px; height: 14px; box-shadow: 5px -1px 0 #efbd99, 10px 0 0 #e8ae86, 15px 2px 0 #d99a72, inset 0 2px 2px rgba(255,255,255,0.2); }
+      .steering-hand::after { top: 13px; width: 9px; height: 18px; }
+      .steering-hand-left { left: 4px; }
+      .steering-hand-right { right: 4px; }
       .steering-caption { display: none; }
       .ctrl-group { gap: 8px !important; }
       .btn-square { width: 52px !important; height: 52px !important; border-radius: 14px; font-size: 9px !important; }
@@ -246,7 +291,8 @@
 
     @media (max-height: 520px) and (orientation: landscape) {
       .top-left-hud, .top-right-hud { top: 8px; transform: scale(0.86); transform-origin: top left; }
-      .top-right-hud { transform-origin: top right; }
+      #exit-game-btn { width: 36px; height: 36px; border-radius: 12px; top: 8px; right: 8px; }
+      .top-right-hud { top: 52px; right: 8px; transform-origin: top right; }
       .top-center-hud { top: 8px; transform: translateX(-50%) scale(0.82); }
       .bottom-center-hud { bottom: calc(env(safe-area-inset-bottom) + 82px); transform: translateX(-50%) scale(0.82); }
       .controls-container { bottom: max(8px, env(safe-area-inset-bottom)); padding: 0 18px; }
@@ -254,8 +300,9 @@
       .steering-backplate { border-radius: 26px; }
       #steering-wheel-icon, .steering-wheel-svg { width: 74px !important; height: 74px !important; }
       #joystick-knob { width: 24px !important; height: 24px !important; }
-      .steering-hand { top: 30px; width: 22px; height: 16px; }
-      .steering-hand::after { width: 6px; height: 12px; }
+      .steering-hand { top: 25px; width: 21px; height: 28px; border-radius: 12px 12px 9px 9px; }
+      .steering-hand::before { top: -8px; left: 3px; width: 4px; height: 12px; box-shadow: 5px -1px 0 #efbd99, 9px 0 0 #e8ae86, 13px 2px 0 #d99a72, inset 0 2px 2px rgba(255,255,255,0.2); }
+      .steering-hand::after { top: 12px; width: 8px; height: 15px; }
       .pedal { height: 62px; }
       .pedal-accel { height: 76px; }
       .btn-square { width: 46px !important; height: 46px !important; }
@@ -276,6 +323,12 @@
   </script>
 </head>
 <body>
+  <button id="exit-game-btn" type="button" aria-label="Exit PrepDrive" onclick="window.stopGameAudioNow?.(); window.parent.postMessage('EXIT_PREPDRIVE', '*')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M18 6 6 18"></path>
+      <path d="m6 6 12 12"></path>
+    </svg>
+  </button>
   <div id="root"></div>
   <div id="hud-overlay">
     <div class="top-left-hud brutalist-panel">

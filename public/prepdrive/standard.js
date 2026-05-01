@@ -24,6 +24,21 @@ document.getElementById('root').appendChild(renderer.domElement);
 // Audio System
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 let engineOsc, windNoise, masterGain;
+const GAME_AUDIO_LEVEL = 0.16;
+
+function setGameAudioActive(active) {
+  if (!masterGain || audioCtx.state === 'closed') return;
+  const target = active ? GAME_AUDIO_LEVEL : 0.0001;
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  masterGain.gain.setTargetAtTime(target, audioCtx.currentTime, active ? 0.12 : 0.03);
+}
+
+function stopGameAudioNow() {
+  if (!masterGain || audioCtx.state === 'closed') return;
+  masterGain.gain.cancelScheduledValues(audioCtx.currentTime);
+  masterGain.gain.setValueAtTime(0.0001, audioCtx.currentTime);
+}
+window.stopGameAudioNow = stopGameAudioNow;
 
 function initAudio() {
   if (masterGain) return;
@@ -36,7 +51,7 @@ function initAudio() {
   compressor.release.value = 0.18;
   masterGain.connect(compressor);
   compressor.connect(audioCtx.destination);
-  masterGain.gain.value = 0.16;
+  masterGain.gain.value = 0.0001;
   engineOsc = audioCtx.createOscillator();
   engineOsc.type = 'triangle';
   const engineBodyOsc = audioCtx.createOscillator();
@@ -351,7 +366,12 @@ function spawnFinishZone(z) {
 
 // Game Loop
 function animate() {
-    if (!isGameActive) return;
+    if (!isGameActive) {
+        setGameAudioActive(false);
+        composer.render();
+        return;
+    }
+    setGameAudioActive(true);
     
     // Physics
     if (keys.w) carSpeed = Math.min(carSpeed + 0.005, 0.7);
@@ -439,6 +459,7 @@ startBtn.onclick = () => {
     enableTiltControls();
     startOverlay.style.display = 'none';
     isGameActive = true;
+    setGameAudioActive(true);
 };
 startBtn.style.display = 'block';
 loadingStatus.textContent = 'SYSTEM READY';
@@ -470,3 +491,9 @@ window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
     composer.setSize(window.innerWidth, window.innerHeight);
 });
+
+window.addEventListener('visibilitychange', () => {
+    if (document.hidden) stopGameAudioNow();
+});
+window.addEventListener('pagehide', stopGameAudioNow);
+window.addEventListener('beforeunload', stopGameAudioNow);
