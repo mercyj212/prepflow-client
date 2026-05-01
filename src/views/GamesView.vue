@@ -191,20 +191,20 @@
             <div v-else-if="leaderboard.length === 0" class="text-sm text-zinc-500 text-center py-10">
               No scores recorded yet for {{ activeLeaderboard === 'prepDrive' ? 'PrepDrive' : 'Speed Recall' }}.
             </div>
-            <div v-else class="flex flex-col gap-4">
+            <div v-else class="flex flex-col gap-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2 pb-2">
               <div 
                 v-for="(player, idx) in leaderboard" 
                 :key="idx" 
                 :class="[
-                  'flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-all relative overflow-hidden',
-                  idx === 0 ? 'p-8 scale-[1.02] border-brand/30 dark:border-brand/40 shadow-xl shadow-brand/10 ring-1 ring-brand/20' : 'hover:border-zinc-200 dark:hover:border-zinc-600'
+                  'flex items-center gap-4 p-4 rounded-2xl bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-100 dark:border-zinc-700/50 transition-all relative overflow-hidden shrink-0',
+                  idx === 0 ? 'p-8 scale-[1.02] border-zinc-900/30 dark:border-white/40 shadow-xl ring-1 ring-zinc-900/20 dark:ring-white/20' : 'hover:border-zinc-200 dark:hover:border-zinc-600'
                 ]"
               >
                 <!-- Rank Badge -->
                 <div 
                   :class="[
                     'w-12 h-12 rounded-2xl flex items-center justify-center text-xs font-black shrink-0 transition-transform',
-                    idx === 0 ? 'bg-brand text-white dark:text-zinc-900 scale-110 shadow-lg shadow-brand/20' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
+                    idx === 0 ? 'bg-zinc-900 dark:bg-white text-white dark:text-black scale-110 shadow-lg' : 'bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'
                   ]"
                 >
                   {{ getRankLabel(idx) }}

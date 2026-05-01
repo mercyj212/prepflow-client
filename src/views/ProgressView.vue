@@ -32,10 +32,11 @@
            <!-- Chart 2: Subject Mastery -->
            <NeoCard variant="extruded" class="!rounded-[28px] p-6 h-80 flex flex-col relative overflow-hidden">
              <div class="flex items-center gap-3 mb-4">
-               <div class="w-10 h-10 rounded-[14px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner">
-                 <Target :size="20" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400" />
+               <div class="absolute -right-16 -top-20 h-48 w-48 rounded-full bg-emerald-500/10 blur-3xl"></div>
+               <div class="w-10 h-10 rounded-[14px] bg-emerald-500/10 dark:bg-emerald-500/15 flex items-center justify-center shadow-neo-inner ring-1 ring-emerald-500/15">
+                 <Target :size="20" :stroke-width="1.5" class="text-emerald-600 dark:text-emerald-400" />
                </div>
-               <p class="text-[11px] font-black uppercase tracking-widest text-zinc-400">Subject Mastery</p>
+               <p class="text-[11px] font-black uppercase tracking-widest text-emerald-600/80 dark:text-emerald-400/80">Subject Mastery</p>
              </div>
              
              <div class="flex-1 w-full min-h-0 relative">
@@ -69,7 +70,7 @@
 
 <script setup>
 import { computed, onMounted } from 'vue';
-import { LineChart as LineChartIcon, Target, Microscope } from 'lucide-vue-next';
+import { LineChart as LineChartIcon, Target } from 'lucide-vue-next';
 import BaseSkeleton from '../components/common/BaseSkeleton.vue';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
@@ -170,7 +171,15 @@ const subjectChartData = computed(() => {
     datasets: [{
       label: 'Mastery %',
       data: data.map(d => d.mastery),
-      backgroundColor: '#18181b', // zinc-900 (dynamic would be better but this is js)
+      backgroundColor: (context) => {
+        const mastery = context.raw || 0;
+        if (mastery >= 80) return '#10b981';
+        if (mastery >= 50) return 'rgba(16, 185, 129, 0.72)';
+        return 'rgba(16, 185, 129, 0.42)';
+      },
+      hoverBackgroundColor: '#059669',
+      borderColor: 'rgba(16, 185, 129, 0.85)',
+      borderWidth: 1,
       borderRadius: 6,
       barThickness: 'flex',
       maxBarThickness: 32

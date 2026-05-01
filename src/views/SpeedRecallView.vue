@@ -1,6 +1,7 @@
 <template>
   <NeoAppShell>
-    <div class="h-full flex flex-col items-center justify-center relative overflow-hidden bg-zinc-50 dark:bg-zinc-950 p-4 md:p-10">
+    <div class="h-full w-full relative overflow-x-hidden overflow-y-auto bg-zinc-50 dark:bg-zinc-950 custom-scrollbar">
+      <div class="min-h-full flex flex-col items-center justify-center relative p-4 md:p-10">
       <!-- Background Ambient Glows -->
       <div class="absolute -top-40 -left-40 w-96 h-96 bg-brand/5 dark:bg-brand/10 blur-[120px] rounded-full pointer-events-none"></div>
       <div class="absolute -bottom-40 -right-40 w-96 h-96 bg-zinc-900/5 dark:bg-zinc-100/5 blur-[120px] rounded-full pointer-events-none"></div>
@@ -28,8 +29,8 @@
                   @click="selectedCourse = course"
                   class="w-full text-left p-4 rounded-2xl border transition-all flex items-center justify-between group"
                   :class="selectedCourse?._id === course._id 
-                    ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-zinc-900 shadow-xl' 
-                    : 'bg-white dark:bg-zinc-900 border-zinc-100 dark:border-white/5 text-zinc-600 hover:border-brand/50'"
+                    ? 'bg-zinc-900 dark:bg-white border-zinc-900 dark:border-white text-white dark:text-black shadow-xl' 
+                    : 'bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-800'"
                 >
                   <span class="text-sm font-bold">{{ course.title }}</span>
                   <div class="flex items-center gap-2">
@@ -43,12 +44,12 @@
             <button 
               @click="startGame"
               :disabled="!selectedCourse || loadingQuizzes"
-              class="w-full h-16 bg-brand text-white font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs shadow-xl shadow-brand/20 active:scale-95 disabled:opacity-50 disabled:grayscale"
+              class="w-full h-16 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-2xl transition-all uppercase tracking-[0.2em] text-xs shadow-xl active:scale-95 disabled:opacity-50 disabled:grayscale"
             >
               <span v-if="loadingQuizzes" class="flex items-center justify-center gap-2">
                 <RotateCw class="animate-spin" :size="16" /> Loading Questions...
               </span>
-              <span v-else>Engage Simulation</span>
+              <span v-else>Start Game</span>
             </button>
           </div>
         </NeoCard>
@@ -77,7 +78,7 @@
                    <div v-for="i in totalQuestions" :key="i" class="w-3 h-1.5 rounded-full" :class="i <= currentIndex + 1 ? 'bg-zinc-900 dark:bg-white' : 'bg-zinc-200 dark:bg-zinc-800'"></div>
                 </div>
              </div>
-             <button @click="quitGame" class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-colors">
+             <button @click="requestQuit" class="w-10 h-10 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 flex items-center justify-center text-zinc-400 hover:text-red-500 transition-colors">
                <X :size="18" />
              </button>
           </div>
@@ -89,7 +90,7 @@
            <div class="mb-8 overflow-hidden h-8">
               <Transition name="slide-up" mode="out-in">
                 <span :key="phase" class="text-[11px] font-black uppercase tracking-[0.4em]" :class="phase === 'RECALL' ? 'text-brand' : 'text-zinc-400'">
-                   {{ phase === 'FLASH' ? 'Memorize Question' : 'Rapid Response Required' }}
+                   {{ phase === 'FLASH' ? 'Memorize Question' : 'Answer Now' }}
                 </span>
               </Transition>
            </div>
@@ -103,8 +104,8 @@
               </div>
 
               <Transition name="fade-scale" mode="out-in">
-                 <h2 :key="currentQuestion?.question" class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white leading-[1.1] tracking-tight">
-                    {{ currentQuestion?.question }}
+                 <h2 :key="currentQuestion?.text" class="text-3xl md:text-5xl font-black text-zinc-900 dark:text-white leading-[1.1] tracking-tight">
+                    {{ currentQuestion?.text }}
                  </h2>
               </Transition>
            </div>
@@ -147,7 +148,7 @@
         </div>
         
         <h1 class="text-5xl font-black text-zinc-900 dark:text-white uppercase tracking-tighter mb-2">Recall Summary</h1>
-        <p class="text-zinc-500 font-medium mb-10">Simulation terminated. Cognitive stats generated.</p>
+        <p class="text-zinc-500 font-medium mb-10">Game over. Here are your results.</p>
 
         <div class="grid grid-cols-2 gap-4 mb-10 text-left">
            <NeoCard variant="depressed" class="p-6">
@@ -169,10 +170,27 @@
         </div>
 
         <div class="flex gap-4">
-           <button @click="gameState = 'SELECT'" class="flex-1 h-14 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-black rounded-2xl uppercase tracking-widest text-[11px] hover:bg-zinc-200 transition-all">New Simulation</button>
+           <button @click="gameState = 'SELECT'" class="flex-1 h-14 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-black rounded-2xl uppercase tracking-widest text-[11px] hover:bg-zinc-200 transition-all">Play Again</button>
            <button @click="$router.push('/games')" class="flex-1 h-14 bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 font-black rounded-2xl uppercase tracking-widest text-[11px] shadow-xl active:scale-95 transition-all">Exit to Hub</button>
         </div>
       </div>
+
+      <!-- Quit Modal -->
+      <div v-if="showQuitModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/40 dark:bg-black/60 backdrop-blur-md">
+        <NeoCard class="w-full max-w-sm !rounded-[32px] p-8 shadow-2xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-white/5 text-center animate-fade-inShadow">
+          <div class="w-16 h-16 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center mx-auto mb-6 text-red-500 ring-4 ring-red-50 dark:ring-red-900/10">
+             <HelpCircle :size="24" :stroke-width="2.5" />
+          </div>
+          <h3 class="text-xl font-black text-zinc-900 dark:text-white uppercase tracking-tight mb-2">Quit Game?</h3>
+          <p class="text-[13px] text-zinc-500 dark:text-zinc-400 mb-8 leading-relaxed">Your current score and streak will be lost.</p>
+          
+          <div class="flex gap-3">
+            <button @click="cancelQuit" class="flex-1 h-12 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white font-bold text-xs uppercase tracking-widest hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">Resume</button>
+            <button @click="confirmQuit" class="flex-1 h-12 rounded-xl bg-red-500 text-white font-bold text-xs uppercase tracking-widest hover:bg-red-600 transition-colors shadow-lg shadow-red-500/20">Quit</button>
+          </div>
+        </NeoCard>
+      </div>
+    </div>
     </div>
   </NeoAppShell>
 </template>
@@ -200,6 +218,7 @@ const maxStreak = ref(0);
 const correctCount = ref(0);
 const feedback = ref(null);
 const loadingQuizzes = ref(false);
+const showQuitModal = ref(false);
 
 // TIMING
 const timer = ref(0);
@@ -211,9 +230,14 @@ const totalTimeTaken = ref(0);
 const currentQuestion = computed(() => questions.value[currentIndex.value]);
 const options = computed(() => {
   if (!currentQuestion.value) return [];
-  // Shuffle options
-  const opts = [...currentQuestion.value.options];
+  // Extract text from options and shuffle
+  const opts = currentQuestion.value.options.map(o => o.text);
   return opts.sort(() => Math.random() - 0.5);
+});
+const correctAnswerText = computed(() => {
+  if (!currentQuestion.value) return null;
+  const correct = currentQuestion.value.options.find(o => o.isCorrect);
+  return correct ? correct.text : null;
 });
 
 const totalQuestions = computed(() => questions.value.length);
@@ -303,7 +327,7 @@ const submitAnswer = (idx) => {
   const selectedText = options.value[idx];
   const timeTaken = Date.now() - startTime.value;
   
-  if (selectedText === currentQuestion.value.answer) {
+  if (selectedText === correctAnswerText.value) {
     handleCorrect(timeTaken);
   } else {
     handleWrong();
@@ -362,10 +386,26 @@ const finishGame = async () => {
   }
 };
 
-const quitGame = () => {
-  if (confirm('Quit simulation? Progress will be lost.')) {
-    gameState.value = 'SELECT';
-    clearInterval(interval.value);
+const requestQuit = () => {
+  showQuitModal.value = true;
+  clearInterval(interval.value);
+};
+
+const confirmQuit = () => {
+  showQuitModal.value = false;
+  gameState.value = 'SELECT';
+};
+
+const cancelQuit = () => {
+  showQuitModal.value = false;
+  // Resume timer if we were in the recall phase
+  if (phase.value === 'RECALL' && feedback.value === null) {
+    interval.value = setInterval(() => {
+      timer.value -= 50;
+      if (timer.value <= 0) {
+        handleTimeout();
+      }
+    }, 50);
   }
 };
 
