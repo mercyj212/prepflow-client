@@ -147,7 +147,7 @@
                 <Trophy class="w-5 h-5 text-zinc-800 dark:text-zinc-100" />
               </div>
               <h2 class="text-2xl font-semibold text-zinc-800 dark:text-zinc-100 tracking-tight">
-                {{ activeLeaderboard === 'prepDrive' ? 'Top Drivers' : 'Top Recalls' }}
+                Top Players
               </h2>
             </div>
 
@@ -175,6 +175,28 @@
               >
                 Recall
               </button>
+              <button 
+                @click="setActiveLeaderboard('conceptMapping')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+                  activeLeaderboard === 'conceptMapping' 
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                ]"
+              >
+                Mapping
+              </button>
+              <button 
+                @click="setActiveLeaderboard('socialDuels')"
+                :class="[
+                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
+                  activeLeaderboard === 'socialDuels' 
+                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                ]"
+              >
+                Duels
+              </button>
             </div>
           </div>
           
@@ -189,7 +211,7 @@
               </div>
             </div>
             <div v-else-if="leaderboard.length === 0" class="text-sm text-zinc-500 text-center py-10">
-              No scores recorded yet for {{ activeLeaderboard === 'prepDrive' ? 'PrepDrive' : 'Speed Recall' }}.
+              No scores recorded yet for {{ getGameName(activeLeaderboard) }}.
             </div>
             <div v-else class="flex flex-col gap-4 max-h-[400px] overflow-y-auto custom-scrollbar pr-2 pb-2">
               <div 
@@ -226,10 +248,10 @@
                         idx === 0 ? 'text-lg text-brand font-bold' : 'text-sm text-emerald-500 dark:text-emerald-400'
                       ]"
                     >
-                      {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveScore : player.speedRecallScore)?.toLocaleString() || 0 }} pts
+                      {{ getScoreForGame(player).toLocaleString() }} pts
                     </span>
                     <span class="text-[11px] text-zinc-400 dark:text-zinc-500">
-                      • {{ (activeLeaderboard === 'prepDrive' ? player.prepDriveAwards : player.speedRecallAwards) || 0 }} awards
+                      • {{ getAwardsForGame(player) }} awards
                     </span>
                   </div>
                 </div>
@@ -237,8 +259,8 @@
                 <!-- 1st Place Trophy -->
                 <div v-if="idx === 0" class="flex items-center justify-center pr-2">
                   <div class="relative animate-trophy-shake">
-                    <div class="absolute inset-0 bg-yellow-500/20 blur-xl rounded-full animate-pulse"></div>
-                    <Trophy :size="48" class="text-yellow-500 relative z-10 filter drop-shadow-lg" />
+                    <div class="absolute inset-0 bg-yellow-400/30 blur-2xl rounded-full animate-pulse"></div>
+                    <img src="/gold_trophy.png" alt="1st Place Trophy" class="w-16 h-16 object-contain relative z-10 drop-shadow-2xl" />
                   </div>
                 </div>
               </div>
@@ -384,6 +406,36 @@ const getRankLabel = (idx) => {
   if (n === 2) return '2nd';
   if (n === 3) return '3rd';
   return n + 'th';
+};
+
+const getGameName = (key) => {
+  const names = {
+    prepDrive: 'PrepDrive',
+    speedRecall: 'Speed Recall',
+    conceptMapping: 'Concept Mapping',
+    socialDuels: 'Social Duels'
+  };
+  return names[key] || 'this game';
+};
+
+const getScoreForGame = (player) => {
+  switch (activeLeaderboard.value) {
+    case 'prepDrive': return player.prepDriveScore || 0;
+    case 'speedRecall': return player.speedRecallScore || 0;
+    case 'conceptMapping': return player.conceptMappingScore || 0;
+    case 'socialDuels': return player.socialDuelsScore || 0;
+    default: return 0;
+  }
+};
+
+const getAwardsForGame = (player) => {
+  switch (activeLeaderboard.value) {
+    case 'prepDrive': return player.prepDriveAwards || 0;
+    case 'speedRecall': return player.speedRecallAwards || 0;
+    case 'conceptMapping': return player.conceptMappingAwards || 0;
+    case 'socialDuels': return player.socialDuelsAwards || 0;
+    default: return 0;
+  }
 };
 
 onMounted(() => {

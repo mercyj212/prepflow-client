@@ -132,7 +132,7 @@
       class="w-full h-full border-0"
       :class="loading || showLevelSelect ? 'opacity-0' : 'opacity-100'"
       style="transition: opacity 0.4s ease;"
-      allow="autoplay"
+      allow="autoplay; accelerometer; gyroscope"
       @load="onFrameLoad"
     />
 

@@ -20,7 +20,7 @@ const renderer = new THREE.WebGLRenderer({
   failIfMajorPerformanceCaveat: false 
 });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -35,22 +35,37 @@ let engineOsc, windNoise, masterGain;
 function initAudio() {
   if (masterGain) return;
   masterGain = audioCtx.createGain();
-  masterGain.connect(audioCtx.destination);
-  masterGain.gain.value = 0.3;
+  const compressor = audioCtx.createDynamicsCompressor();
+  compressor.threshold.value = -28;
+  compressor.knee.value = 24;
+  compressor.ratio.value = 6;
+  compressor.attack.value = 0.008;
+  compressor.release.value = 0.18;
+  masterGain.connect(compressor);
+  compressor.connect(audioCtx.destination);
+  masterGain.gain.value = 0.16;
 
-  // Engine Drone
+  // Soft engine bed
   engineOsc = audioCtx.createOscillator();
-  engineOsc.type = 'sawtooth';
+  engineOsc.type = 'triangle';
+  const engineBodyOsc = audioCtx.createOscillator();
+  engineBodyOsc.type = 'sine';
   const engineGain = audioCtx.createGain();
+  const engineBodyGain = audioCtx.createGain();
   const engineFilter = audioCtx.createBiquadFilter();
   engineFilter.type = 'lowpass';
-  engineFilter.frequency.value = 400;
+  engineFilter.frequency.value = 220;
+  engineFilter.Q.value = 0.45;
   
   engineOsc.connect(engineFilter);
+  engineBodyOsc.connect(engineBodyGain);
   engineFilter.connect(engineGain);
   engineGain.connect(masterGain);
-  engineGain.gain.value = 0.1;
+  engineBodyGain.connect(masterGain);
+  engineGain.gain.value = 0.045;
+  engineBodyGain.gain.value = 0.035;
   engineOsc.start();
+  engineBodyOsc.start();
 
   // Wind Noise
   const bufferSize = 2 * audioCtx.sampleRate,
@@ -69,22 +84,27 @@ function initAudio() {
   windNoise.connect(windFilter);
   windFilter.connect(windGain);
   windGain.connect(masterGain);
-  windGain.gain.value = 0.05;
+  windGain.gain.value = 0.015;
   windNoise.start();
   
-  window.audioData = { engineFilter, engineGain, engineOsc, windFilter, windGain };
+  window.audioData = { engineBodyOsc, engineFilter, engineGain, engineOsc, windFilter, windGain };
 }
 
 function playSFX(freq, type, duration) {
   if (!masterGain) return;
   const osc = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  osc.type = type;
+  const filter = audioCtx.createBiquadFilter();
+  osc.type = type === 'square' || type === 'sawtooth' ? 'triangle' : type;
+  filter.type = 'lowpass';
+  filter.frequency.value = type === 'sawtooth' ? 360 : 1400;
+  filter.Q.value = 0.5;
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
-  g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 0.45), audioCtx.currentTime + duration);
+  g.gain.setValueAtTime(type === 'sawtooth' || type === 'square' ? 0.075 : 0.09, audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-  osc.connect(g);
+  osc.connect(filter);
+  filter.connect(g);
   g.connect(masterGain);
   osc.start();
   osc.stop(audioCtx.currentTime + duration);
@@ -729,6 +749,7 @@ let correctAnswers = 0;
 startBtn.onclick = () => {
     initAudio();
     if (audioCtx.state === 'suspended') audioCtx.resume();
+    enableTiltControls();
     startOverlay.style.display = 'none';
     isGameActive = true;
     startTime = Date.now();
@@ -893,6 +914,12 @@ const envTexture = new THREE.CubeTextureLoader()
 // Realistic Game State
 let zenMode = false;
 const keys = { w: false, a: false, s: false, d: false, space: false };
+let tiltSteer = 0;
+let tiltNeutral = 0;
+let tiltCalibrated = false;
+let tiltControlsEnabled = false;
+const TILT_DEADZONE = 3;
+const TILT_FULL_LOCK = 22;
 let carSpeed = 0;
 const maxNormalSpeed = 0.72; // Reduced for better reaction time
 const maxNitroSpeed = 1.15; // Balanced boost
@@ -922,6 +949,52 @@ const statUnitTotal = document.getElementById('stat-unit-total');
 const progressBar = document.getElementById('progress-bar');
 const pedalAccel = document.getElementById('pedal-accel');
 const pedalBrake = document.getElementById('pedal-brake');
+
+function clamp(value, min, max) {
+  return Math.max(min, Math.min(max, value));
+}
+
+function getLateralTilt(event) {
+  const orientation = screen.orientation?.angle ?? window.orientation ?? 0;
+  if (Math.abs(orientation) === 90) {
+    return orientation > 0 ? event.beta : -event.beta;
+  }
+  return event.gamma;
+}
+
+function handleDeviceTilt(event) {
+  const lateralTilt = getLateralTilt(event);
+  if (typeof lateralTilt !== 'number' || Number.isNaN(lateralTilt)) return;
+
+  if (!tiltCalibrated) {
+    tiltNeutral = lateralTilt;
+    tiltCalibrated = true;
+  }
+
+  const delta = lateralTilt - tiltNeutral;
+  const absDelta = Math.abs(delta);
+  const rawSteer = absDelta <= TILT_DEADZONE
+    ? 0
+    : Math.sign(delta) * clamp((absDelta - TILT_DEADZONE) / (TILT_FULL_LOCK - TILT_DEADZONE), 0, 1);
+
+  tiltSteer = THREE.MathUtils.lerp(tiltSteer, rawSteer, 0.28);
+}
+
+async function enableTiltControls() {
+  if (tiltControlsEnabled || typeof window.DeviceOrientationEvent === 'undefined') return;
+
+  try {
+    if (typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+      const permission = await window.DeviceOrientationEvent.requestPermission();
+      if (permission !== 'granted') return;
+    }
+
+    window.addEventListener('deviceorientation', handleDeviceTilt, true);
+    tiltControlsEnabled = true;
+  } catch (error) {
+    console.warn('Tilt controls unavailable:', error);
+  }
+}
 
 // Level Progression State (150 Questions Total over 5 Levels)
 let currentLevel = 1;
@@ -971,18 +1044,22 @@ const joystickKnob = document.getElementById('joystick-knob');
 const steeringWheelIcon = document.getElementById('steering-wheel-icon');
 let joystickActive = false;
 let joystickOriginX = 0;
+let joystickSteer = 0;
 const JOYSTICK_DEADZONE = 10;
 const JOYSTICK_MAX = 55;
+
+function updateSteeringVisual(steer) {
+  if (!steeringWheelIcon) return;
+  steeringWheelIcon.style.transform = `rotate(${clamp(steer, -1, 1) * 95}deg)`;
+}
 
 function getJoystickDelta(clientX) {
   return Math.max(-JOYSTICK_MAX, Math.min(JOYSTICK_MAX, clientX - joystickOriginX));
 }
 
 function applyJoystick(delta) {
-  joystickKnob.style.transform = `translate(calc(-50% + ${delta}px), -50%)`;
-  // Rotate visual wheel icon
-  const rotation = (delta / JOYSTICK_MAX) * 90; 
-  steeringWheelIcon.style.transform = `rotate(${rotation}deg)`;
+  joystickSteer = clamp(delta / JOYSTICK_MAX, -1, 1);
+  updateSteeringVisual(joystickSteer);
 
   if (Math.abs(delta) < JOYSTICK_DEADZONE) {
     keys.a = false; keys.d = false;
@@ -995,8 +1072,8 @@ function applyJoystick(delta) {
 
 function resetJoystick() {
   joystickActive = false;
-  joystickKnob.style.transform = 'translate(-50%, -50%)';
-  steeringWheelIcon.style.transform = 'rotate(0deg)';
+  joystickSteer = 0;
+  updateSteeringVisual(tiltSteer);
   keys.a = false; keys.d = false;
 }
 
@@ -1199,12 +1276,13 @@ function animate() {
 
   // Refined Steering & Momentum Logic
   let targetTilt = 0;
-  if (keys.a) {
-    sideVelocity = Math.max(sideVelocity - turnAccel, -maxSideSpeed);
-    steeringAngle = THREE.MathUtils.lerp(steeringAngle, -maxSteeringAngle, 0.12);
-  } else if (keys.d) {
-    sideVelocity = Math.min(sideVelocity + turnAccel, maxSideSpeed);
-    steeringAngle = THREE.MathUtils.lerp(steeringAngle, maxSteeringAngle, 0.12);
+  const keyboardSteer = keys.a ? -1 : keys.d ? 1 : 0;
+  const activeSteer = keyboardSteer || joystickSteer || tiltSteer;
+  updateSteeringVisual(activeSteer);
+
+  if (Math.abs(activeSteer) > 0.04) {
+    sideVelocity = clamp(sideVelocity + turnAccel * activeSteer, -maxSideSpeed, maxSideSpeed);
+    steeringAngle = THREE.MathUtils.lerp(steeringAngle, maxSteeringAngle * activeSteer, 0.12);
   } else {
     sideVelocity *= sideFriction; // Natural damping
     steeringAngle = THREE.MathUtils.lerp(steeringAngle, 0, 0.08);
@@ -1215,7 +1293,7 @@ function animate() {
   carGroup.position.x = THREE.MathUtils.clamp(carGroup.position.x, roadMinX, roadMaxX);
   
   // Proportional weight-based tilt
-  targetTilt = -sideVelocity * 0.45;
+  targetTilt = -sideVelocity * 0.45 - activeSteer * 0.035;
   carGroup.rotation.z = THREE.MathUtils.lerp(carGroup.rotation.z, targetTilt, 0.1);
   carGroup.rotation.y = THREE.MathUtils.lerp(carGroup.rotation.y, -sideVelocity * 0.25, 0.1);
   carGroup.position.z -= carSpeed * 2;
@@ -1240,14 +1318,15 @@ function animate() {
   
   // Update Audio
   if (window.audioData) {
-      const { engineOsc, engineFilter, engineGain, windFilter, windGain } = window.audioData;
-      const freq = 40 + carSpeed * 120 + (isNitro ? 40 : 0);
+      const { engineBodyOsc, engineOsc, engineFilter, engineGain, windFilter, windGain } = window.audioData;
+      const freq = 48 + carSpeed * 82 + (isNitro ? 18 : 0);
       engineOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
-      engineFilter.frequency.setTargetAtTime(400 + carSpeed * 800, audioCtx.currentTime, 0.1);
-      engineGain.gain.setTargetAtTime(keys.w ? 0.15 : 0.08, audioCtx.currentTime, 0.2);
+      engineBodyOsc.frequency.setTargetAtTime(freq * 0.5, audioCtx.currentTime, 0.1);
+      engineFilter.frequency.setTargetAtTime(180 + carSpeed * 360, audioCtx.currentTime, 0.14);
+      engineGain.gain.setTargetAtTime(keys.w ? 0.06 : 0.032, audioCtx.currentTime, 0.2);
       
-      windFilter.frequency.setTargetAtTime(100 + carSpeed * 1500, audioCtx.currentTime, 0.1);
-      windGain.gain.setTargetAtTime(carSpeed * 0.15, audioCtx.currentTime, 0.1);
+      windFilter.frequency.setTargetAtTime(160 + carSpeed * 620, audioCtx.currentTime, 0.14);
+      windGain.gain.setTargetAtTime(carSpeed * 0.04, audioCtx.currentTime, 0.16);
   }
 
   // Update Time (Countdown)
@@ -1940,33 +2019,31 @@ window.addEventListener('resize', () => {
 });
 
 // Start Animation Loop
-renderer.setAnimationLoop(animate);// Message Handling for Platform Integration
+renderer.setAnimationLoop(animate);
+
+// Message Handling for Platform Integration
 window.addEventListener('message', (e) => {
     const data = e.data;
     if (data.type === 'INIT_GAME') {
-        console.log(" ENGINE: Received INIT_GAME payload\, data);
- if (data.questions) {
- // Update question pool if provided
- if (typeof questionPool !== 'undefined') {
- questionPool.basic = data.questions;
- questionPool.advanced = data.questions;
- }
- }
- if (data.startLevel) {
- currentLevel = data.startLevel;
- if (typeof statLevel !== 'undefined' && statLevel) statLevel.textContent = currentLevel;
- // Reset state for new starting level
- levelAnswers = 0;
- levelMistakes = 0;
- currentScore = 0;
- }
- if (data.zenMode !== undefined) {
- zenMode = data.zenMode;
- if (zenMode) {
- console.log(\ENGINE: ZEN MODE ENABLED via INIT_GAME\);
- const statusEl = document.getElementById('loading-status');
- if (statusEl) statusEl.textContent = \ZEN MODE: FREE DRIVE ACTIVE\;
- }
- }
- }
+        console.log("PrepDrive engine received INIT_GAME payload", data);
+        if (data.questions) {
+            questionPool.basic = data.questions;
+            questionPool.advanced = data.questions;
+        }
+        if (data.startLevel) {
+            currentLevel = data.startLevel;
+            if (statLevel) statLevel.textContent = currentLevel;
+            levelAnswers = 0;
+            levelMistakes = 0;
+            currentScore = 0;
+        }
+        if (data.zenMode !== undefined) {
+            zenMode = data.zenMode;
+            if (zenMode) {
+                console.log("PrepDrive zen mode enabled via INIT_GAME");
+                const statusEl = document.getElementById('loading-status');
+                if (statusEl) statusEl.textContent = "ZEN MODE: FREE DRIVE ACTIVE";
+            }
+        }
+    }
 });

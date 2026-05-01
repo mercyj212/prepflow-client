@@ -14,7 +14,7 @@ scene.fog = new THREE.Fog(0xc8dde8, 80, 280);
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 300);
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFShadowMap;
 renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -28,19 +28,34 @@ let engineOsc, windNoise, masterGain;
 function initAudio() {
   if (masterGain) return;
   masterGain = audioCtx.createGain();
-  masterGain.connect(audioCtx.destination);
-  masterGain.gain.value = 0.3;
+  const compressor = audioCtx.createDynamicsCompressor();
+  compressor.threshold.value = -28;
+  compressor.knee.value = 24;
+  compressor.ratio.value = 6;
+  compressor.attack.value = 0.008;
+  compressor.release.value = 0.18;
+  masterGain.connect(compressor);
+  compressor.connect(audioCtx.destination);
+  masterGain.gain.value = 0.16;
   engineOsc = audioCtx.createOscillator();
-  engineOsc.type = 'sawtooth';
+  engineOsc.type = 'triangle';
+  const engineBodyOsc = audioCtx.createOscillator();
+  engineBodyOsc.type = 'sine';
   const engineGain = audioCtx.createGain();
+  const engineBodyGain = audioCtx.createGain();
   const engineFilter = audioCtx.createBiquadFilter();
   engineFilter.type = 'lowpass';
-  engineFilter.frequency.value = 400;
+  engineFilter.frequency.value = 220;
+  engineFilter.Q.value = 0.45;
   engineOsc.connect(engineFilter);
+  engineBodyOsc.connect(engineBodyGain);
   engineFilter.connect(engineGain);
   engineGain.connect(masterGain);
-  engineGain.gain.value = 0.1;
+  engineBodyGain.connect(masterGain);
+  engineGain.gain.value = 0.045;
+  engineBodyGain.gain.value = 0.035;
   engineOsc.start();
+  engineBodyOsc.start();
   const bufferSize = 2 * audioCtx.sampleRate,
   noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate),
   output = noiseBuffer.getChannelData(0);
@@ -55,20 +70,26 @@ function initAudio() {
   windNoise.connect(windFilter);
   windFilter.connect(windGain);
   windGain.connect(masterGain);
-  windGain.gain.value = 0.05;
+  windGain.gain.value = 0.015;
   windNoise.start();
+  window.audioData = { engineBodyOsc, engineFilter, engineGain, engineOsc, windFilter, windGain };
 }
 
 function playSFX(freq, type, duration) {
   if (!masterGain) return;
   const osc = audioCtx.createOscillator();
   const g = audioCtx.createGain();
-  osc.type = type;
+  const filter = audioCtx.createBiquadFilter();
+  osc.type = type === 'square' || type === 'sawtooth' ? 'triangle' : type;
+  filter.type = 'lowpass';
+  filter.frequency.value = type === 'sawtooth' ? 360 : 1400;
+  filter.Q.value = 0.5;
   osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(10, audioCtx.currentTime + duration);
-  g.gain.setValueAtTime(0.2, audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(Math.max(40, freq * 0.45), audioCtx.currentTime + duration);
+  g.gain.setValueAtTime(type === 'sawtooth' || type === 'square' ? 0.075 : 0.09, audioCtx.currentTime);
   g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-  osc.connect(g);
+  osc.connect(filter);
+  filter.connect(g);
   g.connect(masterGain);
   osc.start();
   osc.stop(audioCtx.currentTime + duration);
@@ -152,9 +173,78 @@ const progressBar = document.getElementById('progress-bar');
 const startOverlay = document.getElementById('start-overlay');
 const startBtn = document.getElementById('start-btn');
 const loadingStatus = document.getElementById('loading-status');
+const pedalAccel = document.getElementById('pedal-accel');
+const pedalBrake = document.getElementById('pedal-brake');
+const nitroBtn = document.getElementById('nitro-btn');
+const steeringZone = document.getElementById('steering-zone');
+const joystickKnob = document.getElementById('joystick-knob');
+const steeringWheelIcon = document.getElementById('steering-wheel-icon');
 
 // Controls
 const keys = { w: false, a: false, s: false, d: false, space: false };
+let joystickActive = false;
+let joystickOriginX = 0;
+let joystickSteer = 0;
+let tiltSteer = 0;
+let tiltNeutral = 0;
+let tiltCalibrated = false;
+let tiltControlsEnabled = false;
+const JOYSTICK_DEADZONE = 10;
+const JOYSTICK_MAX = 55;
+const TILT_DEADZONE = 3;
+const TILT_FULL_LOCK = 22;
+
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function updateSteeringVisual(steer) {
+    if (!steeringWheelIcon) return;
+    steeringWheelIcon.style.transform = `rotate(${clamp(steer, -1, 1) * 95}deg)`;
+}
+
+function getLateralTilt(event) {
+    const orientation = screen.orientation?.angle ?? window.orientation ?? 0;
+    if (Math.abs(orientation) === 90) {
+        return orientation > 0 ? event.beta : -event.beta;
+    }
+    return event.gamma;
+}
+
+function handleDeviceTilt(event) {
+    const lateralTilt = getLateralTilt(event);
+    if (typeof lateralTilt !== 'number' || Number.isNaN(lateralTilt)) return;
+
+    if (!tiltCalibrated) {
+        tiltNeutral = lateralTilt;
+        tiltCalibrated = true;
+    }
+
+    const delta = lateralTilt - tiltNeutral;
+    const absDelta = Math.abs(delta);
+    const rawSteer = absDelta <= TILT_DEADZONE
+        ? 0
+        : Math.sign(delta) * clamp((absDelta - TILT_DEADZONE) / (TILT_FULL_LOCK - TILT_DEADZONE), 0, 1);
+
+    tiltSteer = THREE.MathUtils.lerp(tiltSteer, rawSteer, 0.28);
+}
+
+async function enableTiltControls() {
+    if (tiltControlsEnabled || typeof window.DeviceOrientationEvent === 'undefined') return;
+
+    try {
+        if (typeof window.DeviceOrientationEvent.requestPermission === 'function') {
+            const permission = await window.DeviceOrientationEvent.requestPermission();
+            if (permission !== 'granted') return;
+        }
+
+        window.addEventListener('deviceorientation', handleDeviceTilt, true);
+        tiltControlsEnabled = true;
+    } catch (error) {
+        console.warn('Tilt controls unavailable:', error);
+    }
+}
+
 window.addEventListener('keydown', (e) => {
     if (e.key === 'w' || e.key === 'ArrowUp') keys.w = true;
     if (e.key === 's' || e.key === 'ArrowDown') keys.s = true;
@@ -169,6 +259,59 @@ window.addEventListener('keyup', (e) => {
     if (e.key === 'd' || e.key === 'ArrowRight') keys.d = false;
     if (e.key === ' ') keys.space = false;
 });
+
+function getJoystickDelta(clientX) {
+    return clamp(clientX - joystickOriginX, -JOYSTICK_MAX, JOYSTICK_MAX);
+}
+
+function applyJoystick(delta) {
+    joystickSteer = clamp(delta / JOYSTICK_MAX, -1, 1);
+    updateSteeringVisual(joystickSteer);
+
+    if (Math.abs(delta) < JOYSTICK_DEADZONE) {
+        keys.a = false;
+        keys.d = false;
+    } else if (delta < 0) {
+        keys.a = true;
+        keys.d = false;
+    } else {
+        keys.d = true;
+        keys.a = false;
+    }
+}
+
+function resetJoystick() {
+    joystickActive = false;
+    joystickSteer = 0;
+    updateSteeringVisual(tiltSteer);
+    keys.a = false;
+    keys.d = false;
+}
+
+pedalAccel?.addEventListener('touchstart', (e) => { e.preventDefault(); keys.w = true; pedalAccel.classList.add('active'); }, { passive: false });
+pedalAccel?.addEventListener('touchend', () => { keys.w = false; pedalAccel.classList.remove('active'); });
+pedalBrake?.addEventListener('touchstart', (e) => { e.preventDefault(); keys.s = true; pedalBrake.classList.add('active'); }, { passive: false });
+pedalBrake?.addEventListener('touchend', () => { keys.s = false; pedalBrake.classList.remove('active'); });
+nitroBtn?.addEventListener('touchstart', (e) => { e.preventDefault(); keys.space = true; nitroBtn.classList.add('active'); }, { passive: false });
+nitroBtn?.addEventListener('touchend', () => { keys.space = false; nitroBtn.classList.remove('active'); });
+pedalAccel?.addEventListener('mousedown', () => { keys.w = true; pedalAccel.classList.add('active'); });
+pedalBrake?.addEventListener('mousedown', () => { keys.s = true; pedalBrake.classList.add('active'); });
+nitroBtn?.addEventListener('mousedown', () => { keys.space = true; nitroBtn.classList.add('active'); });
+window.addEventListener('mouseup', () => {
+    keys.w = false;
+    keys.s = false;
+    keys.space = false;
+    pedalAccel?.classList.remove('active');
+    pedalBrake?.classList.remove('active');
+    nitroBtn?.classList.remove('active');
+    if (joystickActive) resetJoystick();
+});
+steeringZone?.addEventListener('touchstart', (e) => { e.preventDefault(); joystickActive = true; joystickOriginX = e.touches[0].clientX; applyJoystick(0); }, { passive: false });
+steeringZone?.addEventListener('touchmove', (e) => { e.preventDefault(); if (joystickActive) applyJoystick(getJoystickDelta(e.touches[0].clientX)); }, { passive: false });
+steeringZone?.addEventListener('touchend', resetJoystick);
+steeringZone?.addEventListener('touchcancel', resetJoystick);
+steeringZone?.addEventListener('mousedown', (e) => { joystickActive = true; joystickOriginX = e.clientX; applyJoystick(0); });
+window.addEventListener('mousemove', (e) => { if (joystickActive) applyJoystick(getJoystickDelta(e.clientX)); });
 
 // Checkpoints
 const checkpointPositions = [];
@@ -215,13 +358,28 @@ function animate() {
     else if (keys.s) carSpeed = Math.max(carSpeed - 0.015, 0);
     else carSpeed = Math.max(carSpeed - 0.002, 0);
 
-    if (keys.a) sideVelocity = Math.max(sideVelocity - 0.005, -0.05);
-    else if (keys.d) sideVelocity = Math.min(sideVelocity + 0.005, 0.05);
+    const keyboardSteer = keys.a ? -1 : keys.d ? 1 : 0;
+    const activeSteer = keyboardSteer || joystickSteer || tiltSteer;
+    updateSteeringVisual(activeSteer);
+    if (Math.abs(activeSteer) > 0.04) sideVelocity = clamp(sideVelocity + 0.005 * activeSteer, -0.05, 0.05);
     else sideVelocity *= 0.9;
 
     carGroup.position.x += sideVelocity * 10;
     carGroup.position.x = Math.max(-7, Math.min(7, carGroup.position.x));
     carGroup.position.z -= carSpeed * 5;
+    carGroup.rotation.z = THREE.MathUtils.lerp(carGroup.rotation.z, -sideVelocity * 1.4 - activeSteer * 0.04, 0.12);
+    carGroup.rotation.y = THREE.MathUtils.lerp(carGroup.rotation.y, -sideVelocity * 0.8, 0.12);
+
+    if (window.audioData) {
+        const { engineBodyOsc, engineOsc, engineFilter, engineGain, windFilter, windGain } = window.audioData;
+        const freq = 48 + carSpeed * 82 + (keys.space ? 18 : 0);
+        engineOsc.frequency.setTargetAtTime(freq, audioCtx.currentTime, 0.1);
+        engineBodyOsc.frequency.setTargetAtTime(freq * 0.5, audioCtx.currentTime, 0.1);
+        engineFilter.frequency.setTargetAtTime(180 + carSpeed * 360, audioCtx.currentTime, 0.14);
+        engineGain.gain.setTargetAtTime(keys.w ? 0.06 : 0.032, audioCtx.currentTime, 0.2);
+        windFilter.frequency.setTargetAtTime(160 + carSpeed * 620, audioCtx.currentTime, 0.14);
+        windGain.gain.setTargetAtTime(carSpeed * 0.04, audioCtx.currentTime, 0.16);
+    }
 
     // Checkpoints
     checkpointPositions.forEach((z, idx) => {
@@ -278,6 +436,7 @@ applyLevelTheme(currentLevel);
 // Start
 startBtn.onclick = () => {
     initAudio();
+    enableTiltControls();
     startOverlay.style.display = 'none';
     isGameActive = true;
 };
@@ -303,4 +462,11 @@ window.addEventListener('message', (e) => {
         if (statScore) statScore.textContent = "0";
         passedCheckpoints.clear();
     }
+});
+
+window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    composer.setSize(window.innerWidth, window.innerHeight);
 });
