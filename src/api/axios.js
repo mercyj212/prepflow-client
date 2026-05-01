@@ -77,8 +77,11 @@ api.interceptors.response.use(
           withCredentials: true
         });
 
-        const user = getStoredUser() || {};
-        user.token = data.token;
+        const user = {
+          ...(getStoredUser() || {}),
+          ...data,
+          token: data.token,
+        };
         localStorage.setItem('user', JSON.stringify(user));
 
         onRefreshed(data.token);

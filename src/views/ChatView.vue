@@ -117,20 +117,24 @@
               class="flex items-end gap-3"
               :class="(msg.sender?._id || msg.sender) === currentUserId ? 'justify-end' : 'justify-start'"
             >
-              <!-- Avatar (only for others) -->
-              <div v-if="msg.sender?._id !== currentUserId" class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 overflow-hidden shrink-0 hidden sm:block">
+              <!-- Avatar -->
+              <div
+                v-if="shouldShowMessageAvatar(msg)"
+                class="w-8 h-8 rounded-full border border-zinc-200 dark:border-zinc-700 overflow-hidden shrink-0 bg-zinc-100 dark:bg-zinc-800"
+                :class="isOwnMessage(msg) ? 'order-2' : 'order-1'"
+              >
                  <img :src="getMessageAvatar(msg)" class="w-full h-full object-cover">
               </div>
 
               <!-- Bubble Group -->
-              <div class="flex flex-col gap-1 max-w-[85%] sm:max-w-[75%] group relative">
+              <div class="flex flex-col gap-1 max-w-[78%] sm:max-w-[75%] group relative" :class="isOwnMessage(msg) ? 'order-1 items-end' : 'order-2 items-start'">
                 <!-- Name for Group/Global chat -->
                 <span 
-                  v-if="(activeConversation.isGlobal || activeConversation.isGroup) && (msg.sender?._id || msg.sender) !== currentUserId" 
+                  v-if="(activeConversation.isGlobal || activeConversation.isGroup) && !isOwnMessage(msg)" 
                   class="text-[10px] font-black uppercase tracking-wider ml-1 flex items-center gap-1"
-                  :style="{ color: getUserColor(msg.sender?.fullName || 'User') }"
+                  :style="{ color: getUserColor(getDisplayName(msg.sender, 'User')) }"
                 >
-                  {{ msg.sender?.fullName || 'User' }}
+                  {{ getDisplayName(msg.sender, 'User') }}
                   <span v-if="activeConversation.isGroup && msg.sender?._id === activeConversation.admin?._id" class="text-[8px] px-1 py-0.5 rounded bg-amber-500/10 text-amber-600 font-bold">Admin</span>
                 </span>
 
@@ -144,11 +148,11 @@
                 </div>
 
                 <!-- Bubble Display -->
-                <div v-else class="relative group/bubble flex items-center gap-2" :class="[(msg.sender?._id || msg.sender) === currentUserId ? 'flex-row-reverse' : 'flex-row']">
+                <div v-else class="relative group/bubble flex items-center gap-2" :class="[isOwnMessage(msg) ? 'flex-row-reverse' : 'flex-row']">
                   <!-- Action Bar (Copy + Edit) -->
                   <div class="flex flex-col sm:flex-row items-center gap-1 opacity-0 group-hover/bubble:opacity-100 transition-opacity shrink-0">
                     <button 
-                      v-if="(msg.sender?._id || msg.sender) === currentUserId"
+                      v-if="isOwnMessage(msg)"
                       @click="startEditing(msg)"
                       class="p-1.5 rounded-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-zinc-400 hover:text-brand shadow-sm transition-colors"
                       title="Edit Message"
@@ -168,7 +172,7 @@
                   <div 
                     class="p-4 sm:p-5 rounded-[24px] text-[13px] leading-relaxed shadow-neo border relative overflow-hidden"
                     :class="[
-                      (msg.sender?._id || msg.sender) === currentUserId 
+                      isOwnMessage(msg)
                         ? 'bg-blue-600 text-white rounded-tr-sm border-transparent' 
                         : 'bg-white dark:bg-zinc-800/90 text-zinc-700 dark:text-zinc-200 rounded-tl-sm border-zinc-200/50 dark:border-white/5'
                     ]"
@@ -177,7 +181,7 @@
                     <div class="text-[9px] mt-2 opacity-60 text-right flex items-center justify-end gap-1">
                       <span v-if="msg.isEdited" class="italic tracking-wide opacity-70">(edited)</span>
                       {{ formatTime(msg.createdAt) }}
-                      <div v-if="(msg.sender?._id || msg.sender) === currentUserId" class="flex items-center -space-x-1.5 ml-0.5">
+                      <div v-if="isOwnMessage(msg)" class="flex items-center -space-x-1.5 ml-0.5">
                         <template v-if="msg.error">
                           <span class="text-red-300 text-[8px] font-bold uppercase">Failed</span>
                         </template>
@@ -229,8 +233,8 @@
               </div>
               <div class="mt-2 space-y-1">
                 <div v-for="s in addMemberResults" :key="s._id" class="flex items-center gap-2 p-2 rounded-xl hover:bg-white dark:hover:bg-zinc-800 cursor-pointer" @click="addMember(s)">
-                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${s.fullName}`" class="w-6 h-6 rounded-full">
-                  <span class="text-[12px] font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ s.fullName }}</span>
+                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${getDisplayName(s, 'student')}`" class="w-6 h-6 rounded-full">
+                  <span class="text-[12px] font-medium text-zinc-700 dark:text-zinc-300 truncate">{{ getDisplayName(s, 'Student') }}</span>
                   <UserPlus :size="12" class="ml-auto text-zinc-400" />
                 </div>
               </div>
@@ -241,9 +245,9 @@
               <p class="text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-3">Members ({{ activeConversation.participants?.length || 0 }})</p>
               <div class="space-y-2">
                 <div v-for="member in activeConversation.participants" :key="member._id || member" class="flex items-center gap-2">
-                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${member.fullName || 'user'}`" class="w-7 h-7 rounded-full border border-zinc-200 dark:border-zinc-700">
+                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${getDisplayName(member, 'user')}`" class="w-7 h-7 rounded-full border border-zinc-200 dark:border-zinc-700">
                   <div class="flex-1 min-w-0">
-                    <p class="text-[12px] font-bold text-zinc-700 dark:text-zinc-300 truncate">{{ member.fullName || 'Member' }}</p>
+                    <p class="text-[12px] font-bold text-zinc-700 dark:text-zinc-300 truncate">{{ getDisplayName(member, 'Member') }}</p>
                     <p v-if="(member._id || member) === (activeConversation.admin?._id || activeConversation.admin)" class="text-[9px] text-amber-600 font-bold uppercase">Admin</p>
                   </div>
                   <button
@@ -341,10 +345,10 @@
                 class="p-3 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-2xl cursor-pointer transition-colors"
               >
                 <div class="w-10 h-10 rounded-full bg-zinc-200 overflow-hidden">
-                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${student.fullName}`" class="w-full h-full object-cover">
+                  <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${getDisplayName(student, 'student')}`" class="w-full h-full object-cover">
                 </div>
                 <div class="flex-1">
-                  <p class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200">{{ student.fullName }}</p>
+                  <p class="text-[13px] font-bold text-zinc-800 dark:text-zinc-200">{{ getDisplayName(student, 'Student') }}</p>
                   <p class="text-[10px] text-zinc-400">{{ student.email }}</p>
                 </div>
               </div>
@@ -390,8 +394,8 @@
                 @click="toggleGroupMember(s)"
                 class="p-2 flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-800 rounded-xl cursor-pointer transition-colors"
               >
-                <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${s.fullName}`" class="w-8 h-8 rounded-full">
-                <span class="flex-1 text-[12px] font-medium text-zinc-700 dark:text-zinc-300">{{ s.fullName }}</span>
+                <img :src="`https://api.dicebear.com/7.x/notionists/svg?seed=${getDisplayName(s, 'student')}`" class="w-8 h-8 rounded-full">
+                <span class="flex-1 text-[12px] font-medium text-zinc-700 dark:text-zinc-300">{{ getDisplayName(s, 'Student') }}</span>
                 <div :class="isSelectedForGroup(s._id) ? 'bg-brand text-white dark:text-zinc-900' : 'border border-zinc-200 dark:border-zinc-600'" class="w-5 h-5 rounded-full flex items-center justify-center">
                   <Check v-if="isSelectedForGroup(s._id)" :size="10" />
                 </div>
@@ -401,7 +405,7 @@
             <!-- Selected Members Chips -->
             <div v-if="groupForm.members.length" class="flex flex-wrap gap-2 mb-6">
               <div v-for="m in groupForm.members" :key="m._id" class="flex items-center gap-1.5 px-3 py-1 bg-brand/10 rounded-full border border-brand/20">
-                <span class="text-[11px] font-bold text-brand">{{ m.fullName }}</span>
+                <span class="text-[11px] font-bold text-brand">{{ getDisplayName(m, 'Member') }}</span>
                 <button @click="toggleGroupMember(m)" class="text-brand/60 hover:text-brand"><X :size="10" /></button>
               </div>
             </div>
@@ -435,8 +439,10 @@ import hljs from 'highlight.js';
 import 'highlight.js/styles/github-dark.css';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
+import { useAuthStore } from '../store/auth';
 import api from '../api/axios';
 
+const authStore = useAuthStore();
 const currentUserId = ref(null);
 const conversations = ref([]);
 const activeConversation = ref(null);
@@ -620,13 +626,18 @@ const scrollToBottom = async () => {
   if (chatContainer.value) chatContainer.value.scrollTop = chatContainer.value.scrollHeight;
 };
 
+const getDisplayName = (user, fallback = 'User') => {
+  if (!user || typeof user !== 'object') return fallback;
+  return user.nickname || user.fullName || fallback;
+};
+
 const getConvoTitle = (convo) => {
   if (convo.course) return convo.course.title;
   if (convo.isGroup) return convo.name || 'Study Group';
   if (convo.isGlobal) return 'Global Study Room';
   if (convo.isAI) return 'PrepUp AI Tutor';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
-  return other?.fullName || 'Direct Message';
+  return getDisplayName(other, 'Direct Message');
 };
 
 const getConvoImage = (convo) => {
@@ -634,7 +645,7 @@ const getConvoImage = (convo) => {
   if (convo.isGlobal) return 'https://api.dicebear.com/7.x/initials/svg?seed=Gl&backgroundColor=9333ea';
   if (convo.isAI) return '/ai-tutor.jpg';
   const other = convo.participants?.find(p => p._id !== currentUserId.value);
-  return other?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${other?.fullName || 'U'}&backgroundColor=3f3f46`;
+  return other?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${getDisplayName(other, 'U')}&backgroundColor=3f3f46`;
 };
 
 const getConvoIconStyle = (convo) => {
@@ -647,7 +658,17 @@ const getConvoIconStyle = (convo) => {
 
 const getMessageAvatar = (msg) => {
   if (msg.isModel) return '/ai-tutor.jpg';
-  return msg.sender?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${msg.sender?.fullName || 'U'}&backgroundColor=3f3f46`;
+  const sender = typeof msg.sender === 'object' ? msg.sender : null;
+  const fallbackName = getDisplayName(sender, isOwnMessage(msg) ? 'You' : 'User');
+  return sender?.profilePicture || `https://api.dicebear.com/7.x/initials/svg?seed=${fallbackName}&backgroundColor=3f3f46`;
+};
+
+const getMessageSenderId = (msg) => (msg.sender?._id || msg.sender)?.toString();
+const isOwnMessage = (msg) => getMessageSenderId(msg) === currentUserId.value;
+const shouldShowMessageAvatar = (msg) => {
+  if (msg.isModel) return true;
+  if (!activeConversation.value) return true;
+  return !activeConversation.value.isGlobal && !activeConversation.value.isGroup;
 };
 
 const getUserColor = (name) => {
@@ -696,7 +717,17 @@ const sendMessage = async () => {
   systemError.value = null;
 
   const tempId = Date.now().toString();
-  messages.value.push({ _id: tempId, sender: { _id: currentUserId.value }, text, createdAt: new Date() });
+  messages.value.push({
+    _id: tempId,
+    sender: {
+      _id: currentUserId.value,
+      fullName: authStore.user?.fullName || 'You',
+      nickname: authStore.user?.nickname,
+      profilePicture: authStore.user?.profilePicture
+    },
+    text,
+    createdAt: new Date()
+  });
   scrollToBottom();
   if (activeConversation.value.isAI) isLoading.value = true;
 

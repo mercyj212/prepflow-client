@@ -40,6 +40,7 @@ import PaymentVerifyView from '../views/PaymentVerifyView.vue';
 import SpeedRecallView from '../views/SpeedRecallView.vue';
 import PrivacyView from '../views/PrivacyView.vue';
 import TermsView from '../views/TermsView.vue';
+import NicknamePromptView from '../views/NicknamePromptView.vue';
 
 const routes = [
   {
@@ -111,6 +112,12 @@ const routes = [
     name: 'dashboard',
     component: DashboardView,
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/complete-profile',
+    name: 'complete-profile',
+    component: NicknamePromptView,
+    meta: { requiresAuth: true, allowMissingNickname: true }
   },
   {
     path: '/quiz/:id',
@@ -263,6 +270,21 @@ router.beforeEach((to, from) => {
 
   if (to.meta.requiresAdmin && authStore.user?.role !== 'admin') {
     return to.path.startsWith('/games') ? '/games' : '/dashboard';
+  }
+
+  const needsNickname = authStore.isAuthenticated
+    && authStore.user?.role !== 'admin'
+    && !authStore.user?.nickname?.trim();
+
+  if (needsNickname && !to.meta.allowMissingNickname) {
+    return {
+      path: '/complete-profile',
+      query: { redirect: to.fullPath }
+    };
+  }
+
+  if (!needsNickname && to.name === 'complete-profile') {
+    return authStore.user?.role === 'admin' ? '/admin' : '/dashboard';
   }
   
   // Handled inside components for better UX

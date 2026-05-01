@@ -100,6 +100,8 @@ export const useAuthStore = defineStore('auth', {
             fullName: data.fullName,
             email: data.email,
             role: data.role,
+            nickname: data.nickname,
+            profilePicture: data.profilePicture,
             isVerified: true,
             token: data.token
           };
@@ -167,6 +169,25 @@ export const useAuthStore = defineStore('auth', {
         return data;
       } catch (err) {
         this.error = err.response?.data?.message || 'Avatar upload failed';
+        throw err;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    async updateNickname(nickname) {
+      this.loading = true;
+      this.error = null;
+      try {
+        const { data } = await api.put('/auth/profile/nickname', { nickname });
+        this.user = {
+          ...this.user,
+          ...data
+        };
+        localStorage.setItem('user', JSON.stringify(this.user));
+        return data;
+      } catch (err) {
+        this.error = err.response?.data?.message || 'Nickname update failed';
         throw err;
       } finally {
         this.loading = false;
