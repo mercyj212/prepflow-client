@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="min-h-screen bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-all duration-500 overflow-hidden h-screen"
+    class="min-h-[100svh] bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-all duration-500 overflow-hidden h-[100svh]"
     :class="[showSidebar ? (isSidebarHovered ? 'md:pl-[296px]' : 'md:pl-32') : 'md:px-12']"
   >
     <NeoSidebarRail v-if="showSidebar" @hover="isSidebarHovered = $event" />

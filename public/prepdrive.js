@@ -1100,22 +1100,30 @@ const steeringZone = document.getElementById('steering-zone');
 const joystickKnob = document.getElementById('joystick-knob');
 const steeringWheelIcon = document.getElementById('steering-wheel-icon');
 let joystickActive = false;
-let joystickOriginX = 0;
 let joystickSteer = 0;
 const JOYSTICK_DEADZONE = 10;
-const JOYSTICK_MAX = 55;
 
 function updateSteeringVisual(steer) {
-  if (!steeringWheelIcon) return;
-  steeringWheelIcon.style.transform = `rotate(${clamp(steer, -1, 1) * 95}deg)`;
+  const clampedSteer = clamp(steer, -1, 1);
+  if (steeringWheelIcon) steeringWheelIcon.style.transform = `rotate(${clampedSteer * 95}deg)`;
+  if (joystickKnob && steeringZone) {
+    const maxTravel = steeringZone.getBoundingClientRect().width * 0.28;
+    joystickKnob.style.transform = `translate(-50%, -50%) translateX(${clampedSteer * maxTravel}px)`;
+  }
 }
 
 function getJoystickDelta(clientX) {
-  return Math.max(-JOYSTICK_MAX, Math.min(JOYSTICK_MAX, clientX - joystickOriginX));
+  if (!steeringZone) return 0;
+  const rect = steeringZone.getBoundingClientRect();
+  const maxTravel = Math.max(36, rect.width * 0.38);
+  const centerX = rect.left + rect.width / 2;
+  return clamp(clientX - centerX, -maxTravel, maxTravel);
 }
 
 function applyJoystick(delta) {
-  joystickSteer = clamp(delta / JOYSTICK_MAX, -1, 1);
+  const rect = steeringZone?.getBoundingClientRect();
+  const maxTravel = Math.max(36, (rect?.width || 120) * 0.38);
+  joystickSteer = clamp(delta / maxTravel, -1, 1);
   updateSteeringVisual(joystickSteer);
 
   if (Math.abs(delta) < JOYSTICK_DEADZONE) {
@@ -1135,13 +1143,13 @@ function resetJoystick() {
 }
 
 // Touch controls for steering
-steeringZone.addEventListener('touchstart', (e) => { e.preventDefault(); joystickActive = true; joystickOriginX = e.touches[0].clientX; applyJoystick(0); }, { passive: false });
+steeringZone.addEventListener('touchstart', (e) => { e.preventDefault(); joystickActive = true; applyJoystick(getJoystickDelta(e.touches[0].clientX)); }, { passive: false });
 steeringZone.addEventListener('touchmove', (e) => { e.preventDefault(); if (joystickActive) applyJoystick(getJoystickDelta(e.touches[0].clientX)); }, { passive: false });
 steeringZone.addEventListener('touchend', resetJoystick);
 steeringZone.addEventListener('touchcancel', resetJoystick);
 
 // Mouse fallback for desktop
-steeringZone.addEventListener('mousedown', (e) => { joystickActive = true; joystickOriginX = e.clientX; applyJoystick(0); });
+steeringZone.addEventListener('mousedown', (e) => { joystickActive = true; applyJoystick(getJoystickDelta(e.clientX)); });
 window.addEventListener('mousemove', (e) => { if (joystickActive) applyJoystick(getJoystickDelta(e.clientX)); });
 window.addEventListener('mouseup', () => { if (joystickActive) resetJoystick(); });
 

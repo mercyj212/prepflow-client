@@ -1,7 +1,7 @@
 <template>
   <NeoAppShell>
-    <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
-      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
+    <div class="h-full flex flex-col lg:flex-row px-2 sm:px-4 lg:px-8 py-4 gap-8 overflow-x-hidden">
+      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto lg:pb-10 custom-scrollbar lg:pr-4 pt-1">
         <header class="mb-12">
           <div class="flex items-center gap-3 mb-2">
             <Dices :size="20" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400" />
@@ -152,51 +152,53 @@
             </div>
 
             <!-- Game Toggle -->
-            <div class="flex bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-xl border border-zinc-200 dark:border-white/5">
-              <button 
-                @click="setActiveLeaderboard('prepDrive')"
-                :class="[
-                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
-                  activeLeaderboard === 'prepDrive' 
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
-                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
-                ]"
-              >
-                PrepDrive
-              </button>
-              <button 
-                @click="setActiveLeaderboard('speedRecall')"
-                :class="[
-                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
-                  activeLeaderboard === 'speedRecall' 
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
-                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
-                ]"
-              >
-                Recall
-              </button>
-              <button 
-                @click="setActiveLeaderboard('conceptMapping')"
-                :class="[
-                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
-                  activeLeaderboard === 'conceptMapping' 
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
-                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
-                ]"
-              >
-                Mapping
-              </button>
-              <button 
-                @click="setActiveLeaderboard('socialDuels')"
-                :class="[
-                  'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all',
-                  activeLeaderboard === 'socialDuels' 
-                    ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
-                    : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
-                ]"
-              >
-                Duels
-              </button>
+            <div class="flex overflow-x-auto no-scrollbar bg-zinc-100 dark:bg-zinc-800/50 p-1 rounded-xl border border-zinc-200 dark:border-white/5 max-w-full">
+              <div class="flex shrink-0">
+                <button 
+                  @click="setActiveLeaderboard('prepDrive')"
+                  :class="[
+                    'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap',
+                    activeLeaderboard === 'prepDrive' 
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                      : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                  ]"
+                >
+                  PrepDrive
+                </button>
+                <button 
+                  @click="setActiveLeaderboard('speedRecall')"
+                  :class="[
+                    'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap',
+                    activeLeaderboard === 'speedRecall' 
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                      : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                  ]"
+                >
+                  Recall
+                </button>
+                <button 
+                  @click="setActiveLeaderboard('conceptMapping')"
+                  :class="[
+                    'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap',
+                    activeLeaderboard === 'conceptMapping' 
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                      : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                  ]"
+                >
+                  Mapping
+                </button>
+                <button 
+                  @click="setActiveLeaderboard('socialDuels')"
+                  :class="[
+                    'px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap',
+                    activeLeaderboard === 'socialDuels' 
+                      ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-white shadow-sm' 
+                      : 'text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300'
+                  ]"
+                >
+                  Duels
+                </button>
+              </div>
             </div>
           </div>
           
@@ -465,5 +467,13 @@ onMounted(() => {
 .animate-trophy-shake {
   animation: trophy-shake 0.8s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite;
   transform-origin: bottom center;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 </style>
