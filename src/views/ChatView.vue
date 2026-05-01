@@ -174,8 +174,13 @@
                       <span v-if="msg.isEdited" class="italic tracking-wide opacity-70">(edited)</span>
                       {{ formatTime(msg.createdAt) }}
                       <div v-if="(msg.sender?._id || msg.sender) === currentUserId" class="flex items-center -space-x-1.5 ml-0.5">
-                        <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
-                        <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
+                        <template v-if="msg.error">
+                          <span class="text-red-300 text-[8px] font-bold uppercase">Failed</span>
+                        </template>
+                        <template v-else>
+                          <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
+                          <Check :size="10" :class="[msg.readBy?.length > 1 ? 'text-blue-300' : 'text-white/50']" />
+                        </template>
                       </div>
                     </div>
                   </div>
@@ -670,8 +675,8 @@ const sendMessage = async () => {
 
     if (savedUserMessage && index !== -1) {
       messages.value[index] = savedUserMessage;
-    } else {
-      messages.value = messages.value.filter(m => m._id !== tempId);
+    } else if (index !== -1) {
+      messages.value[index].error = true;
     }
 
     systemError.value = error.response?.data?.message || 'Failed to deliver message.';

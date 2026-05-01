@@ -1,7 +1,7 @@
 <template>
   <main class="not-found-page">
     <header class="page-nav">
-      <BrandLogo size="md" theme="dark" />
+      <BrandLogo size="md" theme="light" />
       <router-link :to="primaryRoute" class="login-link">
         {{ primaryLabel }}
       </router-link>
@@ -19,7 +19,7 @@
       </div>
 
       <div class="mascot-frame" aria-hidden="true">
-        <img src="/images/not-found-mascot-cutout.png" alt="" class="mascot-image">
+        <img src="/not-found-character.png" alt="" class="mascot-image">
       </div>
 
       <div class="copy">
@@ -49,7 +49,7 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
 
 <style scoped>
 .not-found-page {
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
   position: relative;
   color: #18181b;
@@ -63,11 +63,12 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 22px clamp(20px, 5vw, 48px);
+  height: 78px;
+  padding: 16px clamp(20px, 5vw, 48px);
 }
 
 .login-link {
-  min-width: 92px;
+  min-width: 132px;
   height: 44px;
   display: inline-flex;
   align-items: center;
@@ -82,30 +83,33 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
   text-transform: uppercase;
   text-decoration: none;
   box-shadow: 0 16px 34px rgba(24, 24, 27, 0.16);
-  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease;
+  transition: transform 180ms ease, box-shadow 180ms ease, background 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
 .login-link:hover {
   transform: translateY(-2px);
-  background: #27272a;
-  box-shadow: 0 20px 42px rgba(24, 24, 27, 0.22);
+  border-color: #18181b;
+  background: #ffffff;
+  color: #18181b;
+  box-shadow: 0 20px 42px rgba(24, 24, 27, 0.18);
 }
 
 .hero-wrap {
   position: relative;
   z-index: 1;
-  min-height: calc(100vh - 86px);
+  height: calc(100vh - 78px);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 0 20px 54px;
+  padding: 0 20px clamp(18px, 4vh, 34px);
   text-align: center;
 }
 
 .number-wrap {
   position: absolute;
-  top: clamp(34px, 6vw, 60px);
+  top: clamp(10px, 3vh, 30px);
   left: 50%;
   transform: translateX(-50%);
   width: min(96vw, 1120px);
@@ -114,7 +118,7 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
   align-items: center;
   gap: clamp(8px, 3vw, 26px);
   color: rgba(255, 255, 255, 0.72);
-  font-size: clamp(9rem, 26vw, 22rem);
+  font-size: clamp(7rem, 22vw, 18rem);
   font-weight: 950;
   line-height: 0.78;
   letter-spacing: -0.05em;
@@ -128,43 +132,46 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
 .mascot-frame {
   position: relative;
   z-index: 5;
-  width: clamp(170px, 23vw, 280px);
-  margin-top: clamp(8px, 5vw, 54px);
+  width: clamp(140px, 19vw, 230px);
+  max-height: 40vh;
+  margin-top: clamp(0px, 2vh, 18px);
   filter: drop-shadow(0 28px 32px rgba(63, 63, 70, 0.2));
 }
 
 .mascot-image {
   width: 100%;
+  max-height: 40vh;
   height: auto;
   display: block;
+  object-fit: contain;
 }
 
 .copy {
   position: relative;
   z-index: 8;
-  margin-top: clamp(18px, 3vw, 28px);
+  margin-top: clamp(8px, 2vh, 18px);
 }
 
 .copy h1 {
   max-width: 760px;
   margin: 0 auto;
   color: #172033;
-  font-size: clamp(2.15rem, 5vw, 4.45rem);
+  font-size: clamp(1.85rem, 4vw, 3.55rem);
   font-weight: 950;
   line-height: 1.02;
   letter-spacing: 0;
 }
 
 .copy p {
-  margin-top: 10px;
+  margin-top: 8px;
   color: rgba(23, 32, 51, 0.55);
   font-size: clamp(0.9rem, 2vw, 1.05rem);
   font-weight: 700;
 }
 
 .home-button {
-  margin-top: 34px;
-  height: 52px;
+  margin-top: clamp(16px, 3vh, 26px);
+  height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -271,21 +278,29 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
 
 @media (max-width: 760px) {
   .page-nav {
-    padding: 18px 18px 0;
+    height: 68px;
+    padding: 12px 18px;
   }
 
   .hero-wrap {
-    justify-content: flex-start;
-    padding-top: 72px;
+    height: calc(100vh - 68px);
+    justify-content: center;
+    padding: 0 16px 20px;
   }
 
   .number-wrap {
-    top: 90px;
-    font-size: clamp(7rem, 32vw, 12rem);
+    top: 14px;
+    font-size: clamp(5.8rem, 29vw, 9rem);
   }
 
   .mascot-frame {
-    margin-top: 10px;
+    width: clamp(118px, 39vw, 170px);
+    max-height: 34vh;
+    margin-top: 0;
+  }
+
+  .mascot-image {
+    max-height: 34vh;
   }
 
   .cloud-one {
@@ -299,7 +314,20 @@ const primaryLabel = computed(() => (authStore.isAuthenticated ? 'Dashboard' : '
   }
 
   .copy {
-    margin-top: 12px;
+    margin-top: 8px;
+  }
+
+  .copy h1 {
+    font-size: clamp(1.6rem, 8vw, 2.4rem);
+  }
+
+  .copy p {
+    margin-top: 6px;
+  }
+
+  .home-button {
+    margin-top: 16px;
+    height: 44px;
   }
 }
 </style>

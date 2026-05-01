@@ -125,6 +125,47 @@ function playSFX(freq, type, duration) {
   osc.stop(audioCtx.currentTime + duration);
 }
 
+function playCrashSFX() {
+  if (!masterGain) return;
+  const now = audioCtx.currentTime;
+
+  const noiseBuffer = audioCtx.createBuffer(1, Math.floor(audioCtx.sampleRate * 0.45), audioCtx.sampleRate);
+  const output = noiseBuffer.getChannelData(0);
+  for (let i = 0; i < output.length; i++) {
+    const fade = 1 - i / output.length;
+    output[i] = (Math.random() * 2 - 1) * fade;
+  }
+
+  const noise = audioCtx.createBufferSource();
+  noise.buffer = noiseBuffer;
+  const noiseFilter = audioCtx.createBiquadFilter();
+  noiseFilter.type = 'bandpass';
+  noiseFilter.frequency.setValueAtTime(520, now);
+  noiseFilter.frequency.exponentialRampToValueAtTime(95, now + 0.42);
+  noiseFilter.Q.value = 0.9;
+  const noiseGain = audioCtx.createGain();
+  noiseGain.gain.setValueAtTime(0.22, now);
+  noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.45);
+  noise.connect(noiseFilter);
+  noiseFilter.connect(noiseGain);
+  noiseGain.connect(masterGain);
+  noise.start(now);
+
+  const thud = audioCtx.createOscillator();
+  thud.type = 'triangle';
+  const thudGain = audioCtx.createGain();
+  thud.frequency.setValueAtTime(82, now);
+  thud.frequency.exponentialRampToValueAtTime(38, now + 0.32);
+  thudGain.gain.setValueAtTime(0.2, now);
+  thudGain.gain.exponentialRampToValueAtTime(0.01, now + 0.36);
+  thud.connect(thudGain);
+  thudGain.connect(masterGain);
+  thud.start(now);
+  thud.stop(now + 0.38);
+
+  setTimeout(() => playSFX(170, 'sawtooth', 0.22), 65);
+}
+
 // WebGL context loss recovery
 renderer.domElement.addEventListener('webglcontextlost', (e) => {
   e.preventDefault();
@@ -1449,7 +1490,7 @@ function animate() {
 
     if (dx < (2.0 + tW) / 2 - 0.2 && dz < (4.4 + tL) / 2 - 0.2) {
       isGameActive = false;
-      playSFX(100, 'square', 0.5); // Crash Sound
+      playCrashSFX();
       lives--;
       updateLivesHUD();
       if (lives <= 0) {

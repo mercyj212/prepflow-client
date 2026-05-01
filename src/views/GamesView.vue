@@ -259,7 +259,7 @@
                 <!-- 1st Place Trophy -->
                 <div v-if="idx === 0" class="flex items-center justify-center pr-2">
                   <div class="relative animate-trophy-shake">
-                    <img src="/gold_trophy.png" alt="1st Place Trophy" class="w-16 h-16 object-contain relative z-10 drop-shadow-2xl" />
+                    <img src="/winner-trophy.png" alt="1st Place Trophy" class="w-16 h-16 object-contain relative z-10 drop-shadow-2xl" />
                   </div>
                 </div>
               </div>
