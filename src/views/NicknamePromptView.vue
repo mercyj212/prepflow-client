@@ -40,7 +40,7 @@
 
         <button
           type="submit"
-          class="mt-7 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-zinc-950 px-5 text-sm font-black uppercase tracking-[0.16em] text-white shadow-xl shadow-zinc-900/15 transition hover:-translate-y-0.5 hover:bg-brand disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
+          class="mt-7 flex h-14 w-full items-center justify-center gap-2 rounded-2xl bg-zinc-950 dark:bg-zinc-100 text-white dark:text-zinc-900 px-5 text-sm font-black uppercase tracking-[0.16em] shadow-xl shadow-zinc-900/15 dark:shadow-none transition hover:-translate-y-0.5 hover:bg-zinc-800 dark:hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
           :disabled="!isValid || loading"
         >
           <span>{{ loading ? 'Saving...' : 'Continue' }}</span>
