@@ -92,6 +92,11 @@
                         <button @click="triggerFileInput" class="w-full text-left flex items-center px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all">
                           Change / Add Photo
                         </button>
+                        <div class="h-px bg-zinc-100 dark:bg-white/5 my-1"></div>
+                        <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-red-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-[18px] transition-all group/item">
+                          <LogOut :size="16" :stroke-width="2" class="opacity-70 group-hover/item:opacity-100 transition-opacity" />
+                          Sign Out
+                        </button>
                       </div>
                    </div>
                  </Transition>
@@ -244,6 +249,8 @@ const confirmAvatarUpload = async () => {
 };
 
 const handleLogout = async () => {
+  showProfileMenu.value = false;
+  showAvatarMenu.value = false;
   await authStore.logout();
   router.push('/');
 };
