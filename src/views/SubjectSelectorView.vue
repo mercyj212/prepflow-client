@@ -59,8 +59,8 @@
         <button @click="selectLevel('All')" class="mt-8 text-[11px] font-bold underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-300">Clear filter</button>
       </div>
       
-      <!-- Course Grid (shows quizzes linked to courses in this department) -->
-      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      <!-- Entrance Path Grid (shows single unsorted grid of subjects/quizzes) -->
+      <div v-else-if="path === 'entrance'" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         <div
           v-for="quiz in quizzes"
           :key="quiz._id"
@@ -104,6 +104,118 @@
           <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
         </div>
       </div>
+
+      <!-- Academic Path Grid (categorized into First and Second Semesters) -->
+      <div v-else class="space-y-16">
+        <!-- First Semester Section -->
+        <div v-if="firstSemesterQuizzes.length > 0" class="space-y-8">
+          <div class="flex items-center gap-4">
+            <h2 class="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500">First Semester</h2>
+            <div class="h-px flex-grow bg-zinc-200 dark:bg-zinc-800"></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div
+              v-for="quiz in firstSemesterQuizzes"
+              :key="quiz._id"
+              class="group cursor-pointer relative"
+              @click="handleQuizClick(quiz)"
+            >
+              <NeoCard variant="hoverable" class="p-8 h-full flex flex-col" :class="{ 'opacity-80': quiz.isLocked }">
+                <div class="flex items-start justify-between mb-8">
+                  <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
+                    <Lock v-if="quiz.isLocked" :size="24" :stroke-width="1.5" class="text-zinc-400" />
+                    <Book v-else :size="24" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400 transition-colors" />
+                  </div>
+                  <div class="flex flex-col items-end">
+                    <span class="px-3 py-1.5 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em] mb-2">
+                      {{ quiz.questions?.length || 0 }} Items
+                    </span>
+                    <span v-if="getLastScore(quiz._id) > 0" class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">
+                      Last: {{ getLastScore(quiz._id) }}%
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="flex-1">
+                  <h3 class="text-[22px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-3 group-hover:text-zinc-500 transition-colors">
+                    {{ quiz.title }}
+                  </h3>
+                  <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
+                    {{ quiz.description || 'Practice test covering important topics.' }}
+                  </p>
+                </div>
+
+                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
+                  <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
+                  </span>
+                  <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
+                    <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </div>
+              </NeoCard>
+              <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Second Semester Section -->
+        <div v-if="secondSemesterQuizzes.length > 0" class="space-y-8">
+          <div class="flex items-center gap-4">
+            <h2 class="text-xs font-black uppercase tracking-[0.3em] text-zinc-400 dark:text-zinc-500">Second Semester</h2>
+            <div class="h-px flex-grow bg-zinc-200 dark:bg-zinc-800"></div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div
+              v-for="quiz in secondSemesterQuizzes"
+              :key="quiz._id"
+              class="group cursor-pointer relative"
+              @click="handleQuizClick(quiz)"
+            >
+              <NeoCard variant="hoverable" class="p-8 h-full flex flex-col" :class="{ 'opacity-80': quiz.isLocked }">
+                <div class="flex items-start justify-between mb-8">
+                  <div class="w-14 h-14 rounded-[22px] bg-zinc-50 dark:bg-zinc-800/50 flex items-center justify-center shadow-neo-inner group-hover:scale-110 transition-transform duration-500">
+                    <Lock v-if="quiz.isLocked" :size="24" :stroke-width="1.5" class="text-zinc-400" />
+                    <Book v-else :size="24" :stroke-width="1.5" class="text-zinc-600 dark:text-zinc-400 transition-colors" />
+                  </div>
+                  <div class="flex flex-col items-end">
+                    <span class="px-3 py-1.5 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[9px] font-black text-zinc-900 dark:text-zinc-100 uppercase tracking-[0.2em] mb-2">
+                      {{ quiz.questions?.length || 0 }} Items
+                    </span>
+                    <span v-if="getLastScore(quiz._id) > 0" class="text-[9px] font-black text-zinc-500 uppercase tracking-widest">
+                      Last: {{ getLastScore(quiz._id) }}%
+                    </span>
+                  </div>
+                </div>
+                
+                <div class="flex-1">
+                  <h3 class="text-[22px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tight leading-none mb-3 group-hover:text-zinc-500 transition-colors">
+                    {{ quiz.title }}
+                  </h3>
+                  <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
+                    {{ quiz.description || 'Practice test covering important topics.' }}
+                  </p>
+                </div>
+
+                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
+                  <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
+                  </span>
+                  <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
+                    <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                  </div>
+                </div>
+              </NeoCard>
+              <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Fallback if no courses are matched into either semester -->
+        <div v-if="firstSemesterQuizzes.length === 0 && secondSemesterQuizzes.length === 0" class="py-16 text-center">
+          <p class="text-[12px] font-black text-zinc-400 uppercase tracking-[0.4em]">No quizzes found for this Level.</p>
+        </div>
+      </div>
     </div>
   </NeoAppShell>
 </template>
@@ -139,6 +251,16 @@ const departmentId = computed(() => route.params.departmentId);
 const pathName = computed(() => {
   const names = { 'university': 'University', 'polytechnic': 'Polytechnic', 'entrance': 'Entrance Exams' };
   return names[path.value] || path.value;
+});
+
+const firstSemesterQuizzes = computed(() => {
+  return quizzes.value.filter(q => {
+    return !q.fullCourse?.semester || q.fullCourse?.semester === 'First Semester';
+  });
+});
+
+const secondSemesterQuizzes = computed(() => {
+  return quizzes.value.filter(q => q.fullCourse?.semester === 'Second Semester');
 });
 
 const availableLevels = computed(() => {

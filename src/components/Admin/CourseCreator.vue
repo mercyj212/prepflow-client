@@ -16,13 +16,31 @@
       
       <!-- LAYER 01: Institutional Hierarchy (Dependent Chain) -->
       <section class="space-y-6">
+<template>
+  <NeoCard variant="depressed" class="p-8 border-brand/20 relative overflow-hidden">
+    <!-- Context Indicator -->
+    <div class="absolute top-0 right-0 px-6 py-2 bg-zinc-900 dark:bg-white rounded-bl-3xl">
+       <span class="text-[10px] font-black text-white dark:text-zinc-900 uppercase tracking-widest">Creator 2.0</span>
+    </div>
+
+    <h2 class="text-xl font-black mb-10 flex items-center gap-3 text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
+      <div class="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
+        <BookPlus :size="20" class="text-brand" />
+      </div>
+      Register New <span class="text-brand ml-2">Academic Course</span>
+    </h2>
+
+    <form @submit.prevent="handleSubmit" class="space-y-10">
+      
+      <!-- LAYER 01: Institutional Hierarchy (Dependent Chain) -->
+      <section class="space-y-6">
         <div class="flex items-center gap-3 mb-4">
            <div class="h-px flex-1 bg-zinc-100 dark:bg-zinc-800"></div>
            <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">01. Hierarchy Positioning</span>
            <div class="h-px flex-1 bg-zinc-100 dark:bg-zinc-800"></div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           <!-- Institution Type -->
           <div class="space-y-2 opacity-60">
             <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Institution Type (Locked)</label>
@@ -53,6 +71,16 @@
             <select v-model="form.department" required :disabled="!form.level" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none disabled:opacity-40">
               <option value="" disabled>Select department</option>
               <option v-for="d in filteredDepartments" :key="d._id" :value="d._id">{{ d.name }}</option>
+            </select>
+          </div>
+
+          <!-- Semester -->
+          <div class="space-y-2">
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 ml-1">Curricular Semester</label>
+            <select v-model="form.semester" class="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 rounded-2xl px-5 py-4 text-sm text-zinc-900 dark:text-zinc-100 transition-all outline-none">
+              <option value="">No Semester</option>
+              <option value="First Semester">First Semester</option>
+              <option value="Second Semester">Second Semester</option>
             </select>
           </div>
         </div>
@@ -141,6 +169,7 @@ const form = ref({
   faculty: '',
   department: '',
   level: 'ND1',
+  semester: '',
   notifyStudents: false
 });
 
@@ -212,6 +241,9 @@ onMounted(async () => {
     } catch (err) { console.error('Creator Setup Error:', err); }
   }
 });
+    } catch (err) { console.error('Creator Setup Error:', err); }
+  }
+});
 
 const handleSubmit = () => {
   const payload = { ...form.value };
@@ -220,6 +252,7 @@ const handleSubmit = () => {
   form.value.title = '';
   form.value.code = '';
   form.value.description = '';
+  form.value.semester = '';
   form.value.notifyStudents = false;
 };
 </script>

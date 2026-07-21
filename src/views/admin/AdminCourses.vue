@@ -99,10 +99,11 @@
               <td class="px-6 md:px-8 py-6">
                 <div class="flex flex-col gap-1">
                   <span class="text-[11px] font-bold text-zinc-600 dark:text-zinc-400 truncate max-w-[160px] md:max-w-none">{{ course.department?.name || 'No Department' }}</span>
-                  <div class="flex items-center gap-2">
+                  <div class="flex items-center gap-2 flex-wrap">
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 dark:bg-white/5 rounded text-zinc-500">{{ courseFaculty(course)?.name || 'No School' }}</span>
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-zinc-100 dark:bg-white/5 rounded text-zinc-500">{{ course.path }}</span>
                     <span class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-brand/10 rounded text-brand">{{ course.level }}</span>
+                    <span v-if="course.semester" class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 bg-emerald-500/10 rounded text-emerald-600 dark:text-emerald-400">{{ course.semester }}</span>
                   </div>
                 </div>
               </td>
@@ -164,6 +165,17 @@
               placeholder="e.g. 2000"
               class="w-full h-12 px-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand/20 outline-none"
             />
+          </div>
+          <div>
+            <label class="block text-[10px] font-black uppercase tracking-widest text-zinc-400 mb-2">Curriculum Semester</label>
+            <select
+              v-model="editForm.semester"
+              class="w-full h-12 px-4 bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl text-sm font-bold text-zinc-900 dark:text-white focus:ring-2 focus:ring-brand/20 outline-none"
+            >
+              <option value="">No Semester</option>
+              <option value="First Semester">First Semester</option>
+              <option value="Second Semester">Second Semester</option>
+            </select>
           </div>
         </div>
 
@@ -297,16 +309,19 @@ const handleDelete = async (id) => {
   }
 };
 
-const editForm = ref({ show: false, id: null, title: '', price: 0, saving: false });
+const editForm = ref({ show: false, id: null, title: '', price: 0, semester: '', saving: false });
 
 const handleEdit = (course) => {
-  editForm.value = { show: true, id: course._id, title: course.title, price: course.price || 0, saving: false };
+  editForm.value = { show: true, id: course._id, title: course.title, price: course.price || 0, semester: course.semester || '', saving: false };
 };
 
 const saveEdit = async () => {
   editForm.value.saving = true;
   try {
-    await api.put(`/courses/${editForm.value.id}`, { price: editForm.value.price });
+    await api.put(`/courses/${editForm.value.id}`, { 
+      price: editForm.value.price,
+      semester: editForm.value.semester || null
+    });
     await adminStore.fetchCoreData();
     editForm.value.show = false;
   } catch (err) {
