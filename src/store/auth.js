@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia';
-import api from '../api/axios';
+import api, { setAccessToken } from '../api/axios';
 import { getStoredUser } from '../utils/storage';
+
+const persistUser = (user) => {
+  const { token, ...safeUser } = user;
+  localStorage.setItem('user', JSON.stringify(safeUser));
+};
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -36,7 +41,8 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { data } = await api.post('/auth/login', { email, password });
         this.user = data;
-        localStorage.setItem('user', JSON.stringify(data));
+        setAccessToken(data.token);
+        persistUser(data);
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
           console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
@@ -105,7 +111,8 @@ export const useAuthStore = defineStore('auth', {
             isVerified: true,
             token: data.token
           };
-          localStorage.setItem('user', JSON.stringify(this.user));
+          setAccessToken(data.token);
+          persistUser(this.user);
         }
         return data;
       } catch (err) {
@@ -139,7 +146,8 @@ export const useAuthStore = defineStore('auth', {
       try {
         const { data } = await api.post('/auth/google', { idToken });
         this.user = data;
-        localStorage.setItem('user', JSON.stringify(data));
+        setAccessToken(data.token);
+        persistUser(data);
         return data;
       } catch (err) {
         console.error('[AUTH STORE][GOOGLE ERROR]:', err.response?.data || err.message);
@@ -165,7 +173,8 @@ export const useAuthStore = defineStore('auth', {
           ...this.user,
           ...data
         };
-        localStorage.setItem('user', JSON.stringify(this.user));
+        setAccessToken(data.token);
+        persistUser(this.user);
         return data;
       } catch (err) {
         this.error = err.response?.data?.message || 'Avatar upload failed';
@@ -184,7 +193,8 @@ export const useAuthStore = defineStore('auth', {
           ...this.user,
           ...data
         };
-        localStorage.setItem('user', JSON.stringify(this.user));
+        setAccessToken(data.token);
+        persistUser(this.user);
         return data;
       } catch (err) {
         this.error = err.response?.data?.message || 'Nickname update failed';
@@ -201,6 +211,7 @@ export const useAuthStore = defineStore('auth', {
         console.warn('[AUTH] Backend logout failed or already logged out', err);
       } finally {
         this.user = null;
+        setAccessToken(null);
         localStorage.removeItem('user');
       }
     },

@@ -1,6 +1,17 @@
 import axios from 'axios';
 import { getStoredUser } from '../utils/storage';
 
+let accessToken = null;
+
+export const setAccessToken = (token) => {
+  accessToken = token || null;
+};
+
+const stripToken = (user = {}) => {
+  const { token, ...safeUser } = user;
+  return safeUser;
+};
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
   timeout: 60000,
@@ -24,9 +35,8 @@ const isRetryableColdStartError = (error) => {
 };
 
 api.interceptors.request.use((config) => {
-  const user = getStoredUser();
-  if (user?.token) {
-    config.headers.Authorization = `Bearer ${user.token}`;
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
   }
   return config;
 });
@@ -82,7 +92,8 @@ api.interceptors.response.use(
           ...data,
           token: data.token,
         };
-        localStorage.setItem('user', JSON.stringify(user));
+        setAccessToken(data.token);
+        localStorage.setItem('user', JSON.stringify(stripToken(user)));
 
         onRefreshed(data.token);
         refreshSubscribers = [];

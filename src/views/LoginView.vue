@@ -28,7 +28,7 @@
     </div>
 
     <!-- Right panel - Form -->
-    <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300">
+    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-screen overflow-y-auto">
       <div class="w-full max-w-sm relative">
         <!--  OTP VERIFICATION MODAL -->
         <div v-if="showOTPModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
@@ -170,7 +170,7 @@
                 @click="showPassword = !showPassword"
                 class="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors focus:outline-none"
               >
-                <!-- ️ EYE ICON (Visible) -->
+                <!-- 👁️ EYE ICON (Visible) -->
                 <Eye v-if="!showPassword" :size="18" :stroke-width="1.5" />
                 <EyeOff v-else :size="18" :stroke-width="1.5" />
               </button>
@@ -365,29 +365,28 @@ const handleGoogleLogin = async (response) => {
 
 onMounted(() => {
   /* global google */
-  if (typeof google !== 'undefined' && !window.googleInitialized) {
-    const isLocalhost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    google.accounts.id.initialize({
-      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE',
-      callback: handleGoogleLogin,
-      auto_select: false,
-    });
+  if (typeof google !== 'undefined') {
+    nextTick(() => {
+      const btnEl = document.getElementById("googleBtn");
+      if (btnEl) {
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID_HERE',
+          callback: handleGoogleLogin,
+          auto_select: false,
+          use_fedcm_for_prompt: false,
+        });
 
-    // 🛡️ Enable One-Tap
-    if (!isLocalhost) {
-      google.accounts.id.prompt();
-    }
-
-    google.accounts.id.renderButton(
-      document.getElementById("googleBtn"),
-      { 
-        type: "standard",
-        theme: "outline", 
-        size: "large", 
-        width: "400",
+        google.accounts.id.renderButton(
+          btnEl,
+          { 
+            type: "standard",
+            theme: "outline", 
+            size: "large", 
+            width: "400",
+          }
+        );
       }
-    );
-    window.googleInitialized = true;
+    });
   }
 });
 </script>

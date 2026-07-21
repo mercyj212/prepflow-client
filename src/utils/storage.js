@@ -4,7 +4,13 @@ export function getStoredUser() {
   if (!rawUser) return null;
 
   try {
-    return JSON.parse(rawUser);
+    const user = JSON.parse(rawUser);
+    if (user?.token) {
+      const { token, ...safeUser } = user;
+      localStorage.setItem('user', JSON.stringify(safeUser));
+      return safeUser;
+    }
+    return user;
   } catch (error) {
     console.warn('[AUTH] Removed invalid saved user data.', error);
     localStorage.removeItem('user');

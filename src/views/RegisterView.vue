@@ -121,7 +121,7 @@
       </div>
 
       <!-- Right panel - Form -->
-      <div class="w-full lg:w-1/2 flex items-center justify-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300">
+      <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-screen overflow-y-auto">
         <div class="w-full max-w-sm relative">
           <!-- Mobile Header -->
           <div class="flex items-center justify-between mb-12 lg:hidden">
@@ -211,8 +211,8 @@
                 </div>
                 Continue with Google
               </div>
-              <div class="absolute inset-0 z-10 overflow-hidden rounded-xl opacity-0">
-                <div id="googleBtn" class="scale-[5] origin-center cursor-pointer"></div>
+              <div class="absolute inset-0 z-10 overflow-hidden rounded-xl">
+                <div id="googleBtn" class="opacity-[0.01] scale-[5] origin-center cursor-pointer"></div>
               </div>
             </div>
           </div>
@@ -345,9 +345,18 @@ const handleGoogleLogin = async (response) => {
 
 onMounted(() => {
   if (typeof google !== 'undefined') {
-    google.accounts.id.initialize({ client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, callback: handleGoogleLogin, auto_select: false });
-    google.accounts.id.prompt();
-    google.accounts.id.renderButton(document.getElementById("googleBtn"), { type: "standard", theme: "outline", size: "large", width: "400" });
+    nextTick(() => {
+      const btnEl = document.getElementById("googleBtn");
+      if (btnEl) {
+        google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleLogin,
+          auto_select: false,
+          use_fedcm_for_prompt: false,
+        });
+        google.accounts.id.renderButton(btnEl, { type: "standard", theme: "outline", size: "large", width: "400" });
+      }
+    });
   }
 });
 </script>
