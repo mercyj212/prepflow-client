@@ -73,10 +73,16 @@ onMounted(async () => {
     const { data } = await api.get(`/payments/verify/${reference}`);
     courseId.value = data.courseId || null;
     status.value = 'success';
+    
+    // Auto redirect after 2.5 seconds for seamless mobile experience
+    setTimeout(() => {
+      router.push('/subjects');
+    }, 2500);
   } catch (error) {
     console.error('[PAYMENT_VERIFY_ERR]:', error);
     status.value = 'failed';
   }
 });
 </script>
+
 
