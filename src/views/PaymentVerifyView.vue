@@ -52,8 +52,10 @@ const message = computed(() => {
   return 'Please wait while we confirm your transaction with Paystack...';
 });
 
+const targetRedirect = ref('/subjects');
+
 const goNext = () => {
-  router.push('/subjects');
+  router.push(targetRedirect.value);
 };
 
 onMounted(async () => {
@@ -73,10 +75,15 @@ onMounted(async () => {
     const { data } = await api.get(`/payments/verify/${reference}`);
     courseId.value = data.courseId || null;
     status.value = 'success';
-    
-    // Auto redirect after 2.5 seconds for seamless mobile experience
+
+    const courseInfo = data.course;
+    if (courseInfo?.path && courseInfo?.facultyId && courseInfo?.departmentId) {
+      targetRedirect.value = `/subjects/${courseInfo.path}/${courseInfo.facultyId}/${courseInfo.departmentId}`;
+    }
+
+    // Auto redirect after 2.5 seconds for seamless user experience
     setTimeout(() => {
-      router.push('/subjects');
+      goNext();
     }, 2500);
   } catch (error) {
     console.error('[PAYMENT_VERIFY_ERR]:', error);
@@ -84,5 +91,6 @@ onMounted(async () => {
   }
 });
 </script>
+
 
 
