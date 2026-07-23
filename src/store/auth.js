@@ -23,10 +23,15 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       try {
         const { data } = await api.post('/auth/register', userData);
+        if (data.token) {
+          this.user = data;
+          setAccessToken(data.token);
+          persistUser(data);
+        }
         return data; 
       } catch (err) {
         if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
+          console.error('️ DISPATCH WARNING:', err.response.data.serverDiagnostic);
         }
         this.error = err.response?.data?.message || 'Registration failed';
         throw err;
@@ -59,7 +64,6 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       try {
         const { data } = await api.post('/auth/forgot-password', { email });
-        // 🛡️ Added Diagnostic check for recovery emails
         if (data?.serverDiagnostic && data.serverDiagnostic !== 'success') {
           console.info('📡 RECOVERY DISPATCH WARNING:', data.serverDiagnostic);
         }
@@ -94,12 +98,6 @@ export const useAuthStore = defineStore('auth', {
       this.error = null;
       try {
         const { data } = await api.post('/auth/verify-otp', { email, otp });
-        
-        // 🛡️ Log diagnostic for the Welcome Email dispatch
-        if (data.serverDiagnostic && data.serverDiagnostic !== 'success') {
-          console.info('ℹ️ WELCOME EMAIL DELAY:', data.serverDiagnostic);
-        }
-
         if (data.token) {
           this.user = {
             _id: data._id,
@@ -130,9 +128,6 @@ export const useAuthStore = defineStore('auth', {
         const { data } = await api.post('/auth/resend-otp', { email });
         return data;
       } catch (err) {
-        if (err.response?.data?.serverDiagnostic && err.response.data.serverDiagnostic !== 'success') {
-          console.error('️ SMTP DISPATCH ERROR:', err.response.data.serverDiagnostic);
-        }
         this.error = err.response?.data?.message || 'Failed to resend code';
         throw err;
       } finally {
@@ -168,7 +163,6 @@ export const useAuthStore = defineStore('auth', {
           },
         });
         
-        // Update user state synchronously with backend response
         this.user = {
           ...this.user,
           ...data

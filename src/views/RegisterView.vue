@@ -192,7 +192,7 @@
             >
               <div v-if="authStore.loading" class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin mr-3"></div>
               <span class="flex items-center gap-2">
-                Continue to Verification
+                Create Account & Join
                 <ArrowRight :size="16" />
               </span>
             </button>
@@ -304,11 +304,7 @@ const handleRegister = async () => {
     const fullPhone = phone.value ? `${countryCode.value}${phone.value.replace(/\s+/g, '')}` : '';
     await authStore.register({ fullName: fullName.value, email: email.value, password: password.value, phone: fullPhone });
     
-    showOTPModal.value = true;
-    setTimeout(() => {
-      if (digitRefs.value && digitRefs.value[0]) digitRefs.value[0].focus();
-    }, 150);
-
+    router.push('/dashboard');
   } catch (error) {
     console.error('[AUTH]: Registration sequence failure.', error);
     errorMsg.value = error.response?.data?.message || 'Identity creation failed. Reference server logs.';
