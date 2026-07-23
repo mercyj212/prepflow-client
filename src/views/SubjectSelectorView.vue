@@ -274,14 +274,21 @@ const availableLevels = computed(() => {
 const fetchData = async () => {
   loadingCourses.value = true;
   try {
-    // Fetch faculty & department names for breadcrumb
-    const faculties = await quizStore.fetchFaculties(path.value);
-    const fac = faculties.find(f => f._id === facultyId.value);
+    const levelFilter = selectedLevel.value !== 'All' ? selectedLevel.value : undefined;
+
+    // Fetch faculties, departments, courses & submissions in parallel for maximum speed
+    const [faculties, depts, deptCourses] = await Promise.all([
+      quizStore.fetchFaculties(path.value),
+      quizStore.fetchDepartments(facultyId.value),
+      quizStore.fetchCoursesByDepartment(departmentId.value, levelFilter),
+      quizStore.fetchMySubmissions()
+    ]);
+
+    const fac = (faculties || []).find(f => f._id === facultyId.value);
     currentFaculty.value = fac || null;
     facultyName.value = fac?.name || 'Faculty';
 
-    const depts = await quizStore.fetchDepartments(facultyId.value);
-    const dept = depts.find(d => d._id === departmentId.value);
+    const dept = (depts || []).find(d => d._id === departmentId.value);
     currentDepartment.value = dept || null;
     departmentName.value = dept?.name || 'Department';
 
@@ -289,14 +296,12 @@ const fetchData = async () => {
       selectedLevel.value = 'All';
     }
 
-    // Fetch courses for this department (with optional level filter)
-    const levelFilter = selectedLevel.value !== 'All' ? selectedLevel.value : undefined;
-    courses.value = await quizStore.fetchCoursesByDepartment(departmentId.value, levelFilter);
-
-    // Fetch all quizzes and filter by matched course IDs
-    await quizStore.fetchQuizzes();
+    courses.value = deptCourses || [];
     const courseIds = courses.value.map(c => c._id);
-    
+
+    // Fetch lightweight quizzes specifically for these course IDs
+    await quizStore.fetchQuizzes({ courses: courseIds.join(',') });
+
     quizzes.value = quizStore.quizzes
       .filter(q => courseIds.includes(q.course?._id || q.course))
       .map(q => {
@@ -308,9 +313,6 @@ const fetchData = async () => {
           fullCourse: course
         };
       });
-
-    // Fetch submissions for score display
-    await quizStore.fetchMySubmissions();
   } catch (err) {
     console.error('[SUBJ_VIEW_ERR]:', err);
   } finally {

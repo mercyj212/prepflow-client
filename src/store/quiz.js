@@ -27,11 +27,15 @@ export const useQuizStore = defineStore('quiz', {
         if (filters.department) params.append('department', filters.department);
         if (filters.level) params.append('level', filters.level);
         if (filters.path) params.append('path', filters.path);
+        if (filters.course) params.append('course', filters.course);
+        if (filters.courses) params.append('courses', filters.courses);
         const query = params.toString() ? `?${params.toString()}` : '';
         const { data } = await api.get(`/quizzes${query}`);
         this.quizzes = data;
+        return data;
       } catch (err) {
         this.error = err.response?.data?.message || 'Failed to fetch quizzes';
+        return [];
       } finally {
         this.loading = false;
       }
