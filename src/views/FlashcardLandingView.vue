@@ -7,7 +7,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
           <div>
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-zinc-900/5 dark:bg-white/5 border border-zinc-900/10 dark:border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-zinc-600 dark:text-zinc-400 mb-3">
-              <Sparkles :size="12" class="text-amber-500 animate-pulse" /> Categorized Decks
+              <Sparkles :size="12" class="text-zinc-500 dark:text-zinc-400 animate-pulse" /> Categorized Decks
             </div>
             <h1 class="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 tracking-tight">Flashcards & Study Decks</h1>
             <p class="text-[14px] text-zinc-500 dark:text-zinc-400 mt-1 max-w-xl">Master your CBT courses with active recall. Filter by department and level to jump right in.</p>
@@ -108,7 +108,7 @@
           
           <!-- Category Section Header -->
           <div class="flex items-center gap-4">
-            <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-zinc-900 dark:bg-white"></div>
             <h2 class="text-sm font-black uppercase tracking-[0.25em] text-zinc-600 dark:text-zinc-400">
               {{ groupName }}
             </h2>
@@ -124,7 +124,7 @@
               v-for="quiz in group"
               :key="quiz._id"
               @click="$router.push(`/flashcards/${quiz._id}`)"
-              class="group cursor-pointer bg-white dark:bg-zinc-900 rounded-[28px] shadow-neo border border-zinc-100 dark:border-white/5 p-7 hover:shadow-neo-md transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between"
+              class="group cursor-pointer bg-white dark:bg-zinc-900 rounded-[28px] shadow-neo border border-zinc-100 dark:border-white/5 p-7 hover:border-zinc-300 dark:hover:border-zinc-700 hover:shadow-neo-md transition-all duration-500 hover:-translate-y-1 flex flex-col justify-between"
             >
               <div>
                 <!-- Top Row: Icon + Card Count Badge -->
@@ -138,7 +138,7 @@
                     />
                   </div>
                   <div class="flex flex-col items-end gap-1">
-                    <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 text-[9px] font-black uppercase tracking-widest">
+                    <span class="px-3 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 border border-zinc-200/60 dark:border-white/10 text-[9px] font-black uppercase tracking-widest">
                       {{ quiz.questions?.length || 0 }} Cards
                     </span>
                     <span v-if="getQuizDept(quiz)" class="text-[9px] font-bold uppercase tracking-wider text-zinc-400">
@@ -148,7 +148,7 @@
                 </div>
 
                 <!-- Title & Description -->
-                <h3 class="text-[19px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug mb-2 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <h3 class="text-[19px] font-bold text-zinc-900 dark:text-zinc-100 tracking-tight leading-snug mb-2 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
                   {{ quiz.title }}
                 </h3>
                 <p class="text-[13px] text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed mb-6">
@@ -166,7 +166,7 @@
                     {{ quiz.course.semester }}
                   </span>
                 </div>
-                <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-300 group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <div class="flex items-center gap-1.5 text-[11px] font-black uppercase tracking-widest text-zinc-600 dark:text-zinc-300 group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
                   Study <ArrowRight :size="14" :stroke-width="2" class="group-hover:translate-x-1 transition-transform" />
                 </div>
               </div>
