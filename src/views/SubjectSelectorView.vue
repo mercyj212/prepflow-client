@@ -276,11 +276,12 @@ const fetchData = async () => {
   try {
     const levelFilter = selectedLevel.value !== 'All' ? selectedLevel.value : undefined;
 
-    // Fetch faculties, departments, courses & submissions in parallel for maximum speed
-    const [faculties, depts, deptCourses] = await Promise.all([
+    // Fetch faculties, departments, courses, quizzes & submissions simultaneously in 1 parallel Promise.all
+    const [faculties, depts, deptCourses, deptQuizzes] = await Promise.all([
       quizStore.fetchFaculties(path.value),
       quizStore.fetchDepartments(facultyId.value),
       quizStore.fetchCoursesByDepartment(departmentId.value, levelFilter),
+      quizStore.fetchQuizzes({ department: departmentId.value, level: levelFilter }),
       quizStore.fetchMySubmissions()
     ]);
 
@@ -297,15 +298,18 @@ const fetchData = async () => {
     }
 
     courses.value = deptCourses || [];
-    const courseIds = courses.value.map(c => c._id);
+    const courseMap = new Map(courses.value.map(c => [c._id.toString(), c]));
+    const courseIds = new Set(courses.value.map(c => c._id.toString()));
 
-    // Fetch lightweight quizzes specifically for these course IDs
-    await quizStore.fetchQuizzes({ courses: courseIds.join(',') });
-
-    quizzes.value = quizStore.quizzes
-      .filter(q => courseIds.includes(q.course?._id || q.course))
+    const fetchedQuizzes = deptQuizzes || quizStore.quizzes || [];
+    quizzes.value = fetchedQuizzes
+      .filter(q => {
+        const cId = (q.course?._id || q.course)?.toString();
+        return cId && courseIds.has(cId);
+      })
       .map(q => {
-        const course = courses.value.find(c => c._id === (q.course?._id || q.course));
+        const cId = (q.course?._id || q.course)?.toString();
+        const course = courseMap.get(cId);
         return {
           ...q,
           isLocked: course ? !course.hasAccess : false,
