@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#fafafa] dark:bg-zinc-950 flex flex-col transition-colors duration-300 relative overflow-x-hidden">
+  <div class="min-h-[100svh] bg-[#fafafa] dark:bg-zinc-950 flex flex-col transition-colors duration-300 relative overflow-x-hidden">
     
     <!-- 🛡️ 1. OTP VERIFICATION MODAL -->
     <div v-if="showOTPModal" class="fixed inset-0 z-[200] flex items-center justify-center p-6 bg-zinc-950/60 backdrop-blur-md animate-in fade-in zoom-in duration-300">
@@ -121,10 +121,10 @@
       </div>
 
       <!-- Right panel - Form -->
-      <div class="w-full lg:w-1/2 flex flex-col justify-center items-center p-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-screen overflow-y-auto">
+      <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-[100svh] lg:min-h-screen">
         <div class="w-full max-w-sm relative">
           <!-- Mobile Header -->
-          <div class="flex items-center justify-between mb-12 lg:hidden">
+          <div class="flex items-center justify-between mb-6 lg:hidden">
             <BrandLogo size="lg" />
             <ThemeToggle />
           </div>
