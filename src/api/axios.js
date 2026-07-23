@@ -1,10 +1,15 @@
 import axios from 'axios';
-import { getStoredUser } from '../utils/storage';
+import { getStoredUser, getStoredToken, clearStoredAuth } from '../utils/storage';
 
-let accessToken = null;
+let accessToken = getStoredToken();
 
 export const setAccessToken = (token) => {
   accessToken = token || null;
+  if (token) {
+    localStorage.setItem('token', token);
+  } else {
+    localStorage.removeItem('token');
+  }
 };
 
 const stripToken = (user = {}) => {
@@ -35,8 +40,9 @@ const isRetryableColdStartError = (error) => {
 };
 
 api.interceptors.request.use((config) => {
-  if (accessToken) {
-    config.headers.Authorization = `Bearer ${accessToken}`;
+  const token = accessToken || getStoredToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
@@ -102,7 +108,8 @@ api.interceptors.response.use(
         return api(originalRequest);
       } catch (refreshError) {
         console.warn('[SESSION EXPIRED]: Silent refresh failed, clearing local state.');
-        localStorage.removeItem('user');
+        clearStoredAuth();
+        setAccessToken(null);
         window.dispatchEvent(new CustomEvent('prepflow:session-expired'));
         refreshSubscribers = [];
         return Promise.reject(refreshError);
@@ -113,6 +120,7 @@ api.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export const warmUpApi = () => {
   return api.get('/health', {

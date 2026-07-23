@@ -4,16 +4,21 @@ export function getStoredUser() {
   if (!rawUser) return null;
 
   try {
-    const user = JSON.parse(rawUser);
-    if (user?.token) {
-      const { token, ...safeUser } = user;
-      localStorage.setItem('user', JSON.stringify(safeUser));
-      return safeUser;
-    }
-    return user;
+    return JSON.parse(rawUser);
   } catch (error) {
     console.warn('[AUTH] Removed invalid saved user data.', error);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
     return null;
   }
 }
+
+export function getStoredToken() {
+  return localStorage.getItem('token') || null;
+}
+
+export function clearStoredAuth() {
+  localStorage.removeItem('user');
+  localStorage.removeItem('token');
+}
+

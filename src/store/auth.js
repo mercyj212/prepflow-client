@@ -3,9 +3,15 @@ import api, { setAccessToken } from '../api/axios';
 import { getStoredUser } from '../utils/storage';
 
 const persistUser = (user) => {
+  if (!user) return;
   const { token, ...safeUser } = user;
+  if (token) {
+    localStorage.setItem('token', token);
+    setAccessToken(token);
+  }
   localStorage.setItem('user', JSON.stringify(safeUser));
 };
+
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -207,7 +213,9 @@ export const useAuthStore = defineStore('auth', {
         this.user = null;
         setAccessToken(null);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     },
+
   },
 });

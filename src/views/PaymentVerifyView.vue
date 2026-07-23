@@ -2,7 +2,7 @@
   <NeoAppShell>
     <div class="min-h-[80vh] flex items-center justify-center px-4 py-20">
       <NeoCard variant="extruded" class="w-full max-w-md p-10 !rounded-[32px] text-center">
-        <Loader2 v-if="status === 'verifying'" class="mx-auto mb-6 animate-spin text-zinc-400" :size="48" />
+        <Loader2 v-if="status === 'verifying'" class="mx-auto mb-6 animate-spin text-zinc-400 dark:text-zinc-500" :size="48" />
         <CheckCircle v-else-if="status === 'success'" class="mx-auto mb-6 text-emerald-500" :size="56" />
         <XCircle v-else class="mx-auto mb-6 text-rose-500" :size="56" />
 
@@ -18,7 +18,7 @@
           @click="goNext"
           class="mt-8 w-full rounded-2xl bg-zinc-900 px-5 py-4 text-[11px] font-black uppercase tracking-widest text-white transition hover:opacity-90 dark:bg-white dark:text-zinc-900"
         >
-          Continue
+          Continue to Courses
         </button>
       </NeoCard>
     </div>
@@ -29,7 +29,8 @@
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { CheckCircle, Loader2, XCircle } from 'lucide-vue-next';
-import api from '../api/axios';
+import api, { setAccessToken } from '../api/axios';
+import { getStoredToken } from '../utils/storage';
 import NeoAppShell from '../components/layout/NeoAppShell.vue';
 import NeoCard from '../components/common/NeoCard.vue';
 
@@ -40,23 +41,19 @@ const status = ref('verifying');
 const courseId = ref(null);
 
 const title = computed(() => {
-  if (status.value === 'success') return 'Payment Confirmed';
+  if (status.value === 'success') return 'Payment Confirmed!';
   if (status.value === 'failed') return 'Payment Verification Failed';
   return 'Verifying Payment';
 });
 
 const message = computed(() => {
-  if (status.value === 'success') return 'Your course access has been unlocked.';
-  if (status.value === 'failed') return 'We could not confirm this transaction. Please try again or contact support.';
-  return 'Please wait while we confirm your transaction with Paystack.';
+  if (status.value === 'success') return 'Your course access has been unlocked successfully.';
+  if (status.value === 'failed') return 'We could not confirm this transaction. Please try again or contact support if you were debited.';
+  return 'Please wait while we confirm your transaction with Paystack...';
 });
 
 const goNext = () => {
-  if (courseId.value) {
-    router.push('/subjects');
-    return;
-  }
-  router.push('/dashboard');
+  router.push('/subjects');
 };
 
 onMounted(async () => {
@@ -64,6 +61,12 @@ onMounted(async () => {
   if (!reference) {
     status.value = 'failed';
     return;
+  }
+
+  // Hydrate access token from localStorage to guarantee authorized request after full-page redirect
+  const savedToken = getStoredToken();
+  if (savedToken) {
+    setAccessToken(savedToken);
   }
 
   try {
@@ -76,3 +79,4 @@ onMounted(async () => {
   }
 });
 </script>
+
