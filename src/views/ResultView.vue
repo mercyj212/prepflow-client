@@ -3,7 +3,7 @@
     <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
       
       <!-- Main Content Column -->
-      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
+      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-4 md:pb-10 custom-scrollbar pr-0 md:pr-4 pt-1">
         
         <header class="mb-12">
           <div class="flex items-center gap-3 mb-2">

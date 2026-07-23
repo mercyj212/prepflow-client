@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="px-6 sm:px-12 py-16 flex flex-col items-center min-h-[80vh]">
+    <div class="px-4 sm:px-12 pt-6 sm:pt-16 pb-4 sm:pb-16 flex flex-col items-center min-h-[70vh]">
       <!-- Header Section -->
       <header class="mb-16 text-center">
         <h1 class="text-[48px] font-medium text-zinc-900 dark:text-zinc-100 tracking-tighter leading-none mb-4">Choose Your Path</h1>

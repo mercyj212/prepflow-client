@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="px-6 sm:px-12 py-12">
+    <div class="px-4 sm:px-12 pt-6 sm:pt-12 pb-4 sm:pb-12">
       <!-- Breadcrumbs -->
       <nav class="flex items-center gap-2 mb-8 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400">
         <router-link to="/subjects" class="hover:text-zinc-900 dark:hover:text-white transition-colors">Path</router-link>

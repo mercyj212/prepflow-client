@@ -1,7 +1,7 @@
 <template>
   <NeoAppShell>
     <div class="h-full flex px-2 sm:px-4 lg:px-8 py-4 gap-8">
-      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-10 custom-scrollbar pr-4 pt-1">
+      <section class="flex-1 flex flex-col min-w-0 h-full overflow-y-auto pb-4 md:pb-10 custom-scrollbar pr-0 md:pr-4 pt-1">
         <header class="mb-12">
           <h1 class="text-[34px] font-medium text-zinc-800 dark:text-zinc-100 tracking-tight mb-1">Progress & Mastery</h1>
           <p class="text-[15px] font-normal text-zinc-500 dark:text-zinc-500">Analyze your historical performance matrices.</p>

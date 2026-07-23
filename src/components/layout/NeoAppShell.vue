@@ -109,7 +109,7 @@
       </header>
       
       <!-- Inner Scrollable Canvas -->
-      <div class="flex-1 overflow-x-hidden overflow-y-auto w-full h-full pb-24 md:pb-8 custom-scrollbar">
+      <div class="flex-1 overflow-x-hidden overflow-y-auto w-full h-full pb-20 md:pb-8 custom-scrollbar">
         <slot></slot>
       </div>
     </main>

@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="min-h-[80vh] flex items-center justify-center px-4 py-20">
+    <div class="min-h-[70vh] flex items-center justify-center px-4 pt-6 pb-4 sm:py-20">
       <NeoCard variant="extruded" class="w-full max-w-md p-10 !rounded-[32px] text-center">
         <Loader2 v-if="status === 'verifying'" class="mx-auto mb-6 animate-spin text-zinc-400 dark:text-zinc-500" :size="48" />
         <CheckCircle v-else-if="status === 'success'" class="mx-auto mb-6 text-emerald-500" :size="56" />

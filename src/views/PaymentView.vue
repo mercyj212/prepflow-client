@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="min-h-[80vh] flex items-center justify-center px-4 py-6 sm:py-20">
+    <div class="min-h-[70vh] flex items-center justify-center px-4 pt-6 pb-4 sm:py-20">
       <!-- Checkout Container -->
       <div class="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         

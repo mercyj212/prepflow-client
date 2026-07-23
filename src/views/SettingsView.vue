@@ -1,6 +1,6 @@
 <template>
   <NeoAppShell>
-    <div class="px-6 md:px-10 py-8 max-w-2xl mx-auto">
+    <div class="px-4 sm:px-8 pt-6 sm:pt-8 pb-4 sm:pb-8 max-w-3xl mx-auto">
 
       <!-- Header -->
       <header class="mb-10">
