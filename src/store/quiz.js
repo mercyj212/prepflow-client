@@ -159,6 +159,9 @@ export const useQuizStore = defineStore('quiz', {
 
     // ── Hierarchy Actions ──────────────────────────────────
     async fetchFaculties(path) {
+      if (this.faculties.length > 0 && (!path || this.faculties[0]?.path === path)) {
+        return this.faculties;
+      }
       try {
         const query = path ? `?path=${path}` : '';
         const { data } = await api.get(`/faculties${query}`);
@@ -170,8 +173,14 @@ export const useQuizStore = defineStore('quiz', {
       }
     },
     async fetchDepartments(facultyId) {
+      const id = (facultyId && typeof facultyId === 'object') ? (facultyId._id || facultyId.id) : facultyId;
+      if (this.departments.length > 0 && id) {
+        const cachedFacultyId = typeof this.departments[0]?.faculty === 'object' 
+          ? this.departments[0].faculty._id 
+          : this.departments[0]?.faculty;
+        if (cachedFacultyId === id) return this.departments;
+      }
       try {
-        const id = (facultyId && typeof facultyId === 'object') ? (facultyId._id || facultyId.id) : facultyId;
         const query = id ? `?faculty=${id}` : '';
         const { data } = await api.get(`/departments${query}`);
         this.departments = data;

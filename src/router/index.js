@@ -41,7 +41,7 @@ import SpeedRecallView from '../views/SpeedRecallView.vue';
 import PrivacyView from '../views/PrivacyView.vue';
 import TermsView from '../views/TermsView.vue';
 import NicknamePromptView from '../views/NicknamePromptView.vue';
-
+import CourseNotesView from '../views/CourseNotesView.vue';
 const routes = [
   {
     path: '/',
@@ -118,6 +118,24 @@ const routes = [
     name: 'complete-profile',
     component: NicknamePromptView,
     meta: { requiresAuth: true, allowMissingNickname: true }
+  },
+  {
+    path: '/quizzes/:id/study',
+    name: 'study',
+    component: QuizView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/courses/:courseId/notes',
+    name: 'course-notes',
+    component: CourseNotesView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/results/:id',
+    name: 'result-detail',
+    component: ResultView,
+    meta: { requiresAuth: true }
   },
   {
     path: '/quiz/:id',

@@ -92,13 +92,22 @@
               </p>
             </div>
 
-            <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
-              <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
-              </span>
-              <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
-                <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+            <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex flex-col gap-3">
+              <div class="flex items-center justify-between">
+                <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                  {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
+                </span>
+                <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
+                  <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                </div>
               </div>
+              <button 
+                v-if="quiz.fullCourse?._id && !quiz.isLocked"
+                @click.stop="router.push(`/courses/${quiz.fullCourse._id}/notes`)" 
+                class="w-full py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+              >
+                📖 Read Notes
+              </button>
             </div>
           </NeoCard>
           <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
@@ -145,13 +154,22 @@
                   </p>
                 </div>
 
-                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
-                  <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
-                  </span>
-                  <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
-                    <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex flex-col gap-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                      {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
+                    </span>
+                    <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
+                      <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
+                  <button 
+                    v-if="quiz.fullCourse?._id && !quiz.isLocked"
+                    @click.stop="router.push(`/courses/${quiz.fullCourse._id}/notes`)" 
+                    class="w-full py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    📖 Read Notes
+                  </button>
                 </div>
               </NeoCard>
               <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
@@ -197,13 +215,22 @@
                   </p>
                 </div>
 
-                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
-                  <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
-                  </span>
-                  <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
-                    <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex flex-col gap-3">
+                  <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+                      {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
+                    </span>
+                    <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
+                      <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
+                    </div>
                   </div>
+                  <button 
+                    v-if="quiz.fullCourse?._id && !quiz.isLocked"
+                    @click.stop="router.push(`/courses/${quiz.fullCourse._id}/notes`)" 
+                    class="w-full py-2.5 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-900 dark:text-white text-xs font-bold rounded-xl transition-colors flex items-center justify-center gap-2"
+                  >
+                    📖 Read Notes
+                  </button>
                 </div>
               </NeoCard>
               <div class="absolute -z-10 -bottom-2 -right-2 w-full h-full bg-zinc-900/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity rounded-[32px]"></div>
