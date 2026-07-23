@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="min-h-[100svh] bg-[var(--neo-bg)] flex p-2 pt-4 pb-[5.5rem] md:pb-6 md:p-6 font-sans transition-all duration-500 overflow-hidden h-[100svh]"
+    class="min-h-[100svh] bg-[var(--neo-bg)] flex p-2 md:p-6 font-sans transition-all duration-500 overflow-hidden h-[100svh]"
     :class="[showSidebar ? (isSidebarHovered ? 'md:pl-[296px]' : 'md:pl-32') : 'md:px-12']"
   >
     <NeoSidebarRail v-if="showSidebar" @hover="isSidebarHovered = $event" />
@@ -109,7 +109,7 @@
       </header>
       
       <!-- Inner Scrollable Canvas -->
-      <div class="flex-1 overflow-x-hidden overflow-y-auto w-full h-full pb-10 custom-scrollbar">
+      <div class="flex-1 overflow-x-hidden overflow-y-auto w-full h-full pb-24 md:pb-8 custom-scrollbar">
         <slot></slot>
       </div>
     </main>
