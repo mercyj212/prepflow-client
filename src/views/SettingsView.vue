@@ -206,7 +206,7 @@
             :key="tx._id"
             class="bg-[var(--neo-surface)] rounded-[24px] shadow-neo p-6 border border-white/20 dark:border-white/5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 transition-all hover:border-zinc-300 dark:hover:border-zinc-700"
           >
-            <div class="flex items-start gap-4 min-w-0">
+            <div class="flex items-start gap-4 min-w-0 flex-1">
               <div 
                 class="w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 border shadow-sm mt-0.5"
                 :class="{
@@ -220,13 +220,13 @@
                 <XCircle v-else :size="22" />
               </div>
 
-              <div class="min-w-0">
-                <div class="flex items-center gap-2 mb-1 flex-wrap">
-                  <h3 class="text-[16px] font-bold text-zinc-900 dark:text-zinc-100 truncate">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 mb-1.5 flex-wrap">
+                  <h3 class="text-[15px] sm:text-[16px] font-bold text-zinc-900 dark:text-zinc-100 leading-snug break-words">
                     {{ tx.course?.title || 'Unknown Course' }}
                   </h3>
                   <span 
-                    class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider"
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shrink-0"
                     :class="{
                       'bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800': tx.status === 'success',
                       'bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800': tx.status === 'pending',
@@ -237,7 +237,7 @@
                   </span>
                 </div>
 
-                <p class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 mb-2">
+                <p class="text-[12px] font-medium text-zinc-500 dark:text-zinc-400 mb-2 break-all">
                   Ref: <span class="font-mono font-bold text-zinc-700 dark:text-zinc-300">{{ tx.reference }}</span> · {{ formatDate(tx.paidAt || tx.createdAt) }}
                 </p>
 
