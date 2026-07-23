@@ -28,7 +28,7 @@
     </div>
 
     <!-- Right panel - Form -->
-    <div class="w-full lg:w-1/2 flex flex-col justify-center items-center px-6 py-8 sm:p-12 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-[100svh] lg:min-h-screen">
+    <div class="w-full lg:w-1/2 flex flex-col justify-start lg:justify-center items-center px-6 py-6 lg:p-16 bg-white dark:bg-zinc-950 transition-colors duration-300 min-h-full lg:min-h-screen">
       <div class="w-full max-w-sm relative">
         <!--  OTP VERIFICATION MODAL -->
         <div v-if="showOTPModal" class="fixed inset-0 z-[110] flex items-center justify-center p-6 animate-in fade-in zoom-in duration-500">
