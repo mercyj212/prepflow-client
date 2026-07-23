@@ -179,7 +179,7 @@
             </div>
             
             <div class="relative">
-              <label for="password" class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1 font-sans">Security Password</label>
+              <label for="password" class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1 font-sans">Create Password</label>
               <div class="relative group">
                 <input id="password" :type="showPassword ? 'text' : 'password'" required v-model="password" placeholder="••••••••" class="block w-full rounded-xl border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 px-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-1 focus:ring-brand focus:border-brand transition-all outline-none" />
                 <button type="button" @click="showPassword = !showPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
@@ -209,6 +209,28 @@
               </div>
             </div>
 
+            <!-- CONFIRM PASSWORD FIELD -->
+            <div class="relative pt-1">
+              <label for="confirmPassword" class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1 font-sans">Confirm Password</label>
+              <div class="relative group">
+                <input id="confirmPassword" :type="showConfirmPassword ? 'text' : 'password'" required v-model="confirmPassword" placeholder="••••••••" :class="[
+                  isPasswordMatched === true ? 'border-emerald-500 focus:ring-emerald-500' : 
+                  isPasswordMatched === false ? 'border-red-500 focus:ring-red-500' : 
+                  'border-zinc-200 dark:border-zinc-800 focus:ring-brand'
+                ]" class="block w-full rounded-xl bg-zinc-50/50 dark:bg-zinc-900/50 px-4 py-3 text-sm text-zinc-900 dark:text-white placeholder-zinc-400 focus:ring-1 transition-all outline-none" />
+                <button type="button" @click="showConfirmPassword = !showConfirmPassword" class="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-black dark:hover:text-white transition-colors">
+                  <Eye v-if="!showConfirmPassword" :size="18" :stroke-width="1.5" />
+                  <EyeOff v-else :size="18" :stroke-width="1.5" />
+                </button>
+              </div>
+              <div v-if="isPasswordMatched === true" class="mt-1 text-[10px] font-bold text-emerald-500 flex items-center gap-1">
+                <span>✓ Passwords match</span>
+              </div>
+              <div v-else-if="isPasswordMatched === false" class="mt-1 text-[10px] font-bold text-red-500 flex items-center gap-1">
+                <span>⚠️ Passwords do not match</span>
+              </div>
+            </div>
+
             <div class="pt-1">
               <label for="phone" class="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1 font-sans">Phone Number (Optional)</label>
               <div class="flex gap-2">
@@ -220,7 +242,7 @@
             </div>
 
             <button
-              type="submit" :disabled="authStore.loading || passwordStrength < 4"
+              type="submit" :disabled="authStore.loading || passwordStrength < 4 || !isPasswordMatched"
               class="w-full flex justify-center items-center py-3.5 bg-black dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-xs rounded-xl hover:scale-[1.02] shadow-xl mt-5 transition-all disabled:opacity-30"
             >
               <div v-if="authStore.loading" class="w-4 h-4 border-2 border-white/30 dark:border-black/30 border-t-white dark:border-t-black rounded-full animate-spin mr-3"></div>
@@ -268,8 +290,10 @@ import ThemeToggle from '../components/ThemeToggle.vue';
 const fullName = ref('');
 const email = ref('');
 const password = ref('');
+const confirmPassword = ref('');
 const phone = ref('');
 const showPassword = ref(false);
+const showConfirmPassword = ref(false);
 const countryCode = ref('+234');
 const showOTPModal = ref(false);
 const otpInputs = ref(['', '', '', '', '', '']);
@@ -277,6 +301,11 @@ const digitRefs = ref(null);
 const verifyError = ref('');
 const showErrorModal = ref(false);
 const errorMsg = ref('');
+
+const isPasswordMatched = computed(() => {
+  if (!confirmPassword.value) return null;
+  return password.value === confirmPassword.value;
+});
 
 const countries = [
   { code: 'NG', dial: '+234' }, { code: 'US', dial: '+1' }, { code: 'GB', dial: '+44' }, { code: 'GH', dial: '+233' }, { code: 'ZA', dial: '+27' }
