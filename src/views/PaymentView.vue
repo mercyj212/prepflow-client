@@ -1,82 +1,88 @@
 <template>
   <NeoAppShell>
-    <div class="min-h-[80vh] flex items-center justify-center px-4 py-20">
+    <div class="min-h-[80vh] flex items-center justify-center px-4 py-6 sm:py-20">
       <!-- Checkout Container -->
-      <div class="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+      <div class="w-full max-w-[1000px] grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
         
         <!-- Left: Course Info -->
-        <div class="space-y-12 animate-in slide-in-from-left duration-700">
+        <div class="space-y-8 sm:space-y-12 animate-in slide-in-from-left duration-700">
           <div>
             <router-link 
               to="/subjects" 
-              class="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors mb-8"
+              class="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition-colors mb-6 sm:mb-8"
             >
               <ArrowLeft :size="14" />
               Back to Courses
             </router-link>
             
-            <div class="w-20 h-20 rounded-[32px] bg-zinc-900 dark:bg-white flex items-center justify-center mb-10 shadow-neo">
-              <CreditCard :size="36" class="text-white dark:text-zinc-900" />
+            <div class="w-14 h-14 sm:w-20 sm:h-20 rounded-2xl sm:rounded-[32px] bg-zinc-900 dark:bg-white flex items-center justify-center mb-6 sm:mb-10 shadow-neo">
+              <CreditCard class="w-6 h-6 sm:w-9 sm:h-9 text-white dark:text-zinc-900" />
             </div>
             
-            <h1 class="text-[56px] font-medium tracking-tighter leading-[0.9] text-zinc-900 dark:text-zinc-100 mb-6">
-              Complete your <br/> enrollment.
+            <h1 class="text-3xl sm:text-[56px] font-medium tracking-tighter leading-[0.95] text-zinc-900 dark:text-zinc-100 mb-4 sm:mb-6">
+              Complete your <br class="hidden sm:inline"/> enrollment.
             </h1>
-            <p class="text-[18px] font-normal text-zinc-500 dark:text-zinc-500 leading-relaxed max-w-md">
+            <p class="text-sm sm:text-[18px] font-normal text-zinc-500 dark:text-zinc-500 leading-relaxed max-w-md">
               You're one step away from unlocking <span class="text-zinc-900 dark:text-zinc-200 font-bold">{{ course?.title }}</span>. 
               Gain full access to the most comprehensive study engine in West Africa.
             </p>
           </div>
 
           <!-- Feature Grid -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div v-for="feature in features" :key="feature.title" class="space-y-2">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div v-for="feature in features" :key="feature.title" class="space-y-1 sm:space-y-2">
               <div class="flex items-center gap-3">
-                <div class="w-6 h-6 rounded-full bg-zinc-900 dark:bg-white flex items-center justify-center">
-                  <Check :size="12" class="text-white dark:text-zinc-900" />
+                <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-zinc-900 dark:bg-white flex items-center justify-center shrink-0">
+                  <Check class="w-3 h-3 text-white dark:text-zinc-900" />
                 </div>
-                <h3 class="text-[13px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">{{ feature.title }}</h3>
+                <h3 class="text-[12px] sm:text-[13px] font-black uppercase tracking-widest text-zinc-900 dark:text-zinc-100">{{ feature.title }}</h3>
               </div>
-              <p class="text-[12px] text-zinc-500 leading-snug">{{ feature.desc }}</p>
+              <p class="text-[11px] sm:text-[12px] text-zinc-500 leading-snug pl-8 sm:pl-0">{{ feature.desc }}</p>
             </div>
           </div>
         </div>
 
         <!-- Right: Checkout Card -->
         <div class="lg:sticky lg:top-24 animate-in slide-in-from-right duration-700">
-          <NeoCard variant="extruded" class="p-10 !rounded-[48px]">
-            <div v-if="loading" class="py-20 flex flex-col items-center justify-center gap-4">
+          <NeoCard variant="extruded" class="p-6 sm:p-10 !rounded-[32px] sm:!rounded-[48px]">
+            <div v-if="loading" class="py-16 flex flex-col items-center justify-center gap-4">
               <Loader2 class="animate-spin text-zinc-300" :size="48" />
               <p class="text-[12px] font-black uppercase tracking-widest text-zinc-400">Fetching Details...</p>
             </div>
 
             <template v-else-if="course">
-              <div class="mb-12">
-                <p class="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-4">Summary</p>
-                <div class="flex justify-between items-end">
-                  <h2 class="text-[28px] font-medium tracking-tight text-zinc-900 dark:text-zinc-100">{{ course.title }}</h2>
-                  <div class="text-right">
-                    <span class="text-[14px] font-medium text-zinc-400 line-through mr-2">₦5,000</span>
-                    <span class="text-[32px] font-medium text-zinc-900 dark:text-zinc-100">₦{{ course.price?.toLocaleString() }}</span>
+              <div class="mb-8 sm:mb-12">
+                <p class="text-[11px] font-black uppercase tracking-[0.3em] text-zinc-400 mb-3 sm:mb-4">Summary</p>
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4">
+                  <h2 class="text-lg sm:text-[24px] font-semibold tracking-tight text-zinc-900 dark:text-zinc-100 leading-snug">
+                    {{ course.title }}
+                  </h2>
+                  <div class="flex items-baseline gap-2 whitespace-nowrap shrink-0 self-start sm:self-auto">
+                    <span class="text-xs sm:text-[14px] font-medium text-zinc-400 line-through">₦5,000</span>
+                    <span class="text-2xl sm:text-[32px] font-bold tracking-tight text-zinc-900 dark:text-zinc-100">
+                      ₦{{ course.price?.toLocaleString() }}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              <div class="space-y-6 mb-12">
-                <div class="flex justify-between text-[14px] py-4 border-b border-zinc-100 dark:border-white/5">
+              <div class="space-y-4 sm:space-y-6 mb-8 sm:mb-12">
+                <div class="flex justify-between text-xs sm:text-[14px] py-3 sm:py-4 border-b border-zinc-100 dark:border-white/5">
                   <span class="text-zinc-500">Service Fee</span>
                   <span class="text-zinc-900 dark:text-zinc-200 font-medium">₦0.00</span>
                 </div>
-                <div class="flex justify-between text-[18px] font-bold py-2">
+                <div class="flex justify-between text-base sm:text-[18px] font-bold py-2 items-center">
                   <span class="text-zinc-900 dark:text-zinc-100">Total</span>
-                  <span class="text-zinc-900 dark:text-zinc-100">₦{{ course.price?.toLocaleString() }}</span>
+                  <span class="text-xl sm:text-[28px] font-black text-zinc-900 dark:text-zinc-100 whitespace-nowrap">
+                    ₦{{ course.price?.toLocaleString() }}
+                  </span>
                 </div>
               </div>
 
               <button 
                 @click="initiatePayment"
                 :disabled="isProcessing"
-                class="w-full h-20 rounded-[24px] bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-[16px] font-black uppercase tracking-[0.2em] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-4 disabled:opacity-50 shadow-neo-dark dark:shadow-neo-light mb-6"
+                class="w-full h-14 sm:h-20 rounded-2xl sm:rounded-[24px] bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 text-xs sm:text-[16px] font-black uppercase tracking-[0.2em] hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-50 shadow-neo-dark dark:shadow-neo-light mb-6"
               >
                 <Loader2 v-if="isProcessing" class="animate-spin" :size="24" />
                 <span v-else>Pay with Paystack</span>
@@ -85,14 +91,14 @@
 
               <div class="flex items-center justify-center gap-6 opacity-30">
                 <!-- PayPal Inline -->
-                <svg viewBox="0 0 24 24" class="h-6" xmlns="http://www.w3.org/2000/svg" fill="#003087">
+                <svg viewBox="0 0 24 24" class="h-5 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="#003087">
                   <path d="M15.607 4.653H8.941L6.645 19.251H1.82L4.862 0h7.995c3.754 0 6.375 2.294 6.473 5.513-.648-.478-2.105-.86-3.722-.86m6.57 5.546c0 3.41-3.01 6.853-6.958 6.853h-2.493L11.595 24H6.74l1.845-11.538h3.592c4.208 0 7.346-3.634 7.153-6.949a5.24 5.24 0 0 1 2.848 4.686M9.653 5.546h6.408c.907 0 1.942.222 2.363.541-.195 2.741-2.655 5.483-6.441 5.483H8.714Z"/>
                 </svg>
 
-                <div class="h-6 w-px bg-zinc-300 dark:bg-zinc-700"></div>
+                <div class="h-5 sm:h-6 w-px bg-zinc-300 dark:bg-zinc-700"></div>
 
                 <!-- Paystack -->
-                <svg width="175" height="31" viewBox="0 0 175 31" class="h-6" xmlns="http://www.w3.org/2000/svg">
+                <svg width="175" height="31" viewBox="0 0 175 31" class="h-5 sm:h-6" xmlns="http://www.w3.org/2000/svg">
                   <g fill="none" fill-rule="evenodd">
                     <g transform="translate(0 .928)" fill="#09A5DB">
                       <path d="M27.338 0H1.608C.72 0 0 .72 0 1.608v2.858c0 .888.72 1.609 1.608 1.609h25.73c.888 0 1.608-.72 1.608-1.609V1.608C28.946.72 28.226 0 27.338 0z"/>
@@ -110,7 +116,7 @@
             </template>
           </NeoCard>
 
-          <p class="mt-10 text-center text-[11px] font-medium text-zinc-400 leading-relaxed">
+          <p class="mt-6 sm:mt-10 text-center text-[11px] font-medium text-zinc-400 leading-relaxed">
             By completing this purchase, you agree to our <br/>
             <router-link to="/help" class="text-zinc-900 dark:text-zinc-200 underline underline-offset-4">Terms of Service</router-link> and <router-link to="/help" class="text-zinc-900 dark:text-zinc-200 underline underline-offset-4">Refund Policy</router-link>.
           </p>
@@ -120,6 +126,7 @@
     </div>
   </NeoAppShell>
 </template>
+
 
 <script setup>
 import { ref, onMounted } from 'vue';
