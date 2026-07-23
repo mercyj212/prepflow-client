@@ -223,9 +223,6 @@ onMounted(async () => {
     } catch (err) { console.error('Creator Setup Error:', err); }
   }
 });
-    } catch (err) { console.error('Creator Setup Error:', err); }
-  }
-});
 
 const handleSubmit = () => {
   const payload = { ...form.value };
