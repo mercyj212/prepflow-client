@@ -49,7 +49,8 @@
             </div>
             <h3 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Something went wrong</h3>
             <p class="text-zinc-500 mb-8">{{ quizStore.error }}</p>
-            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Go back to Dashboard</button>
+            <button @click="router.push(getReturnRoute())" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Back to Courses</button>
+
         </NeoCard>
       </div>
 
@@ -342,8 +343,20 @@ const submitQuizFinal = async () => {
   await handleFinish();
 };
 
-const handleConfirm = () => { if (confirmModal.value.onConfirm) confirmModal.value.onConfirm(); confirmModal.value.show = false; };
-const retakeQuiz = () => window.location.reload();
+const getReturnRoute = () => {
+  const course = quiz.value?.course;
+  if (course && course.department) {
+    const path = course.path || course.department?.faculty?.path || 'polytechnic';
+    const facultyId = course.department?.faculty?._id || course.department?.faculty;
+    const departmentId = course.department?._id || course.department;
+
+    if (path && facultyId && departmentId) {
+      return `/subjects/${path}/${facultyId}/${departmentId}`;
+    }
+  }
+  return '/subjects';
+};
+
 const goToResults = () => router.push({ 
   path: '/result', 
   query: { 
@@ -353,11 +366,22 @@ const goToResults = () => router.push({
     submissionId: currentSubmissionId.value
   } 
 });
-const goBack = () => { confirmModal.value = { show: true, title: 'Leave Practice?', message: 'Leaving will lose your progress on this test. Are you sure?', confirmText: 'Leave', isDanger: true, onConfirm: () => router.push('/dashboard') }; };
+
+const goBack = () => { 
+  confirmModal.value = { 
+    show: true, 
+    title: 'Leave Practice?', 
+    message: 'Leaving will lose your progress on this test. Are you sure?', 
+    confirmText: 'Leave', 
+    isDanger: true, 
+    onConfirm: () => router.push(getReturnRoute()) 
+  }; 
+};
 const onNextClick = () => nextQuestion();
 const flaggedQuestionIndexes = computed(() => quiz.value ? quiz.value.questions.map((q, i) => flaggedQuestions.value.has(q._id) ? i : -1).filter(i => i !== -1) : []);
 function jumpToFlaggedQuestion(index) { currentIndex.value = index; answered.value = !!localAnswers.value[index]; focusedOptionIndex.value = 0; showFlagReview.value = false; window.scrollTo({ top: 0, behavior: 'smooth' }); }
 </script>
+
 
 <style scoped>
 .animate-in { animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }

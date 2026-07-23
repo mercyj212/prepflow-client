@@ -219,7 +219,7 @@
 
                       <div class="pt-8 flex flex-col gap-3">
                         <button @click="retryQuiz" class="w-full py-4 rounded-[20px] bg-zinc-900 dark:bg-white text-white dark:text-black font-black uppercase tracking-widest text-[11px] shadow-lg hover:-translate-y-1 transition-all">Retry Assessment</button>
-                        <button @click="router.push('/dashboard')" class="w-full py-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 text-zinc-500 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-50 transition-all">Back to Command</button>
+                        <button @click="goBackToCourses" class="w-full py-4 rounded-[20px] bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-white/5 text-zinc-500 font-black uppercase tracking-widest text-[11px] hover:bg-zinc-50 transition-all">Back to Courses</button>
                       </div>
                     </div>
                  </div>
@@ -233,7 +233,8 @@
           <NeoCard variant="depressed" class="p-10 text-center">
             <h3 class="text-xl font-black uppercase tracking-tight text-zinc-900 dark:text-white mb-4">Result not found</h3>
             <p class="text-zinc-500 mb-8">This result link does not include a saved session. Open a completed attempt from your dashboard history.</p>
-            <button @click="router.push('/dashboard')" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Back to Dashboard</button>
+            <button @click="goBackToCourses" class="px-8 py-3 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-xl font-black uppercase tracking-widest text-[11px]">Back to Courses</button>
+
           </NeoCard>
         </div>
       </section>
@@ -335,7 +336,25 @@ function retryQuiz() {
   }
 }
 
+function goBackToCourses() {
+  const quiz = result.value?.quiz;
+  const course = quiz?.course || result.value?.course;
+
+  if (course && course.department) {
+    const path = course.path || course.department?.faculty?.path || 'polytechnic';
+    const facultyId = course.department?.faculty?._id || course.department?.faculty;
+    const departmentId = course.department?._id || course.department;
+
+    if (path && facultyId && departmentId) {
+      router.push(`/subjects/${path}/${facultyId}/${departmentId}`);
+      return;
+    }
+  }
+  router.push('/subjects');
+}
+
 onMounted(() => {
+
   loadResult();
   window.scrollTo({ top: 0, behavior: 'smooth' });
 });
