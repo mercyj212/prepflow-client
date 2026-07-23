@@ -45,6 +45,11 @@
                       </div>
 
                       <div class="space-y-1">
+                        <router-link to="/settings?tab=transactions" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
+                          <CreditCard :size="16" :stroke-width="2" class="opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                          Purchase History
+                        </router-link>
+
                         <router-link to="/settings" @click="showProfileMenu = false" class="flex items-center gap-3 px-4 py-3 text-[12px] font-bold text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800 hover:text-zinc-900 dark:hover:text-white rounded-[18px] transition-all group/item">
                           <Settings :size="16" :stroke-width="2" class="opacity-50 group-hover/item:opacity-100 transition-opacity" />
                           Settings
@@ -166,6 +171,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { 
   Plus, 
   Settings, 
+  CreditCard,
   LogOut, 
   Loader2, 
   X 
