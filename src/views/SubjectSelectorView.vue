@@ -18,7 +18,7 @@
           {{ path === 'entrance' ? departmentName + ' Subjects' : departmentName + ' Courses' }}
         </h1>
         <p class="text-[16px] font-normal text-zinc-500 dark:text-zinc-500 max-w-xl leading-relaxed">
-          {{ path === 'entrance' ? 'Select a subject to take practice tests from ' + departmentName + ' past questions.' : 'Browse courses and practice tests. Filter by level to find exactly what you need.' }}
+          {{ path === 'entrance' ? 'Select a subject to take practice exams from ' + departmentName + ' past questions.' : 'Browse courses and practice exams. Filter by level to find exactly what you need.' }}
         </p>
       </header>
 
@@ -88,13 +88,13 @@
                 {{ quiz.title }}
               </h3>
               <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
-                {{ quiz.description || 'Practice test covering important topics.' }}
+                {{ quiz.description || 'Practice exam covering important topics.' }}
               </p>
             </div>
 
             <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
               <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
+                {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
               </span>
               <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
                 <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
@@ -141,13 +141,13 @@
                     {{ quiz.title }}
                   </h3>
                   <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
-                    {{ quiz.description || 'Practice test covering important topics.' }}
+                    {{ quiz.description || 'Practice exam covering important topics.' }}
                   </p>
                 </div>
 
                 <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
                   <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
+                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
                   </span>
                   <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
                     <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />
@@ -193,13 +193,13 @@
                     {{ quiz.title }}
                   </h3>
                   <p class="text-[14px] font-normal text-zinc-500 dark:text-zinc-500 line-clamp-2 leading-relaxed mb-8">
-                    {{ quiz.description || 'Practice test covering important topics.' }}
+                    {{ quiz.description || 'Practice exam covering important topics.' }}
                   </p>
                 </div>
 
                 <div class="pt-6 border-t border-zinc-100 dark:border-zinc-800/50 flex items-center justify-between">
                   <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em] group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
-                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice' }}
+                    {{ quiz.isLocked ? 'Locked • ₦' + (quiz.coursePrice || 0) : 'Start Practice Exam' }}
                   </span>
                   <div class="w-10 h-10 rounded-full border border-zinc-200 dark:border-zinc-800 flex items-center justify-center group-hover:bg-zinc-900 dark:group-hover:bg-white group-hover:border-zinc-900 dark:group-hover:border-white group-hover:text-white dark:group-hover:text-zinc-900 transition-all duration-300">
                     <ArrowRight :size="18" :stroke-width="2" class="group-hover:translate-x-0.5 transition-transform" />

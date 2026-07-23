@@ -51,7 +51,7 @@
               Restart Session
             </button>
             <button @click="$router.push(`/quiz/${quiz._id}`)" class="w-full h-14 bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 rounded-2xl font-black uppercase tracking-widest text-[11px] shadow-neo-pill hover:-translate-y-1 transition-all flex items-center justify-center gap-3">
-              Ready for a test?
+              Ready for practice?
               <ArrowRight :size="16" :stroke-width="2" />
             </button>
           </div>
@@ -67,7 +67,7 @@
             Back to sets
           </button>
           <button @click="$router.push(`/quiz/${quiz._id}`)" class="px-5 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest bg-zinc-900 dark:bg-white text-white dark:text-zinc-900 hover:-translate-y-0.5 transition-all shadow-neo-pill flex items-center gap-2">
-            Start Exam
+            Start Practice
             <ArrowRight :size="14" :stroke-width="3" />
           </button>
         </div>

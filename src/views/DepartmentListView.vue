@@ -140,7 +140,7 @@ const getDepartmentLevels = (dept) => {
 };
 
 const getDepartmentDescription = (dept) => {
-  return getDepartmentCard(dept)?.description || dept.description || 'Open this department to view courses and practice tests.';
+  return getDepartmentCard(dept)?.description || dept.description || 'Open this department to view courses and practice exams.';
 };
 
 onMounted(async () => {
