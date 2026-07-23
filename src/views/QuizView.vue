@@ -205,6 +205,14 @@ const flaggedQuestions = ref(new Set());
 const showFlagReview = ref(false);
 const focusedOptionIndex = ref(0);
 const confirmModal = ref({ show: false, title: '', message: '', confirmText: 'Confirm', isDanger: true, onConfirm: null });
+
+const handleConfirm = () => {
+  const action = confirmModal.value.onConfirm;
+  confirmModal.value.show = false;
+  if (typeof action === 'function') {
+    action();
+  }
+};
 const localAnswers = ref({});
 const timeLeft = ref(0);
 let timer = null;
