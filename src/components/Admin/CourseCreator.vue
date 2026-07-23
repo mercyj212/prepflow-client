@@ -16,24 +16,6 @@
       
       <!-- LAYER 01: Institutional Hierarchy (Dependent Chain) -->
       <section class="space-y-6">
-<template>
-  <NeoCard variant="depressed" class="p-8 border-brand/20 relative overflow-hidden">
-    <!-- Context Indicator -->
-    <div class="absolute top-0 right-0 px-6 py-2 bg-zinc-900 dark:bg-white rounded-bl-3xl">
-       <span class="text-[10px] font-black text-white dark:text-zinc-900 uppercase tracking-widest">Creator 2.0</span>
-    </div>
-
-    <h2 class="text-xl font-black mb-10 flex items-center gap-3 text-zinc-900 dark:text-zinc-100 uppercase tracking-tight">
-      <div class="w-10 h-10 rounded-xl bg-brand/10 flex items-center justify-center">
-        <BookPlus :size="20" class="text-brand" />
-      </div>
-      Register New <span class="text-brand ml-2">Academic Course</span>
-    </h2>
-
-    <form @submit.prevent="handleSubmit" class="space-y-10">
-      
-      <!-- LAYER 01: Institutional Hierarchy (Dependent Chain) -->
-      <section class="space-y-6">
         <div class="flex items-center gap-3 mb-4">
            <div class="h-px flex-1 bg-zinc-100 dark:bg-zinc-800"></div>
            <span class="text-[10px] font-black text-zinc-400 uppercase tracking-[0.3em]">01. Hierarchy Positioning</span>
