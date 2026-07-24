@@ -233,7 +233,7 @@ const isCurrentCorrect = computed(() => {
 const isFlagged = computed(() => currentQuestion.value ? flaggedQuestions.value.has(currentQuestion.value._id) : false);
 
 onMounted(async () => {
-  await quizStore.fetchStudyQuizById(route.params.id);
+  await quizStore.fetchQuizById(route.params.id);
   if (quiz.value) {
     timeLeft.value = (quiz.value.timeLimit || 30) * 60;
     startTimer();
